@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: BA Book Everything 1.3.27\n"
-"POT-Creation-Date: 2024-09-18 13:45+0300\n"
+"POT-Creation-Date: 2024-09-26 13:33+0300\n"
 "PO-Revision-Date: 2016-07-05 22:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -123,7 +123,7 @@ msgstr ""
 #: includes/class-babe-cmb2-admin.php:2113
 #: includes/class-babe-cmb2-admin.php:2656
 #: includes/class-babe-cmb2-admin.php:2821
-#: includes/class-babe-html.php:2571 includes/class-babe-html.php:2572
+#: includes/class-babe-html.php:2618 includes/class-babe-html.php:2619
 msgid "Title"
 msgstr ""
 
@@ -657,7 +657,7 @@ msgstr ""
 #: includes/class-babe-cmb2-admin.php:1064
 #: includes/class-babe-cmb2-admin.php:1998
 #: includes/class-babe-cmb2-admin.php:2541 includes/class-babe-html.php:396
-#: includes/class-babe-html.php:3793
+#: includes/class-babe-html.php:3840
 msgid "Address"
 msgstr ""
 
@@ -796,7 +796,7 @@ msgid "Extra guest contacts"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:1722
-#: includes/class-babe-html.php:3778
+#: includes/class-babe-html.php:3825
 msgid "Extra guest"
 msgstr ""
 
@@ -875,9 +875,9 @@ msgid "Percentage"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:1958
-#: includes/class-babe-html.php:2573 includes/class-babe-html.php:2574
-#: includes/class-babe-html.php:4363 includes/class-babe-html.php:4626
-#: includes/class-babe-html.php:4878 includes/class-babe-html.php:5030
+#: includes/class-babe-html.php:2620 includes/class-babe-html.php:2621
+#: includes/class-babe-html.php:4410 includes/class-babe-html.php:4673
+#: includes/class-babe-html.php:4925 includes/class-babe-html.php:5077
 #: includes/class-babe-order.php:1886 includes/class-babe-prices.php:532
 #: includes/class-babe-prices.php:728
 #: includes/class-babe-search-form.php:376
@@ -2127,7 +2127,7 @@ msgstr ""
 msgid "Your contacts"
 msgstr ""
 
-#: includes/class-babe-emails.php:666 includes/class-babe-html.php:4077
+#: includes/class-babe-emails.php:666 includes/class-babe-html.php:4124
 msgid "Pay Now!"
 msgstr ""
 
@@ -2156,32 +2156,32 @@ msgstr ""
 msgid "Next &raquo;"
 msgstr ""
 
-#: includes/class-babe-html.php:254 includes/class-babe-html.php:5179
-#: includes/class-babe-html.php:5265
+#: includes/class-babe-html.php:254 includes/class-babe-html.php:5226
+#: includes/class-babe-html.php:5312
 msgid "Mode of Travel: "
 msgstr ""
 
-#: includes/class-babe-html.php:256 includes/class-babe-html.php:5181
-#: includes/class-babe-html.php:5267
+#: includes/class-babe-html.php:256 includes/class-babe-html.php:5228
+#: includes/class-babe-html.php:5314
 msgid "Walking"
 msgstr ""
 
-#: includes/class-babe-html.php:257 includes/class-babe-html.php:5182
-#: includes/class-babe-html.php:5268
+#: includes/class-babe-html.php:257 includes/class-babe-html.php:5229
+#: includes/class-babe-html.php:5315
 msgid "Driving"
 msgstr ""
 
-#: includes/class-babe-html.php:258 includes/class-babe-html.php:5183
-#: includes/class-babe-html.php:5269
+#: includes/class-babe-html.php:258 includes/class-babe-html.php:5230
+#: includes/class-babe-html.php:5316
 msgid "Bicycling"
 msgstr ""
 
-#: includes/class-babe-html.php:262 includes/class-babe-html.php:5176
-#: includes/class-babe-html.php:5262
+#: includes/class-babe-html.php:262 includes/class-babe-html.php:5223
+#: includes/class-babe-html.php:5309
 msgid "Enter your address"
 msgstr ""
 
-#: includes/class-babe-html.php:296 includes/class-babe-html.php:2420
+#: includes/class-babe-html.php:296 includes/class-babe-html.php:2467
 msgid "Please fill in all the data."
 msgstr ""
 
@@ -2229,15 +2229,15 @@ msgstr ""
 msgid "Billing address"
 msgstr ""
 
-#: includes/class-babe-html.php:372 includes/class-babe-html.php:3784
+#: includes/class-babe-html.php:372 includes/class-babe-html.php:3831
 msgid "Country"
 msgstr ""
 
-#: includes/class-babe-html.php:381 includes/class-babe-html.php:3787
+#: includes/class-babe-html.php:381 includes/class-babe-html.php:3834
 msgid "State"
 msgstr ""
 
-#: includes/class-babe-html.php:389 includes/class-babe-html.php:3790
+#: includes/class-babe-html.php:389 includes/class-babe-html.php:3837
 msgid "City"
 msgstr ""
 
@@ -2246,11 +2246,11 @@ msgstr ""
 msgid "Extra guest %s"
 msgstr ""
 
-#: includes/class-babe-html.php:460 includes/class-babe-html.php:3760
+#: includes/class-babe-html.php:460 includes/class-babe-html.php:3807
 msgid "First name"
 msgstr ""
 
-#: includes/class-babe-html.php:467 includes/class-babe-html.php:3763
+#: includes/class-babe-html.php:467 includes/class-babe-html.php:3810
 msgid "Last name"
 msgstr ""
 
@@ -2318,7 +2318,7 @@ msgstr ""
 msgid "Select address"
 msgstr ""
 
-#: includes/class-babe-html.php:1586 includes/class-babe-html.php:2331
+#: includes/class-babe-html.php:1586 includes/class-babe-html.php:2378
 msgid "Select meeting point"
 msgstr ""
 
@@ -2326,216 +2326,216 @@ msgstr ""
 msgid "Go to Booking form"
 msgstr ""
 
-#: includes/class-babe-html.php:2175 includes/class-babe-html.php:2194
-#: includes/class-babe-html.php:2474 includes/class-babe-html.php:3097
+#: includes/class-babe-html.php:2222 includes/class-babe-html.php:2241
+#: includes/class-babe-html.php:2521 includes/class-babe-html.php:3144
 msgid "From:"
 msgstr ""
 
-#: includes/class-babe-html.php:2182
+#: includes/class-babe-html.php:2229
 msgid "Time from:"
 msgstr ""
 
-#: includes/class-babe-html.php:2213 includes/class-babe-html.php:2485
-#: includes/class-babe-html.php:3097
+#: includes/class-babe-html.php:2260 includes/class-babe-html.php:2532
+#: includes/class-babe-html.php:3144
 msgid "To:"
 msgstr ""
 
-#: includes/class-babe-html.php:2232
+#: includes/class-babe-html.php:2279
 msgid "Time to:"
 msgstr ""
 
-#: includes/class-babe-html.php:2253 includes/class-babe-html.php:3100
+#: includes/class-babe-html.php:2300 includes/class-babe-html.php:3147
 msgid "Time:"
 msgstr ""
 
-#: includes/class-babe-html.php:2292
+#: includes/class-babe-html.php:2339
 msgid "please, select date first"
 msgstr ""
 
-#: includes/class-babe-html.php:2296 includes/class-babe-html.php:3149
+#: includes/class-babe-html.php:2343 includes/class-babe-html.php:3196
 msgid "Tickets:"
 msgstr ""
 
-#: includes/class-babe-html.php:2296 includes/class-babe-html.php:3149
+#: includes/class-babe-html.php:2343 includes/class-babe-html.php:3196
 msgid "Guests:"
 msgstr ""
 
-#: includes/class-babe-html.php:2328
+#: includes/class-babe-html.php:2375
 msgid "find closest location"
 msgstr ""
 
-#: includes/class-babe-html.php:2344 includes/class-babe-html.php:5260
+#: includes/class-babe-html.php:2391 includes/class-babe-html.php:5307
 msgid "Find a route from your location"
 msgstr ""
 
-#: includes/class-babe-html.php:2350
+#: includes/class-babe-html.php:2397
 msgid "Ok"
 msgstr ""
 
-#: includes/class-babe-html.php:2399
+#: includes/class-babe-html.php:2446
 msgid "Please login or register to continue your booking"
 msgstr ""
 
-#: includes/class-babe-html.php:2402
+#: includes/class-babe-html.php:2449
 msgid "Book Now"
 msgstr ""
 
-#: includes/class-babe-html.php:2414 includes/class-babe-html.php:3385
+#: includes/class-babe-html.php:2461 includes/class-babe-html.php:3432
 msgid "Total:"
 msgstr ""
 
-#: includes/class-babe-html.php:2507
+#: includes/class-babe-html.php:2554
 msgid "Your name"
 msgstr ""
 
-#: includes/class-babe-html.php:2512 includes/class-babe-my-account.php:394
+#: includes/class-babe-html.php:2559 includes/class-babe-my-account.php:394
 msgid "Your email"
 msgstr ""
 
-#: includes/class-babe-html.php:2517
+#: includes/class-babe-html.php:2564
 msgid "Message"
 msgstr ""
 
-#: includes/class-babe-html.php:2526
+#: includes/class-babe-html.php:2573
 msgid "Request a reservation"
 msgstr ""
 
-#: includes/class-babe-html.php:2575 includes/class-babe-html.php:2576
+#: includes/class-babe-html.php:2622 includes/class-babe-html.php:2623
 #: includes/class-babe-rating.php:607
 #: includes/vendors/elementor/widgets/allitems.php:174
 msgid "Rating"
 msgstr ""
 
-#: includes/class-babe-html.php:2577 includes/class-babe-html.php:2578
+#: includes/class-babe-html.php:2624 includes/class-babe-html.php:2625
 msgid "Availability date"
 msgstr ""
 
-#: includes/class-babe-html.php:2998
+#: includes/class-babe-html.php:3045
 #, php-format
 msgid "Order #%s is confirmed."
 msgstr ""
 
-#: includes/class-babe-html.php:2998
+#: includes/class-babe-html.php:3045
 #, php-format
 msgid "Order #%s is rejected."
 msgstr ""
 
-#: includes/class-babe-html.php:3007
+#: includes/class-babe-html.php:3054
 msgid "Confirm Order #"
 msgstr ""
 
-#: includes/class-babe-html.php:3007
+#: includes/class-babe-html.php:3054
 msgid "Reject Order #"
 msgstr ""
 
-#: includes/class-babe-html.php:3100
+#: includes/class-babe-html.php:3147
 msgid "Date:"
 msgstr ""
 
-#: includes/class-babe-html.php:3113
+#: includes/class-babe-html.php:3160
 msgid "Duration:"
 msgstr ""
 
-#: includes/class-babe-html.php:3126
+#: includes/class-babe-html.php:3173
 msgid "Departure from:"
 msgstr ""
 
-#: includes/class-babe-html.php:3136
+#: includes/class-babe-html.php:3183
 msgid "Departure time:"
 msgstr ""
 
-#: includes/class-babe-html.php:3163
+#: includes/class-babe-html.php:3210
 msgid "persons"
 msgstr ""
 
-#: includes/class-babe-html.php:3163 includes/class-babe-prices.php:289
+#: includes/class-babe-html.php:3210 includes/class-babe-prices.php:289
 msgid "person"
 msgstr ""
 
-#: includes/class-babe-html.php:3211
+#: includes/class-babe-html.php:3258
 #, php-format
 msgid "Price Cut %d%% off applied"
 msgstr ""
 
-#: includes/class-babe-html.php:3307
+#: includes/class-babe-html.php:3354
 msgid "Taxes"
 msgstr ""
 
-#: includes/class-babe-html.php:3356
+#: includes/class-babe-html.php:3403
 msgid "Subtotal:"
 msgstr ""
 
-#: includes/class-babe-html.php:3376
+#: includes/class-babe-html.php:3423
 msgid "Discount coupon"
 msgstr ""
 
-#: includes/class-babe-html.php:3395
+#: includes/class-babe-html.php:3442
 msgid "Amount Paid:"
 msgstr ""
 
-#: includes/class-babe-html.php:3405
+#: includes/class-babe-html.php:3452
 msgid "Amount Due:"
 msgstr ""
 
-#: includes/class-babe-html.php:3571
+#: includes/class-babe-html.php:3618
 msgid "Remove Coupon"
 msgstr ""
 
-#: includes/class-babe-html.php:3577
+#: includes/class-babe-html.php:3624
 #, php-format
 msgid "Coupon Code %s with amount %s was applied"
 msgstr ""
 
-#: includes/class-babe-html.php:3610
+#: includes/class-babe-html.php:3657
 msgid "Enter Coupon Code and get a discount!"
 msgstr ""
 
-#: includes/class-babe-html.php:3615
+#: includes/class-babe-html.php:3662
 msgid "Apply Coupon"
 msgstr ""
 
-#: includes/class-babe-html.php:3766
+#: includes/class-babe-html.php:3813
 msgid "Email"
 msgstr ""
 
-#: includes/class-babe-html.php:3769
+#: includes/class-babe-html.php:3816
 msgid "Re-type Email"
 msgstr ""
 
-#: includes/class-babe-html.php:3772
+#: includes/class-babe-html.php:3819
 msgid "Contact Phone"
 msgstr ""
 
-#: includes/class-babe-html.php:3775
+#: includes/class-babe-html.php:3822
 msgid "Guest"
 msgstr ""
 
-#: includes/class-babe-html.php:3781
+#: includes/class-babe-html.php:3828
 msgid "Extra guests"
 msgstr ""
 
-#: includes/class-babe-html.php:3817
+#: includes/class-babe-html.php:3864
 msgid "Amount to Pay:"
 msgstr ""
 
-#: includes/class-babe-html.php:3825
+#: includes/class-babe-html.php:3872
 msgid "(deposit)"
 msgstr ""
 
-#: includes/class-babe-html.php:3838
+#: includes/class-babe-html.php:3885
 msgid "(full)"
 msgstr ""
 
-#: includes/class-babe-html.php:3892 includes/class-babe-html.php:4084
+#: includes/class-babe-html.php:3939 includes/class-babe-html.php:4131
 #, php-format
 msgid "Order #%s"
 msgstr ""
 
-#: includes/class-babe-html.php:3964
+#: includes/class-babe-html.php:4011
 msgid "Payment Method"
 msgstr ""
 
-#: includes/class-babe-html.php:3978
+#: includes/class-babe-html.php:4025
 #, php-format
 msgid ""
 "You could pay after the items availability confirmation! <br> "
@@ -2543,103 +2543,103 @@ msgid ""
 "be %s."
 msgstr ""
 
-#: includes/class-babe-html.php:3981
+#: includes/class-babe-html.php:4028
 msgid "Payment details"
 msgstr ""
 
-#: includes/class-babe-html.php:3989
+#: includes/class-babe-html.php:4036
 msgid "Contact information"
 msgstr ""
 
-#: includes/class-babe-html.php:4013
+#: includes/class-babe-html.php:4060
 msgid "I read and agree to the terms & conditions"
 msgstr ""
 
-#: includes/class-babe-html.php:4023
+#: includes/class-babe-html.php:4070
 msgid "Complete My Order"
 msgstr ""
 
-#: includes/class-babe-html.php:4077
+#: includes/class-babe-html.php:4124
 msgid "Complete the booking"
 msgstr ""
 
-#: includes/class-babe-html.php:4304 includes/class-babe-prices.php:400
+#: includes/class-babe-html.php:4351 includes/class-babe-prices.php:400
 #: includes/class-babe-prices.php:669
 msgid "Minimum booking:"
 msgstr ""
 
-#: includes/class-babe-html.php:4309 includes/class-babe-prices.php:404
+#: includes/class-babe-html.php:4356 includes/class-babe-prices.php:404
 #: includes/class-babe-prices.php:674
 msgid "Maximum booking:"
 msgstr ""
 
-#: includes/class-babe-html.php:4318
+#: includes/class-babe-html.php:4365
 msgid "General price:"
 msgstr ""
 
-#: includes/class-babe-html.php:4344
+#: includes/class-babe-html.php:4391
 msgid "Options"
 msgstr ""
 
-#: includes/class-babe-html.php:4354 includes/class-babe-prices.php:513
+#: includes/class-babe-html.php:4401 includes/class-babe-prices.php:513
 #: includes/class-babe-prices.php:719
 msgid "guests"
 msgstr ""
 
-#: includes/class-babe-html.php:4358 includes/class-babe-prices.php:518
+#: includes/class-babe-html.php:4405 includes/class-babe-prices.php:518
 #: includes/class-babe-prices.php:723
 msgid "AND"
 msgstr ""
 
-#: includes/class-babe-html.php:4500 includes/class-babe-html.php:4711
-#: includes/class-babe-html.php:4902 includes/class-babe-post-types.php:239
+#: includes/class-babe-html.php:4547 includes/class-babe-html.php:4758
+#: includes/class-babe-html.php:4949 includes/class-babe-post-types.php:239
 msgid "Add "
 msgstr ""
 
-#: includes/class-babe-html.php:4511
+#: includes/class-babe-html.php:4558
 msgid "%"
 msgstr ""
 
-#: includes/class-babe-html.php:4542
+#: includes/class-babe-html.php:4589
 msgid "Mandatory fees"
 msgstr ""
 
-#: includes/class-babe-html.php:4551
+#: includes/class-babe-html.php:4598
 msgid "Optional fees"
 msgstr ""
 
-#: includes/class-babe-html.php:4755 includes/class-babe-html.php:4759
-#: includes/class-babe-html.php:4776 includes/class-babe-html.php:4928
-#: includes/class-babe-html.php:4940 includes/class-babe-html.php:5091
-#: includes/class-babe-html.php:5107
+#: includes/class-babe-html.php:4802 includes/class-babe-html.php:4806
+#: includes/class-babe-html.php:4823 includes/class-babe-html.php:4975
+#: includes/class-babe-html.php:4987 includes/class-babe-html.php:5138
+#: includes/class-babe-html.php:5154
 msgid "%/booking "
 msgstr ""
 
-#: includes/class-babe-html.php:4807
+#: includes/class-babe-html.php:4854
 msgid "Mandatory services"
 msgstr ""
 
-#: includes/class-babe-html.php:4815
+#: includes/class-babe-html.php:4862
 msgid "Add Extra"
 msgstr ""
 
-#: includes/class-babe-html.php:4842
+#: includes/class-babe-html.php:4889
 msgid "qty."
 msgstr ""
 
-#: includes/class-babe-html.php:4889 includes/class-babe-html.php:5042
+#: includes/class-babe-html.php:4936 includes/class-babe-html.php:5089
 msgid "Prices "
 msgstr ""
 
-#: includes/class-babe-html.php:4999
+#: includes/class-babe-html.php:5046
 msgid "Continue"
 msgstr ""
 
-#: includes/class-babe-html.php:5173
+#: includes/class-babe-html.php:5220
 msgid "Find closest meeting point"
 msgstr ""
 
-#: includes/class-babe-html.php:5177
+#: includes/class-babe-html.php:5224
 #: includes/class-babe-search-form.php:192
 msgid "Search"
 msgstr ""

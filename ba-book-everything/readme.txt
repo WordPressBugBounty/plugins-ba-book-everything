@@ -4,7 +4,7 @@ Tags: booking, tours, cars, calendar, events
 Requires at least: 6.0
 Requires PHP: 7.4
 Tested up to: 6.6.2
-Stable tag: 1.6.22
+Stable tag: 1.6.24
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,14 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.6.24 =
+* Improved order status update during payment processing
+* Added recalculate rating button to the booking object admin screen
+* Added the button to calculate the remaining amount to the order admin screen
+
+= 1.6.23 =
+* Added hooks to BABE_html::booking_form_av_times method
 
 = 1.6.22 =
 * Fixed guest description of the services in orders

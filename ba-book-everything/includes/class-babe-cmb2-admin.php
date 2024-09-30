@@ -69,12 +69,14 @@ class BABE_CMB2_admin {
 
         add_action( 'wp_ajax_add_category_exclude_dates', array( __CLASS__, 'ajax_add_category_exclude_dates'));
         add_action( 'wp_ajax_delete_category_exclude_dates', array( __CLASS__, 'ajax_delete_category_exclude_dates'));
+        add_action( 'wp_ajax_recalculate_rating', array( __CLASS__, 'ajax_recalculate_rating'));
 
         add_filter( 'cmb2_render_price_details', array( __CLASS__, 'cmb2_price_details'), 10, 5 );
         add_filter( 'cmb2_render_object_code', array( __CLASS__, 'cmb2_object_code'), 10, 5 );
         add_filter( 'cmb2_render_duration', array( __CLASS__, 'cmb2_duration'), 10, 5 );
         add_filter( 'cmb2_render_time_shift', array( __CLASS__, 'cmb2_time_shift'), 10, 5 );
         add_filter( 'cmb2_render_schedule', array( __CLASS__, 'cmb2_schedule'), 10, 5 );
+        add_filter( 'cmb2_render_recalculate_rating', array( __CLASS__, 'cmb2_recalculate_rating'), 10, 5 );
 
         add_filter( 'cmb2_render_service_prices', array( __CLASS__, 'cmb2_service_prices'), 10, 5 );
         add_filter( 'cmb2_sanitize_service_prices', array( __CLASS__, 'cmb2_sanitize_service_prices'), 10, 5 );
@@ -508,6 +510,19 @@ class BABE_CMB2_admin {
       <div id="prices-form" data-obj-id="'.$object_id.'">
       </div>';
     
+      echo $output;
+     }
+
+     public static function cmb2_recalculate_rating($field, $value, $object_id, $object_type, $field_type){
+
+      $output = '<div>
+        <button id="recalculate_rating" class="button-secondary" data-obj-id="'.$object_id.'">'
+          . __('Recalculate rating', 'ba-book-everything')
+          . ' <i class="fas fa-sync-alt"></i>'
+          .'</button>
+        &nbsp;&nbsp;<span id="recalculate_rating_spinner"></span>
+      </div>';
+
       echo $output;
      }
   
@@ -1534,6 +1549,7 @@ class BABE_CMB2_admin {
          'id'   => $prefix . 'prepaid_amount',
          'type'    => 'text',
          'default' => 0,
+         'after_field' => ' <span id="get_the_rest_amount" class="button button-secondary button-large">'.__( 'Get the rest amount', 'ba-book-everything' ).'</span>',
       ) );
       
       $cmb->add_field( array(
@@ -2860,9 +2876,17 @@ class BABE_CMB2_admin {
                 'row_title' => __( 'Related items', 'ba-book-everything' ),
             ) );
         }
+
+        $cmb->add_field( array(
+            'name'       => __( 'Recalculate Rating', 'ba-book-everything' ),
+            'desc' => '',
+            'id'   => $prefix . 'recalculate_rating',
+            'type' => 'recalculate_rating',
+            'before_row' => array( __CLASS__, 'cmb2_before_row_header'),
+            'row_title' => __( 'Rating', 'ba-book-everything' ),
+        ) );
        
-       do_action('cmb2_booking_obj_after_all', $cmb, $prefix);         
-    
+       do_action('cmb2_booking_obj_after_all', $cmb, $prefix);
     }
 
     /////////////
@@ -3295,6 +3319,33 @@ class BABE_CMB2_admin {
         wp_die();
     }
 
+    public static function ajax_recalculate_rating(){
+
+        $output = '';
+
+        if (
+            empty($_POST['post_id'])
+            || !wp_verify_nonce( $_POST['nonce'], self::$nonce_title )
+            || !BABE_Post_types::is_post_booking_obj($_POST['post_id'])
+            || !BABE_Users::current_user_can_edit_post($_POST['post_id'])
+        ){
+            echo $output;
+            wp_die();
+        }
+
+        $post_id = (int)$_POST['post_id'];
+
+        $comments = get_comments([
+            'status' => 1,
+            'post_id' => $post_id,
+        ]);
+
+        BABE_Rating::recalculate_post_rating( $post_id, $comments );
+
+        echo __('Success!', 'ba-book-everything');
+        wp_die();
+    }
+
 ///////////////////////////////////////
     /**
 	 * Register taxonomies_list extra fields.
@@ -3666,6 +3717,7 @@ class BABE_CMB2_admin {
         $original_rates = BABE_Prices::get_rates($original_id);
         BABE_Prices::delete_rates_by_booking_obj_id($duplicate_id);
         BABE_Prices::add_booking_obj_rates($duplicate_id, $original_rates);
+        BABE_Rating::delete_post_rating($duplicate_id);
     }
      
 ///////////////////////////////

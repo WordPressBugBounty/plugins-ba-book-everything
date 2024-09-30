@@ -962,10 +962,18 @@ class BABE_Order {
         
        if (is_string($status) && isset(self::$order_statuses[$status])){
           $old_status = self::get_order_status($post_id);
-          update_post_meta($post_id, '_status', $status);
-          unset(self::$order_meta[$post_id]);
-          
-          do_action('babe_order_status_updated', $post_id, $status, $old_status);
+
+          if( $status === 'payment_processing' && BABE_Order::get_order_prepaid_received($post_id)){
+              // the order was paid previously, so we will prevent accidental deletion of the order when the checkout is interrupted
+              $status = 'payment_expected';
+          }
+
+          if( $old_status !== $status ){
+              update_post_meta($post_id, '_status', $status);
+              unset(self::$order_meta[$post_id]);
+              do_action('babe_order_status_updated', $post_id, $status, $old_status);
+          }
+
           $output = true;
        }
        

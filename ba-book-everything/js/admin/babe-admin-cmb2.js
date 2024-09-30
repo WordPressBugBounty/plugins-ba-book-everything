@@ -338,13 +338,54 @@ $(document).ready(function(){
     });
     
     ///////////////////////////////////////////
-    
-    $('#coupon_generate_num').on('click', function(el){
-        
-        generate_coupon_number('#_coupon_number', '#coupon_generate_num_loader', true);
-        
+
+    $('#recalculate_rating').on('click', function(el){
+        el.stopPropagation();
+        el.preventDefault();
+
+        $('#recalculate_rating_spinner').html('<span class="spin_f"><i class="fas fa-spinner fa-spin fa-2x"></i></span>');
+
+        let post_id = $(this).data('obj-id');
+
+        $.ajax({
+            url : babe_cmb2_lst.ajax_url,
+            type : 'POST',
+            data : {
+                action : 'recalculate_rating',
+                post_id : post_id,
+                // check
+                nonce : babe_cmb2_lst.nonce
+            },
+            success : function( msg ) {
+
+                if ( msg === '' ){
+                    swal_error_general();
+                    return;
+                }
+                swal_success();
+            },
+            error : function(){
+                swal_error_general();
+            }
+        }).always( function(){
+            $('#recalculate_rating_spinner').html('');
+        });
     });
-    
+
+    ///////////////////////////////////////////
+
+    $('#get_the_rest_amount').on('click', function(el){
+        $('#_prepaid_amount').val( $('#_total_amount').val() - $('#_prepaid_received').val() );
+    });
+
+    ///////////////////////////////////////////
+
+    $('#coupon_generate_num').on('click', function(el){
+
+        generate_coupon_number('#_coupon_number', '#coupon_generate_num_loader', true);
+
+    });
+
     //////////////generate_coupon_number////////////
     
     function generate_coupon_number(selector_name, selector_spinner_name, is_val){

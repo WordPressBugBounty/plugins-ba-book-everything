@@ -1086,19 +1086,29 @@ $(document).ready(function(){
     ///////////on change booking_time////////////////
     
     $('#booking_form').on('change', 'input:radio[name=booking_time]:checked', function(el){
-        var max_select_guests = parseInt($(this).data('max-select-guests'));
-        var options = '';
+        let max_select_guests = parseInt($(this).data('max-select-guests'));
+        update_select_guests_block(max_select_guests);
+        booking_form_calculate();
+    });
+
+    function update_select_guests_block(max_select_guests){
+        let options = '';
         $("#error_group").removeClass('show_error');
-        
+
         for (let i = 0; i <= max_select_guests; i++){
-           var add_class = '';
-           if (i == 0){
-              add_class = ' term_item_selected';
-           }
-           options += '<li class="term_item' + add_class + '" data-id="' + i + '"  data-value="' + i + '">' + i + '</li>';
+            var add_class = '';
+            if (i == 0){
+                add_class = ' term_item_selected';
+            }
+            options += '<li class="term_item' + add_class + '" data-id="' + i + '"  data-value="' + i + '">' + i + '</li>';
         }
         $('#booking_form').find('.select_guests_block .select_guests').val(0);
         $('#booking_form').find('.select_guests_block .input_select_list').html(options);
+    }
+
+    $('#booking_form').on('change', 'select[name=booking_time]', function(el){
+        let max_select_guests = parseInt($(this).find(":selected").data('max-select-guests'));
+        update_select_guests_block(max_select_guests);
         booking_form_calculate();
     });
     
@@ -1291,6 +1301,8 @@ $(document).ready(function(){
         }
         if ($('.booking_time_line').length > 0){
             time_from = $('#booking_form input:radio[name=booking_time]:checked').val();
+        } else if ($('.booking_time_line_select').length > 0){
+            time_from = $('#booking_form select[name=booking_time]').val();
         }
         if ($('.input_select_field_booking_time_from').length > 0){
             time_from = $('.input_select_field_booking_time_from .input_select_input').val();
@@ -1346,6 +1358,8 @@ $(document).ready(function(){
         }
         if ($('.booking_time_line').length > 0){
             time_from = $('#booking_form input:radio[name=booking_time]:checked').val();
+        } else if ($('.booking_time_line_select').length > 0){
+            time_from = $('#booking_form select[name=booking_time]').val();
         }
         if ($('.input_select_field_booking_time_from').length > 0){
             time_from = $('.input_select_field_booking_time_from .input_select_input').val();

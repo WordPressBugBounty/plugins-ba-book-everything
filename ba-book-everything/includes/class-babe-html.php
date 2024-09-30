@@ -1865,6 +1865,21 @@ class BABE_html {
 
         $guests_min = $av_cal[$date_from_obj->format('Y-m-d')]['min_booking_period'] ?: 0;
 
+        $input_type = apply_filters(
+            'babe_booking_form_av_times_input_type',
+            'radio',
+            $times,
+            $post_id,
+            $date_from,
+            $order_item_args,
+            $ignor_stop_booking
+        );
+
+        if ( $input_type === 'select' ){
+            $output['time_lines'] .= '
+              <select class="booking_time_line_select" name="booking_time" >';
+        }
+
         $i = 0;
 
         foreach( $times as $time => $av_guests){
@@ -1888,22 +1903,54 @@ class BABE_html {
 
             $i++;
 
-            $output['time_lines'] .= '
+            if ( $input_type === 'select' ){
+
+                if ($checked){
+                    $checked = ' selected="selected"';
+                }
+
+                $output['time_lines'] .= '
+              <option class="booking_time_option" value="'.$time.'" id="booking_time_'.$i.'" data-max-guests="'.$av_guests.'" data-max-select-guests="'.min($av_guests, BABE_Settings::$settings['max_guests_select']).'"'.$checked.'>'
+                    . apply_filters(
+                        'babe_booking_form_av_times_time_label',
+                        $time_date_obj->format(get_option('time_format')),
+                        $time_date_obj,
+                        $post_id
+                    )
+                    .'
+              </option>';
+
+            } else {
+
+                $output['time_lines'] .= '
               <span class="booking_time_line">
                 <input type="radio" class="booking_time" name="booking_time" value="'.$time.'" id="booking_time_'.$i.'" data-max-guests="'.$av_guests.'" data-max-select-guests="'.min($av_guests, BABE_Settings::$settings['max_guests_select']).'"'.$checked.'>
                 <label for="booking_time_'.$i.'">'
-                . apply_filters(
-                    'babe_booking_form_av_times_time_label',
-                    $time_date_obj->format(get_option('time_format')),
-                    $time_date_obj,
-                    $post_id
-                )
-                .'</label>
+                    . apply_filters(
+                        'babe_booking_form_av_times_time_label',
+                        $time_date_obj->format(get_option('time_format')),
+                        $time_date_obj,
+                        $post_id
+                    )
+                    .'</label>
               </span>';
+            }
+        }
 
+        if ( $input_type === 'select' ){
+            $output['time_lines'] .= '
+              </select>';
         }
         
-        return $output;
+        return apply_filters(
+            'babe_booking_form_av_times',
+            $output,
+            $times,
+            $post_id,
+            $date_from,
+            $order_item_args,
+            $ignor_stop_booking
+        );
         
     }    
     

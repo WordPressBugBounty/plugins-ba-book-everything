@@ -2,9 +2,9 @@
 Contributors: bookingalgorithms
 Tags: booking, tours, cars, calendar, events
 Requires at least: 6.0
-Requires PHP: 7.4
+Requires PHP: 8.1
 Tested up to: 6.6.2
-Stable tag: 1.6.24
+Stable tag: 1.7.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -92,7 +92,7 @@ When using our products, russian audiences may encounter unexpected behavior.
 
 = Minimum Requirements =
 
-* PHP 7.4 or greater
+* PHP 8.1 or greater
 * MySQL 5.7 / MariaDB 10 or greater is recommended
 
 = Installation =
@@ -113,6 +113,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.0 =
+* Requires at least PHP 8.1
 
 = 1.6.24 =
 * Improved order status update during payment processing

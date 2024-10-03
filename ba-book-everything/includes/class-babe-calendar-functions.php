@@ -839,8 +839,9 @@ class BABE_Calendar_functions {
         (
         SELECT rate_id, booking_obj_id AS rate_booking_obj_id, rate_title, date_from AS rate_date_from, date_to AS rate_date_to, apply_days, start_days, min_booking_period, max_booking_period, price_from, price_general, prices_conditional, rate_order
         FROM ".BABE_Prices::$table_rate."
+        WHERE booking_obj_id = ".$booking_obj_id." 
         ORDER BY rate_booking_obj_id ASC, rate_order ASC, price_from ASC, rate_date_from DESC, rate_date_to DESC
-        LIMIT 10000
+        LIMIT 1000
         ) t_rate ON av.booking_obj_id = t_rate.rate_booking_obj_id AND ( t_rate.rate_date_to >= av.date_from OR t_rate.rate_date_to IS NULL ) AND ( t_rate.rate_date_from <= av.date_from OR t_rate.rate_date_from IS NULL ) AND ( LOCATE( CONCAT('i:', ".$av_day_exp.", ';'), t_rate.apply_days) > 0 )
         
         WHERE (

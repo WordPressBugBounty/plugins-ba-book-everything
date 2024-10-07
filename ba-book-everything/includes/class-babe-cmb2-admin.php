@@ -1144,6 +1144,9 @@ class BABE_CMB2_admin {
                    
         if (!empty($schedule) && isset($schedule[$day_num])){
             foreach($schedule[$day_num] as $time){
+                if ( $time === '0:00 am' ){
+                    $time = '12:00 am';
+                }
                 $time_date_obj = new DateTime($time);
 
                 $output .= '<span class="schedule_time">'.$time_date_obj->format(get_option('time_format')).'<input type="hidden" class="schedule_time_'.$day_num.'" name="_schedule_'.$day_num.'[]" value="'.$time.'"><i class="fas fa-times"></i></span>';

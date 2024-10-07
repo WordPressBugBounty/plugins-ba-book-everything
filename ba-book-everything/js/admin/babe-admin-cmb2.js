@@ -198,7 +198,9 @@ $(document).ready(function(){
         if ( $('#schedule_form_hour option[value="0"]').html().indexOf('am') !== -1 ){
             sf = $('#schedule_form_hour option[value="'+hour+'"]').html().indexOf('am') !== -1 ? 'am' : 'pm';
             sf = ' ' + sf;
-            if ( hour > 12 ){
+            if ( hour === 0 ){
+                hour = 12;
+            } else if ( hour > 12 ){
                 hour = hour - 12;
             }
         } else {

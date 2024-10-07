@@ -2058,14 +2058,17 @@ class BABE_Post_types {
               if (!empty($post['schedule'])){
                  foreach($post['schedule'] as $schedule){
                     foreach($schedule as $time){
-                      $date_tmp = new DateTime('2017-01-01 '.$time);
-                      $modify_string = '';
-                      $modify_string .= isset($meeting_point['time_shift']['h']) ? '-'. (int)$meeting_point['time_shift']['h'] .' hour ' : '';
-                      $modify_string .= isset($meeting_point['time_shift']['i']) ? '-'. (int)$meeting_point['time_shift']['i'] .' minute' : '';
-                      if ($modify_string){
-                          $date_tmp->modify($modify_string);
-                      }
-                      $times[$time] = $date_tmp->format(get_option('time_format'));
+                        if ( $time === '0:00 am' ){
+                            $time = '12:00 am';
+                        }
+                        $date_tmp = new DateTime('2017-01-01 '.$time);
+                        $modify_string = '';
+                        $modify_string .= isset($meeting_point['time_shift']['h']) ? '-'. (int)$meeting_point['time_shift']['h'] .' hour ' : '';
+                        $modify_string .= isset($meeting_point['time_shift']['i']) ? '-'. (int)$meeting_point['time_shift']['i'] .' minute' : '';
+                        if ($modify_string){
+                            $date_tmp->modify($modify_string);
+                        }
+                        $times[$time] = $date_tmp->format(get_option('time_format'));
                     }
                  }
               }

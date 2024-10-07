@@ -408,6 +408,9 @@ class BABE_Calendar_functions {
                     if( isset($schedule[$day_num]) ){
 
                         foreach($schedule[$day_num] as $time){
+                            if ( $time === '0:00 am' ){
+                                $time = '12:00 am';
+                            }
                             $cur_date = new DateTime($date->format('Y-m-d').' '.$time);
                             if (isset($date_arr[$cur_date->format('Y-m-d H:i:s')])){
                                 $date_arr[$cur_date->format('Y-m-d H:i:s')] = 1;

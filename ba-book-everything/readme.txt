@@ -4,7 +4,7 @@ Tags: booking, tours, cars, calendar, events
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.6.2
-Stable tag: 1.7.2
+Stable tag: 1.7.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.3 =
+* Fixed incorrect search result issue when excluded dates are added to booking items
 
 = 1.7.2 =
 * Fixed "0:00 am" time issue in the schedule section

@@ -1248,6 +1248,7 @@ class BABE_Post_types {
         }
         $d_interval = date_diff($rate_date_from, $rate_date_to);
         $days_total = $d_interval->format('%a'); // total days
+
         // if < 7 days check the apply days
         if ($days_total < 7){
             $tmp_clauses_arr = [];
@@ -1259,7 +1260,10 @@ class BABE_Post_types {
             }
             $rate_clauses .= " AND ( ".implode(' OR ', $tmp_clauses_arr)." )";
         }
-        //////
+
+        $rate_clauses .= " AND ( t_rate.min_booking_period = 0 OR rules.basic_booking_period = 'recurrent_custom' OR rules.basic_booking_period = 'hour' OR t_rate.min_booking_period <= ". (int)$days_total ." )
+        AND ( t_rate.max_booking_period = 0 OR rules.basic_booking_period = 'recurrent_custom' OR rules.basic_booking_period = 'hour' OR t_rate.max_booking_period >= ". (int)$days_total ." )
+        ";
         
         $datetime_from = $date_from_obj->format('Y-m-d H:i:s');
         $datetime_to = $date_to_obj->format('Y-m-d H:i:s');
@@ -1415,24 +1419,28 @@ class BABE_Post_types {
               SELECT booking_obj_id
               FROM ".BABE_Calendar_functions::$table_av_cal."               
               WHERE booking_obj_id = posts.ID 
-              AND in_schedule=1 
               AND date_from > '".$date_from."' 
               AND date_from <= '".$date_to."'
-              AND av_guests < ".$guests."
               AND rules.basic_booking_period != 'recurrent_custom' 
               AND rules.basic_booking_period != 'single_custom' 
               AND rules.basic_booking_period != 'night'
+              AND (
+                  in_schedule=0
+                  OR av_guests < ".$guests."
+              )
               LIMIT 1
            )           
            AND NOT EXISTS (
               SELECT booking_obj_id
               FROM ".BABE_Calendar_functions::$table_av_cal."
               WHERE booking_obj_id = posts.ID 
-              AND in_schedule=1 
               AND date_from >= '".$date_from."' 
               AND date_from < '".$date_to."'
-              AND av_guests < ".$guests."
               AND rules.basic_booking_period = 'night'
+              AND (
+                  in_schedule=0
+                  OR av_guests < ".$guests."
+              )
               LIMIT 1
            ) 
            AND (
@@ -1557,12 +1565,6 @@ class BABE_Post_types {
         
         ".$lang_filter."
         
-        # get rates
-        ".$av_join." JOIN ".BABE_Prices::$table_rate." t_rate ON posts.ID = t_rate.booking_obj_id 
-        AND ( t_rate.date_from <= '".$date_to."' OR t_rate.date_from IS NULL ) 
-        AND ( t_rate.date_to >= '".$date_from."' OR t_rate.date_to IS NULL )"
-            .$rate_clauses.
-            "
         #get max guests        
         INNER JOIN 
         (
@@ -1576,6 +1578,13 @@ class BABE_Post_types {
         
         # get rule
         LEFT JOIN ".BABE_Booking_Rules::$table_booking_rules." rules ON rules.rule_id = tm.meta_value
+        
+        # get rates
+        ".$av_join." JOIN ".BABE_Prices::$table_rate." t_rate ON posts.ID = t_rate.booking_obj_id 
+        AND ( t_rate.date_from <= '".$date_to."' OR t_rate.date_from IS NULL ) 
+        AND ( t_rate.date_to >= '".$date_from."' OR t_rate.date_to IS NULL )"
+            .$rate_clauses.
+            "
         
         #get items number
         LEFT JOIN 

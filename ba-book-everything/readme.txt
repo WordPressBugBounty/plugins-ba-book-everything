@@ -4,7 +4,7 @@ Tags: booking, tours, cars, calendar, events
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.6.2
-Stable tag: 1.7.4
+Stable tag: 1.7.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.5 =
+* Fixed an issue with price localization when calculating the cost of a booking
 
 = 1.7.4 =
 * Added the ability to edit and add ratings in comments from the admin panel

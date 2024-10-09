@@ -1484,9 +1484,10 @@ class BABE_Prices {
           $prices_arr['clear'][$age_id] = isset($prices['clear'][$age_id]) ? $prices['clear'][$age_id] : 0;
 
           if ( isset($rate['price_general'][$age_id]) ){
-              $price_clear = $rate['price_general'][$age_id]*$multiplier_local;
+              $price_clear = self::localize_price($rate['price_general'][$age_id], $currency)*$multiplier_local;
           } else {
-              $price_clear = isset($rate['price_general'][0]) ? $rate['price_general'][0]*$multiplier_local : 0;
+              $price_clear = isset($rate['price_general'][0])
+                  ? self::localize_price($rate['price_general'][0], $currency)*$multiplier_local : 0;
           }
 
           /// check conditional prices
@@ -1495,11 +1496,9 @@ class BABE_Prices {
               $conditional_price = self::calculate_rate_conditional_price( $rate['prices_conditional'], $age_id, $guests_total, $days_total, $multiplier_local );
 
               if ( $conditional_price !== false && $conditional_price ){
-                  $price_clear = (float)$conditional_price;
+                  $price_clear = self::localize_price((float)$conditional_price, $currency);
               }
           }
-
-          $price_clear = self::localize_price($price_clear, $currency);
 
           $prices_arr['clear'][$age_id] += $price_clear;
 

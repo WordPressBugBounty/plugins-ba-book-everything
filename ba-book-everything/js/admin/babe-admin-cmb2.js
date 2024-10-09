@@ -625,6 +625,95 @@ $(document).ready(function(){
         $(this).siblings().find('input').prop('checked', check);
     });
 
+    ////////////stars//////////////////////
+
+    $('.comment-form-rating-stars .star').on('mouseover', '.fa-star, svg', function(){
+        var par = $(this).parent();
+        var cur_star = $(par).find('.fas, .far').first();
+        var cur_star_svg = $(par).find('svg').first();
+        $(cur_star_svg).attr('data-prefix', 'fas');
+
+        $(cur_star).addClass('fas');
+        $(cur_star).removeClass('far');
+
+        $(par).prevAll().each(function(){
+            var star = $(this).find('.fas, .far').first();
+            $(star).addClass('fas');
+            $(star).removeClass('far');
+
+            var star_svg = $(this).find('svg').first();
+            $(star_svg).attr('data-prefix', 'fas');
+        });
+
+        $(par).nextAll().each(function(){
+            var star = $(this).find('.fas, .far').first();
+            $(star).addClass('far');
+            $(star).removeClass('fas');
+
+            var star_svg = $(this).find('svg').first();
+            $(star_svg).attr('data-prefix', 'far');
+        });
+    });
+
+    $('.comment-form-rating-stars .star').on('mouseout', 'svg', function(){
+        var par = $(this).parents().eq(1);
+        var rating_cr = $(par).data('rating-cr');
+        var rating_val = parseInt($('#rating_'+rating_cr).val());
+
+        $(par).find('.star').each(function(){
+            var star = $(this).find('.fas, .far').first();
+            var star_svg = $(this).find('svg').first();
+
+            var star_val = parseInt($(this).data('rating-val'));
+
+            if (star_val <= rating_val){
+                $(star).addClass('fas');
+                $(star).removeClass('far');
+                $(star_svg).attr('data-prefix', 'fas');
+            } else {
+                $(star).addClass('far');
+                $(star).removeClass('fas');
+                $(star_svg).attr('data-prefix', 'far');
+            }
+
+        });
+    });
+
+    $('.comment-form-rating-stars .star').on('mousedown', 'svg', function(){
+        var rating_cr = $(this).parents().eq(1).data('rating-cr');
+        var star_val = parseInt($(this).parent().data('rating-val'));
+        $('#rating_'+rating_cr).val(star_val);
+    });
+
+    $('.comment-form-rating-stars').on('mouseout', function(){
+        var rating_cr = $(this).data('rating-cr');
+        var rating_val = parseInt($('#rating_'+rating_cr).val());
+
+        $(this).find('.star').each(function(){
+            var star = $(this).find('.fas, .far').first();
+            var star_svg = $(this).find('svg').first();
+
+            var star_val = parseInt($(this).data('rating-val'));
+
+            if (star_val <= rating_val){
+                $(star).addClass('fas');
+                $(star).removeClass('far');
+                $(star_svg).attr('data-prefix', 'fas');
+            } else {
+                $(star).addClass('far');
+                $(star).removeClass('fas');
+                $(star_svg).attr('data-prefix', 'far');
+            }
+
+        });
+    });
+
+    $('.comment-form-rating-stars .star').on('click', '.fa-star', function(){
+        var rating_cr = $(this).parents().eq(1).data('rating-cr');
+        var star_val = parseInt($(this).parent().data('rating-val'));
+        $('#rating_'+rating_cr).val(star_val);
+    });
+
 });
 
 ////////////////////General functions/////////////////////

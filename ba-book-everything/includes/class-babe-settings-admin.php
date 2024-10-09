@@ -802,6 +802,15 @@ function setup_demo_content(i){
         );
 
         add_settings_field(
+            'reviews_allow_to_clients_only', // ID
+            __('Allow only customers who have a successful booking to post a review (one review per booking)','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_general', // Section
+            array('option' => 'reviews_allow_to_clients_only', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
             'reviews_comment_template', // ID
             __('Reviews comment template (leave empty to use the default "/comments.php")','ba-book-everything'), // Title
             array( __CLASS__, 'text_field_callback' ), // Callback
@@ -1903,6 +1912,7 @@ function setup_demo_content(i){
           $new_input['mpoints_active'] = absint($input['mpoints_active']);
           $new_input['content_in_tabs'] = absint($input['content_in_tabs']);
           $new_input['reviews_in_tabs'] = absint($input['reviews_in_tabs']);
+          $new_input['reviews_allow_to_clients_only'] = absint($input['reviews_allow_to_clients_only']);
           $new_input['reviews_comment_template'] = sanitize_text_field($input['reviews_comment_template']);
           $new_input['view_only_uploaded_images'] = absint($input['view_only_uploaded_images']);
 

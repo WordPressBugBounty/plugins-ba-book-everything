@@ -285,6 +285,30 @@ table.order_item_age_prices td{
 
 /*************Stars**************/
 
+.comment-form-rating{
+    margin-bottom: 5px;
+}
+
+.comment-form-rating-ul{
+    list-style: none;
+    padding-left: 0;
+}
+
+.comment-form-rating-criterion{
+    margin-right: 15px;
+}
+
+.comment-form-rating-stars .star{
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 20px;
+    color: #F7931E;
+}
+
+.comment-form-rating-stars .star:hover{
+    cursor: pointer;
+}
+
 .comment-rating-ul{
     list-style: none;
     padding-left: 0;
@@ -402,3 +426,19 @@ Related items style
 .category_exclude_dates_title{
     margin-bottom: 10px;
 }
+
+#commentsdiv #edithead2 .inside, #edithead2 .inside {
+    float: left;
+    padding: 3px 0 2px 5px;
+    margin: 0;
+    text-align: center;
+}
+
+#edithead2 label {
+    padding: 2px 0;
+}
+
+#commentsdiv #edithead2 .inside input {
+    width: 160px;
+}
+

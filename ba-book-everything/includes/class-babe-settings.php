@@ -104,6 +104,7 @@ class BABE_Settings {
             'booking_obj_gutenberg'=> 0,
             'content_in_tabs'=> 0,
             'reviews_in_tabs'=> 0,
+            'reviews_allow_to_clients_only'=> 0,
             'reviews_comment_template'=> '',
             'mpoints_active'=> 0,
             'view_only_uploaded_images' => 0,

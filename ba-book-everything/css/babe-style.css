@@ -1646,6 +1646,11 @@ table.order_item_age_prices td, table.order_item_age_prices td{
 }
 
 /*************Stars**************/
+
+.comment .comment-form-rating{
+    display: none;
+}
+
 .comment-form-rating{
     margin-bottom: 5px;
 }

@@ -104,6 +104,8 @@ class BABE_Settings {
             'booking_obj_gutenberg'=> 0,
             'content_in_tabs'=> 0,
             'reviews_in_tabs'=> 0,
+            'add_product_schema_markup'=> 1,
+            'generate_schema_review_if_no_comments'=> 1,
             'reviews_allow_to_clients_only'=> 0,
             'reviews_comment_template'=> '',
             'mpoints_active'=> 0,
@@ -307,19 +309,18 @@ Your order has been canceled:', 'ba-book-everything'),
 	 * Get rating criteria.
      * @return array
 	 */
-    public static function get_rating_criteria() {
-        
-        return self::$settings['rating_criteria'];
+    public static function get_rating_criteria(): array
+    {
+        return (array)self::$settings['rating_criteria'];
     }
-    
-///////////////////////////////////////
+
     /**
 	 * Get rating stars num.
      * @return int
 	 */
-    public static function get_rating_stars_num() {
-        
-        return self::$settings['rating_stars_num'];
+    public static function get_rating_stars_num(): int
+    {
+        return (int)self::$settings['rating_stars_num'];
     }            
     
 ///////////////////////////////////////

@@ -586,24 +586,6 @@ function setup_demo_content(i){
         );
         
         add_settings_field(
-            'booking_obj_gutenberg', // ID
-            __('Use Gutenberg for booking object posts','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'booking_obj_gutenberg', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-
-        add_settings_field(
-            'zero_price_display_value', // ID
-            __('When service price is 0 display','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'zero_price_display_value', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-        
-        add_settings_field(
             'booking_obj_post_slug', // ID
             __('Booking object post slug','ba-book-everything'), // Title
             array( __CLASS__, 'text_field_callback' ), // Callback
@@ -721,15 +703,6 @@ function setup_demo_content(i){
         );
         
         add_settings_field(
-            'max_guests_select', // ID
-            __('Booking form: maximum number of guests available to choose','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'max_guests_select', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-        
-        add_settings_field(
             'results_per_page', // ID
             __('Search result: items per page','ba-book-everything'), // Title
             array( __CLASS__, 'text_field_callback' ), // Callback
@@ -745,15 +718,6 @@ function setup_demo_content(i){
             BABE_Settings::$option_menu_slug, // Page
             'setting_section_general',  // Section
             array('option' => 'posts_per_taxonomy_page', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-
-        add_settings_field(
-            'av_calendar_max_months', // ID
-            __('Maximum number of months in availability calendar','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'av_calendar_max_months', 'settings_name' => BABE_Settings::$option_name) // Args array
         );
 
         add_settings_field(
@@ -781,115 +745,6 @@ function setup_demo_content(i){
             BABE_Settings::$option_menu_slug, // Page
             'setting_section_general' // Section
         );
-        ////
-
-        add_settings_field(
-            'content_in_tabs', // ID
-            __('Show booking object post content in tabs?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'content_in_tabs', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-
-        add_settings_field(
-            'reviews_in_tabs', // ID
-            __('Show reviews in tab on booking object page?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'reviews_in_tabs', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-
-        add_settings_field(
-            'reviews_allow_to_clients_only', // ID
-            __('Allow only customers who have a successful booking to post a review (one review per booking)','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'reviews_allow_to_clients_only', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-
-        add_settings_field(
-            'reviews_comment_template', // ID
-            __('Reviews comment template (leave empty to use the default "/comments.php")','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'reviews_comment_template', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-
-        add_settings_field(
-            'mpoints_active', // ID
-            __('Add meeting points functionality?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'mpoints_active', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-        
-        add_settings_field(
-            'view_only_uploaded_images', // ID
-            __('Media library filter: show only current user attachments and unattached madia in the Media library', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'view_only_uploaded_images', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-        
-        add_settings_field(
-            'unitegallery_remove', // ID
-            __('Remove unitegallery from booking object pages', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'unitegallery_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-        
-        add_settings_field(
-            'av_calendar_remove', // ID
-            __('Remove availability calendar from booking object pages', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'av_calendar_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-
-        add_settings_field(
-            'av_calendar_remove_hover_prices', // ID
-            __('Remove price details on hover from availability calendar', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'av_calendar_remove_hover_prices', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-        
-        add_settings_field(
-            'google_map_remove', // ID
-            __('Remove google map from booking object pages', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'google_map_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-        
-        add_settings_field(
-            'services_to_booking_form', // ID
-            __('Add services to booking form', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'services_to_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
-
-        add_settings_field(
-            'prefill_date_in_booking_form', // ID
-            __('Prepopulates the date field on the booking form, starting with the nearest available date', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'prefill_date_in_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
-        );
 
         add_settings_field(
             'use_minimized_css', // ID
@@ -909,7 +764,6 @@ function setup_demo_content(i){
             array('option' => 'use_minimized_js', 'settings_name' => BABE_Settings::$option_name) // Args array
         );
 
-
         add_settings_field(
             'reset_settings', // ID
             __('Reset settings', 'ba-book-everything'), // Title
@@ -920,8 +774,209 @@ function setup_demo_content(i){
         );
 
         ////////////////
-        
+
         do_action('babe_settings_after_general_fields', BABE_Settings::$option_menu_slug, BABE_Settings::$option_name);
+
+        ////////////////
+
+        add_settings_section(
+            'setting_section_booking_object', // ID
+            __('Booking object','ba-book-everything'), // Title
+            '__return_false', // Callback
+            BABE_Settings::$option_menu_slug // Page
+        );
+
+        add_settings_field(
+            'booking_obj_gutenberg', // ID
+            __('Use Gutenberg for booking object posts','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'booking_obj_gutenberg', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'zero_price_display_value', // ID
+            __('When service price is 0 display','ba-book-everything'), // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object',  // Section
+            array('option' => 'zero_price_display_value', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'av_calendar_max_months', // ID
+            __('Maximum number of months in availability calendar','ba-book-everything'), // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object',  // Section
+            array('option' => 'av_calendar_max_months', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'content_in_tabs', // ID
+            __('Show booking object post content in tabs?','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'content_in_tabs', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'mpoints_active', // ID
+            __('Add meeting points functionality?','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'mpoints_active', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'view_only_uploaded_images', // ID
+            __('Media library filter: show only current user attachments and unattached madia in the Media library', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'view_only_uploaded_images', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'unitegallery_remove', // ID
+            __('Remove unitegallery from booking object pages', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'unitegallery_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'av_calendar_remove', // ID
+            __('Remove availability calendar from booking object pages', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'av_calendar_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'av_calendar_remove_hover_prices', // ID
+            __('Remove price details on hover from availability calendar', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'av_calendar_remove_hover_prices', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'google_map_remove', // ID
+            __('Remove google map from booking object pages', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'google_map_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        ////////////////
+
+        do_action('babe_settings_after_booking_object_fields', BABE_Settings::$option_menu_slug, BABE_Settings::$option_name);
+
+        ////////////////
+
+        add_settings_section(
+            'setting_section_review', // ID
+            __('Reviews','ba-book-everything'), // Title
+            '__return_false', // Callback
+            BABE_Settings::$option_menu_slug // Page
+        );
+
+        add_settings_field(
+            'add_product_schema_markup', // ID
+            __('Add schema.org Product markup to the booking object page','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_review', // Section
+            array('option' => 'add_product_schema_markup', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'generate_schema_review_if_no_comments', // ID
+            __('Generate 5 star review in schema.org Product markup if no comments found','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_review', // Section
+            array('option' => 'generate_schema_review_if_no_comments', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'reviews_allow_to_clients_only', // ID
+            __('Allow only customers who have a successful booking to post a review (one review per booking)','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_review', // Section
+            array('option' => 'reviews_allow_to_clients_only', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'reviews_in_tabs', // ID
+            __('Show reviews in tab on booking object page?','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_review', // Section
+            array('option' => 'reviews_in_tabs', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'reviews_comment_template', // ID
+            __('Reviews comment template (leave empty to use the default "/comments.php")','ba-book-everything'), // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_review',  // Section
+            array('option' => 'reviews_comment_template', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        ////////////////
+
+        do_action('babe_settings_after_review_fields', BABE_Settings::$option_menu_slug, BABE_Settings::$option_name);
+
+        ////////////////
+
+        add_settings_section(
+            'setting_section_booking_form', // ID
+            __('Booking form','ba-book-everything'), // Title
+            '__return_false', // Callback
+            BABE_Settings::$option_menu_slug // Page
+        );
+
+        add_settings_field(
+            'max_guests_select', // ID
+            __('Booking form: maximum number of guests available to choose','ba-book-everything'), // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_form',  // Section
+            array('option' => 'max_guests_select', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'services_to_booking_form', // ID
+            __('Add services to booking form', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_form', // Section
+            array('option' => 'services_to_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'prefill_date_in_booking_form', // ID
+            __('Prepopulates the date field on the booking form, starting with the nearest available date', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_form', // Section
+            array('option' => 'prefill_date_in_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        ////////////////
+
+        do_action('babe_settings_after_booking_form_fields', BABE_Settings::$option_menu_slug, BABE_Settings::$option_name);
         
         ///////// Currency
 
@@ -1913,6 +1968,8 @@ function setup_demo_content(i){
           $new_input['content_in_tabs'] = absint($input['content_in_tabs']);
           $new_input['reviews_in_tabs'] = absint($input['reviews_in_tabs']);
           $new_input['reviews_allow_to_clients_only'] = absint($input['reviews_allow_to_clients_only']);
+          $new_input['add_product_schema_markup'] = absint($input['add_product_schema_markup']);
+          $new_input['generate_schema_review_if_no_comments'] = absint($input['generate_schema_review_if_no_comments']);
           $new_input['reviews_comment_template'] = sanitize_text_field($input['reviews_comment_template']);
           $new_input['view_only_uploaded_images'] = absint($input['view_only_uploaded_images']);
 

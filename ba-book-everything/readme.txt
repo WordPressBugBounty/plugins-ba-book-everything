@@ -4,7 +4,7 @@ Tags: booking, tours, cars, calendar, events
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.6.2
-Stable tag: 1.7.5
+Stable tag: 1.7.6
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,10 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.6 =
+* Updated generation of the Product schema markup
+* Added option to turn off the Product schema markup into the BA Settings admin menu
 
 = 1.7.5 =
 * Fixed an issue with price localization when calculating the cost of a booking

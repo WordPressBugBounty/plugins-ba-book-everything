@@ -86,9 +86,25 @@ class BABE_html {
 
         //add billing address fields
         add_filter('babe_checkout_after_contact_fields', array( __CLASS__, 'add_address_fields' ), 20, 2);
-	}  
-    
-//////////////////////////////
+
+        add_action( 'wp_body_open', array( __CLASS__, 'wp_body_open' ), 10 );
+	}
+
+    public static function wp_body_open(): void
+    {
+        global $post;
+
+        if (
+            !is_single()
+            || $post->post_type !== BABE_Post_types::$booking_obj_post_type
+            || !BABE_Settings::$settings['add_product_schema_markup']
+        ){
+            return;
+        }
+
+        echo self::get_post_schema( BABE_Post_types::get_post($post->ID) );
+    }
+
     /**
 	 * Hook in init
 	 */
@@ -900,7 +916,6 @@ class BABE_html {
             $output .= '<div class="item_info_price">
        <label>'. sprintf( BABE_Settings::get_option('price_from_label') , BABE_Currency::get_currency() ).'</label>
        <span class="item_info_price_from">'.BABE_Currency::get_currency_price($prices['discount_price_from']).'</span>'.$save.'
-       '.self::get_post_schema($post).'
     </div>';
 
         }
@@ -908,113 +923,182 @@ class BABE_html {
         return $output; 
     }
 
-///////////////////////////
     /**
      * Get post Product schema markup array
      *
      * @param array $post - BABE post array
      * @return string
      */
-    public static function get_post_schema($post){
+    public static function get_post_schema( array $post ): string
+    {
+        $lang = BABE_Functions::get_current_language();
+        $productID = BABE_Post_types::get_post_category($post['ID'])->slug.'_'.$lang.'_'.$post['ID'];
 
-        $output = '';
+        $description = get_post_meta( $post['ID'], '_yoast_wpseo_metadesc', true);
+        $description = $description ?: BABE_Post_types::get_post_excerpt($post);
+        /// \u00a0 character fix
+        $description = str_replace( chr( 194 ) . chr( 160 ), ' ', $description );
 
-        $prices = BABE_Post_types::get_post_price_from($post['ID']);
+        $post_meta = BABE_Post_types::get_post_meta($post['ID']);
 
-        if (!empty($prices)){
+        $product_url = esc_url( get_permalink($post['ID']) );
 
-            if (function_exists( 'qtranxf_getLanguage' )){
-                $lang = qtranxf_getLanguage();
-            } else {
-                $lang = substr( get_locale(), 0, 2 );
-            }
+        $schema = array(
+            '@context' => 'https://schema.org/',
+            '@type' => 'Product',
+            'name' => esc_attr( $post['post_title'] ),
+            'url' => $product_url,
+            'description' => esc_js( strip_tags(
+                apply_filters( 'babe_product_schema_markup_description', $description, $post['ID'])
+            ) ),
+            'brand' => [
+                '@type' => 'Brand',
+                'name' => esc_attr(
+                    apply_filters( 'babe_product_schema_markup_brand_name', get_bloginfo( 'name' ), $post['ID'])
+                ),
+            ],
+            'productID' => $productID,
+            'sku' => $productID,
+            'mpn' => $productID,
+        );
 
-            $productID = BABE_Post_types::get_post_category($post['ID'])->slug.'_'.$lang.'_'.$post['ID'];
-
-            $description = get_post_meta( $post['ID'], '_yoast_wpseo_metadesc', true);
-            $description = $description ? $description : BABE_Post_types::get_post_excerpt($post);
-
-            /// \u00a0 character fix
-            $description = str_replace( chr( 194 ) . chr( 160 ), ' ', $description );
-
-            $post_meta = BABE_Post_types::get_post_meta($post['ID']);
-
-            $schema = [
-                '@context' => 'http://schema.org/',
-                '@type' => 'Product',
-                'name' => esc_attr( $post['post_title'] ),
-                'url' => esc_url( get_permalink($post['ID']) ),
-                'description' => esc_js( strip_tags($description) ),
-                'productID' => $productID,
-                'sku' => $productID,
-                'mpn' => $productID,
-                'brand' => [
-                    '@type' => "Organization",
-                    'name' => esc_attr( get_bloginfo( 'name' ) ),
-                ],
-                'offers' => [
-                    '@type' => 'Offer',
-                    'price' => esc_attr( $prices['discount_price_from'] ),
-                    'priceCurrency' => esc_attr( BABE_Currency::get_currency() ),
-                    'availability' => 'http://schema.org/InStock',
-                    'validFrom' => BABE_Calendar_functions::date_to_sql($post_meta['start_date']),
-                    'priceValidUntil' => BABE_Calendar_functions::date_to_sql($post_meta['end_date']),
-                    'url' => esc_url( get_permalink($post['ID']) ),
-                ],
-            ];
-
-            $featured_image = get_the_post_thumbnail_url($post['ID']);
-            if( !empty($featured_image) ){
-                $schema['image'] = esc_url($featured_image);
-            }
-
-            $total_rating = BABE_Rating::get_post_total_rating($post['ID']);
-            $total_votes = BABE_Rating::get_post_total_votes($post['ID']);
-
-            if ( $total_rating && $post['comment_count'] ){
-
-                $comments = get_comments( array( 'post_id' => $post['ID'] ) );
-
-                $i = 0;
-
-                foreach ( $comments as $comment ) {
-
-                    $rating = BABE_Rating::get_comment_total_rating($comment->comment_ID);
-
-                    $schema['review'][] = [
-                        '@type' => 'Review',
-                        'author' => esc_attr($comment->comment_author),
-                        'datePublished' => esc_attr($comment->comment_date),
-                        'reviewBody' => esc_attr( sanitize_text_field( $comment->comment_content ) ),
-                        'name' => esc_attr__('Worth a purchase', 'ba-book-everything'),
-                        'reviewRating' => [
-                            '@type' => 'Rating',
-                            'ratingValue' => round($rating, 2),
-                        ],
-                    ];
-
-                    $i++;
-
-                    if ( $i >= 7 ){
-                        break;
-                    }
-                }
-
-                $schema['aggregateRating'] = [
-                    '@type' => 'AggregateRating',
-                    'ratingValue' => round($total_rating, 2),
-                    'reviewCount' => $total_votes,
-                ];
-
-            }
-
-            $schema = apply_filters( 'babe_post_schema_markup', $schema, $post);
-
-            $output = '<script type="application/ld+json">'.json_encode($schema).'</script>';
-
+        $featured_image = get_the_post_thumbnail_url($post['ID'], 'full');
+        if ( !empty($featured_image) ){
+            $schema['image'] = esc_url($featured_image);
         }
 
-        return $output;
+        $currency = esc_attr( strtoupper(BABE_Currency::get_currency()) );
+
+        $price_arr = BABE_Post_types::get_post_price_from($post['ID']);
+
+        if (
+            !empty($price_arr)
+            && !empty($post_meta['start_date'])
+            && !empty($post_meta['end_date'])
+        ){
+            $schema['offers'] = [
+                '@type' => 'Offer',
+                'price' => esc_attr( $price_arr['discount_price_from'] ),
+                'availability' => 'https://schema.org/InStock',
+                'url' => $product_url,
+                'priceCurrency' => $currency,
+                'validFrom' => BABE_Calendar_functions::date_to_sql($post_meta['start_date']),
+                'priceValidUntil' => BABE_Calendar_functions::date_to_sql($post_meta['end_date']),
+            ];
+
+            $price_from_with_taxes = ($price_arr['price_from'] * (100 + $price_arr['categories_add_taxes'] * $price_arr['categories_tax'])) / 100;
+
+            if( $price_arr['discount_price_from'] < $price_from_with_taxes ){
+
+                $schema['offers']['priceSpecification'] = [
+                    '@type' => 'UnitPriceSpecification',
+                    'priceType' => "https://schema.org/ListPrice",
+                    'price' => esc_attr( $price_from_with_taxes ),
+                    'priceCurrency' => $currency,
+                ];
+            }
+        }
+
+        $rating = BABE_Rating::get_post_total_rating($post['ID']);
+        $votes = BABE_Rating::get_post_total_votes($post['ID']);
+        $comments = get_comments([
+            'status' => 1,
+            'post_id' => $post['ID'],
+            'orderby' => 'comment_date',
+            'order' => 'DESC',
+        ]);
+        $rating_stars_num = BABE_Settings::get_rating_stars_num();
+
+        if( !empty($rating) ){
+            $schema['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => $rating,
+                'reviewCount' => $votes,
+                'worstRating' => 1,
+                'bestRating' => $rating_stars_num,
+            ];
+        } elseif ( BABE_Settings::$settings['generate_schema_review_if_no_comments'] ) {
+            $schema['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => $rating_stars_num,
+                'reviewCount' => 1,
+                'worstRating' => 1,
+                'bestRating' => $rating_stars_num,
+            ];
+        }
+
+        if( !empty($comments) ){
+            $i = 0;
+            foreach ($comments as $comment) {
+
+                $schema['review'][] = [
+                    '@type' => "Review",
+                    'author' => [
+                        '@type' => 'Person',
+                        'name' => esc_attr(
+                            apply_filters( 'babe_product_schema_markup_review_author_name', $comment->comment_author, $post['ID'], $comment)
+                        ),
+                    ],
+                    'datePublished' => get_comment_date('Y-m-d', $comment->comment_ID),
+                    'name' => esc_attr(
+                        apply_filters(
+                            'babe_product_schema_markup_review_name',
+                            esc_attr__('Value purchase', 'ba-book-everything'),
+                            $post['ID'],
+                            $comment
+                        )
+                    ),
+                    'reviewBody' => trim( esc_html( sanitize_text_field($comment->comment_content) ) ),
+                    'reviewRating' => array(
+                        '@type' => "Rating",
+                        'ratingValue' => BABE_Rating::get_comment_rating_total($comment->comment_ID),
+                        'worstRating' => 1,
+                        'bestRating' => $rating_stars_num,
+                    ),
+                ];
+
+                $i++;
+                if( $i >= 3 ){
+                    break;
+                }
+            }
+        } elseif ( BABE_Settings::$settings['generate_schema_review_if_no_comments'] ) {
+            $schema['review'] = [
+                '@type' => "Review",
+                'author' => [
+                    '@type' => 'Person',
+                    'name' => esc_attr(
+                        apply_filters(
+                            'babe_product_schema_markup_review_author_name',
+                            __('Tourist', 'ba-book-everything'),
+                            $post['ID'],
+                            null
+                        )
+                    ),
+                ],
+                'datePublished' => date_i18n('Y-m-d', time()),
+                'name' => esc_attr(
+                    apply_filters(
+                        'babe_product_schema_markup_review_name',
+                        __('Value purchase', 'ba-book-everything'),
+                        $post['ID'],
+                        null
+                    )
+                ),
+                'reviewRating' => [
+                    '@type' => "Rating",
+                    'ratingValue' => $rating_stars_num,
+                    'worstRating' => 1,
+                    'bestRating' => $rating_stars_num,
+                ],
+            ];
+        }
+
+        return '<script type="application/ld+json">'
+            .json_encode(
+                apply_filters( 'babe_post_schema_markup', $schema, $post )
+            )
+            .'</script>';
     }
     
 ///////////////////////////        

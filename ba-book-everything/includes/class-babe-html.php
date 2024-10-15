@@ -4194,21 +4194,38 @@ class BABE_html {
         $order_id = $args['order_id'];
         
         ///// messages for $args['order_status']
-        if ($args['order_status'] && isset(BABE_Settings::$settings['message_'.$args['order_status']])){
+        if (
+            $args['order_status']
+            && isset(BABE_Settings::$settings['message_'.$args['order_status']])
+        ){
           
             $output .= '
             <div class="babe_message_order babe_message_order_status_'.$args['order_status'].'">
                ' . BABE_Settings::$settings['message_'.$args['order_status']] . '
             </div>';
-            
         }
-        
-        if ( $args['order_status'] == 'payment_expected' || $args['order_status'] == 'draft' ){
 
-            $message = $args['order_status'] == 'payment_expected' ? __('Pay Now!', 'ba-book-everything') : __('Complete the booking', 'ba-book-everything');
+        if (
+            in_array($args['order_status'], ['payment_expected', 'draft',])
+            && BABE_Settings::$settings['show_pay_button_on_confirmation_page']
+        ){
+            $message = $args['order_status'] === 'payment_expected'
+                ? __('Pay Now!', 'ba-book-everything')
+                : __('Complete the booking', 'ba-book-everything')
+            ;
 
             $output .= '<div class="babe_order_confirm">
               <a href="'.BABE_Order::get_order_payment_page($order_id).'" class="babe_button_order babe_button_order_to_pay">'.$message.'</a>
+            </div>';
+        }
+
+        if (
+            in_array($args['order_status'], ['payment_processing', 'payment_expected',])
+            && BABE_Settings::$settings['show_reload_page_button_on_confirmation_page']
+        ){
+            $output .= '<div class="babe_order_refresh">
+              <p>'.__('If you have made a payment, please refresh the page to check the current order status', 'ba-book-everything').'</p>
+              <button class="babe_button_refresh" onClick="window.location.reload();">'.__('Refresh the page', 'ba-book-everything').'</button>
             </div>';
         }
         

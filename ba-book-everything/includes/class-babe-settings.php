@@ -148,6 +148,8 @@ class BABE_Settings {
             'price_decimals' => 2, // number of decimals after the decimal point
             'price_from_label' => _x( 'From %s', 'item price from label', 'ba-book-everything' ),
             'shop_email' => '',
+            'show_pay_button_on_confirmation_page' => 1,
+            'show_reload_page_button_on_confirmation_page' => 1,
             'message_av_confirmation' => __( "Your order is waiting for the availability confirmation, you will be notified by email when it's ready. Thank you!", 'ba-book-everything' ),
             'message_not_available' => __( 'Sorry, but your selected items are not available for selected dates/times. Please, search another dates/times or items and create new order.', 'ba-book-everything' ),
             'message_payment_deferred' => __( 'Your order is completed and received, and a confirmation email was sent to you. You will pay the full amount later. Thank you!', 'ba-book-everything' ),

@@ -1,10 +1,10 @@
 ﻿=== BA Book Everything ===
 Contributors: bookingalgorithms
-Tags: booking, tours, cars, calendar, events
+Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.6.2
-Stable tag: 1.7.6
+Stable tag: 1.7.7
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,10 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.7 =
+* Added option to remove "Pay now" button from the confirmation page if the order has "payment expected" or "draft" status (BA Settings admin menu)
+* Added option to add a reload page button to the confirmation page if the order has "payment processing" or "payment expected" status (BA Settings admin menu)
 
 = 1.7.6 =
 * Updated generation of the Product schema markup

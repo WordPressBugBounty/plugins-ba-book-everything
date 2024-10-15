@@ -1580,17 +1580,16 @@ table.order_item_age_prices td, table.order_item_age_prices td{
 }
 
 .babe_order_confirm{
-    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 .babe_button_order{
     display: block;
     text-align: center;
-    padding: 20px;
-    width: 75%;
-    min-width: 300px;
+    padding: 16px;
+    width: fit-content;
     font-weight: 700;
-    font-size: 18px;
     margin-left: auto;
     margin-right: auto;
     background-color: #ff4800;
@@ -1600,6 +1599,25 @@ table.order_item_age_prices td, table.order_item_age_prices td{
 .babe_button_order:hover, .babe_button_order:focus, .babe_button_order:active{
     text-decoration: none;
     color: #ffffff;
+}
+
+.babe_order_refresh{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.babe_order_refresh p{
+    margin-bottom: 10px;
+}
+
+.babe_button_refresh{
+    display: block;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #6A6A6A;
+    color: #ffffff;
+    margin-bottom: 20px;
 }
 
 

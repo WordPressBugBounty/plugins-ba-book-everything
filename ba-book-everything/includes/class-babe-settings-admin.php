@@ -1142,7 +1142,25 @@ function setup_demo_content(i){
             '__return_false', // Callback
             BABE_Settings::$option_menu_slug // Page
         );
+
+        add_settings_field(
+            'show_pay_button_on_confirmation_page', // ID
+            __('Show "Pay now" button on the confirmation page if the order has "payment expected" or "draft" status','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_confirm', // Section
+            array('option' => 'show_pay_button_on_confirmation_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
         
+        add_settings_field(
+            'show_reload_page_button_on_confirmation_page', // ID
+            __('Show a reload page button on the confirmation page if the order has "payment processing" or "payment expected" status','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_confirm', // Section
+            array('option' => 'show_reload_page_button_on_confirmation_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
         add_settings_field(
             'message_av_confirmation', // ID
             __('Message for status "availability confirmation"', 'ba-book-everything'), // Title
@@ -2028,6 +2046,8 @@ function setup_demo_content(i){
           $new_input['use_minimized_css'] = empty($input['use_minimized_css']) ? 0 : 1;
           $new_input['use_minimized_js'] = empty($input['use_minimized_js']) ? 0 : 1;
 
+          $new_input['show_pay_button_on_confirmation_page'] = absint($input['show_pay_button_on_confirmation_page']);
+          $new_input['show_reload_page_button_on_confirmation_page'] = absint($input['show_reload_page_button_on_confirmation_page']);
           $new_input['message_av_confirmation'] = wp_kses_post($input['message_av_confirmation']);
           $new_input['message_not_available'] = wp_kses_post($input['message_not_available']);
           $new_input['message_payment_deferred'] = wp_kses_post($input['message_payment_deferred']);

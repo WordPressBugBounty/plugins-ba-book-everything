@@ -75,25 +75,24 @@ class BABE_Payments {
 
             update_post_meta($order_id, '_payment_method', 'coupon');
 
-            add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'switch_to_coupon_payment_method'), 10 );
+            add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'switch_to_coupon_payment_method'), 100 );
 
             add_filter('babe_checkout_form_element_amount_group', function($output, $total_amount, $prepaid_amount, $payment_model, $order_id){
                 return '
                   <input type="hidden" name="payment[amount_to_pay]" id="order_amount_to_pay_full" value="full" checked="checked">
                 ';
-            }, 10, 5);
+            }, 100, 5);
 
         } else {
+
+            add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'remove_coupon_payment_method'), 100 );
 
             $payment_method = get_post_meta($order_id, '_payment_method', true);
             if ( empty($payment_method) || 'coupon' === $payment_method ){
                 $payment_methods_arr = BABE_Settings::get_active_payment_methods($order_id);
                 update_post_meta($order_id, '_payment_method', key($payment_methods_arr) );
             }
-
-            add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'remove_coupon_payment_method'), 10 );
         }
-
     }
 
     public static function switch_to_coupon_payment_method( $payment_methods_arr )

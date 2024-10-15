@@ -84,12 +84,22 @@ class BABE_Pay_coupon {
      * @return void
 	 */
      public static function order_to_pay($order_id, $args, $current_url, $success_url){
-        
-        BABE_Order::update_order_status($order_id, 'payment_received');
-        
-        do_action('babe_order_completed', $order_id);
-                  
-        wp_safe_redirect($success_url);
+
+         $order_coupon_num = BABE_Order::get_order_coupon_num($order_id);
+         $order_coupon_amount = BABE_Order::get_order_coupon_amount_applied($order_id);
+         $total_with_coupon = BABE_Order::get_order_total_amount($order_id);
+
+         if (
+             empty($order_coupon_num)
+             || empty($order_coupon_amount)
+             || $total_with_coupon != 0
+         ){
+             return;
+         }
+
+         BABE_Order::update_order_status($order_id, 'payment_received');
+         do_action('babe_order_completed', $order_id);
+         wp_safe_redirect($success_url);
      }                
         
 ////////////////////    

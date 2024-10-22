@@ -1962,19 +1962,6 @@ $(document).ready(function(){
        
     });
     
-    $('.my_account_my_bookings_table_td').on('click', '.my_bookings_table_icon_button', function(el){
-       el.stopPropagation();
-       el.preventDefault();
-       var parent = $(this).parent();
-       if ($(this).hasClass('icon-button-confirm')){
-          $(parent).find('.my_bookings_table_a_button.btn-av-confirm').toggleClass('button-disabled');
-       }
-       if ($(this).hasClass('icon-button-reject')){
-          $(parent).find('.my_bookings_table_a_button.btn-av-reject').toggleClass('button-disabled');
-       }      
-       
-    });
-    
     $( "#registration_form" ).validate({
         rules: {
             new_email: {

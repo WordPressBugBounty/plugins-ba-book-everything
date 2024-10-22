@@ -1021,43 +1021,48 @@ class BABE_Import_export {
 
         add_filter( 'http_request_host_is_external', '__return_true' );
 
-		$terms =  $GLOBALS['wp_import']->terms;
-		$all_terms = array();
-		foreach ($terms as $id => $term){
+        if ( !empty($GLOBALS['wp_import']) && isset($GLOBALS['wp_import']->terms) ){
 
-			if ( $term["term_taxonomy"] === BABE_Post_types::$taxonomies_list_tax ){
-				// if the term already exists in the correct taxonomy leave it alone
-				$term_id = term_exists( $term['slug'], $term['term_taxonomy'] );
-				if (!$term_id) {
+            $terms =  $GLOBALS['wp_import']->terms;
 
-					$args        = array(
-						'slug'        => $term['slug'],
-						'description' => '',
-					);
+            foreach ($terms as $id => $term){
 
-					$id = wp_insert_term( wp_slash( $term['term_name'] ), $term['term_taxonomy'], $args );
-					if ( ! is_wp_error( $id ) ) {
-						update_term_meta($id['term_id'], 'gmap_active', 0);
-						update_term_meta($id['term_id'], 'select_mode', 'multi_checkbox');
-						update_term_meta($id['term_id'], 'frontend_style', 'col_3');
-						self::$processed_terms[$term['term_id']] = $id['term_id']; // old/new
-					} else {
-						printf( __( 'Failed to import %s %s', 'wordpress-importer' ), esc_html($term['term_taxonomy']), esc_html($term['term_name']) );
-						if ( defined('IMPORT_DEBUG') && IMPORT_DEBUG )
-							echo ': ' . $id->get_error_message();
-						echo '<br />';
-						continue;
-					}
-				} else {
-					self::$processed_terms[$term['term_id']] = $term_id['term_id']; // old /new
-				}
+                if ( $term["term_taxonomy"] === BABE_Post_types::$taxonomies_list_tax ){
+                    // if the term already exists in the correct taxonomy leave it alone
+                    $term_id = term_exists( $term['slug'], $term['term_taxonomy'] );
+                    if (!$term_id) {
 
-			} else {
-				$all_terms[] = $term;
-			}
+                        $args        = array(
+                            'slug'        => $term['slug'],
+                            'description' => '',
+                        );
 
-		}
+                        $id = wp_insert_term( wp_slash( $term['term_name'] ), $term['term_taxonomy'], $args );
+                        if ( ! is_wp_error( $id ) ) {
+                            update_term_meta($id['term_id'], 'gmap_active', 0);
+                            update_term_meta($id['term_id'], 'select_mode', 'multi_checkbox');
+                            update_term_meta($id['term_id'], 'frontend_style', 'col_3');
+                            self::$processed_terms[$term['term_id']] = $id['term_id']; // old/new
+                        } else {
+                            printf( __( 'Failed to import %s %s', 'wordpress-importer' ), esc_html($term['term_taxonomy']), esc_html($term['term_name']) );
+                            if ( defined('IMPORT_DEBUG') && IMPORT_DEBUG )
+                                echo ': ' . $id->get_error_message();
+                            echo '<br />';
+                            continue;
+                        }
+                    } else {
+                        self::$processed_terms[$term['term_id']] = $term_id['term_id']; // old /new
+                    }
+
+                } else {
+                    $all_terms[] = $term;
+                }
+
+            }
+
+            $GLOBALS['wp_import']->terms = $all_terms;
+        }
+
 		BABE_Post_types::init_taxonomies_list();
-		$GLOBALS['wp_import']->terms = $all_terms;
 	}
 }

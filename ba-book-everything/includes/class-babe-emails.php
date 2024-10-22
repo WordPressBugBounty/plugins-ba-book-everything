@@ -1,23 +1,19 @@
 <?php
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+BABE_Emails::init();
+
 /**
- * BABE_Emails Class.
- * Get general settings
+ * BABE_Emails Class
  * @class 		BABE_Emails
- * @version		1.0.0
+ * @version		1.7.9
  * @author 		Booking Algorithms
  */
-
 class BABE_Emails {
-    
-//////////////////////////////
-    /**
-	 * Hook in tabs.
-	 */
+
+
     public static function init() {
 
         add_action( 'babe_order_status_update_before_order_actions', array( __CLASS__, 'send_standard_emails' ), 10, 5);
@@ -26,7 +22,10 @@ class BABE_Emails {
         
         add_action( 'babe_user_password_reseted', array( __CLASS__, 'send_email_password_reseted'), 10, 2);
 
-        if ( class_exists('BABE_Settings') && !empty(BABE_Settings::$settings['my_account_disable']) ){
+        if (
+            class_exists('BABE_Settings')
+            && !empty(BABE_Settings::$settings['my_account_disable'])
+        ){
             return;
         }
 
@@ -74,6 +73,12 @@ class BABE_Emails {
                 self::send_email_new_order_av_confirm($order_id);
                 BABE_Order::restore_locale_by_order_id($order_id);
                 update_post_meta($order_id, '_email_new_order', 1);
+                break;
+
+            case 'order_customer_confirmation':
+                BABE_Order::switch_locale_by_order_id($order_id);
+                self::send_email_order_customer_confirmation($order_id);
+                BABE_Order::restore_locale_by_order_id($order_id);
                 break;
 
             case 'order_rejected':
@@ -388,14 +393,8 @@ class BABE_Emails {
         $post = $prev_post;
     }
 
-////////////////////////
-     /**
-	 * Send admin email new order confirmation
-     * @param int $order_id
-     * @return void
-	 */
-     public static function send_admin_email_new_order_av_confirm($order_id){
-
+     public static function send_admin_email_new_order_av_confirm( int $order_id): void
+     {
          $email_to = self::get_manager_email($order_id);
 
          if ( empty($email_to) ){
@@ -427,17 +426,17 @@ class BABE_Emails {
         $body .= BABE_html_emails::email_get_row_content($order_items_html);
         
         if (apply_filters('babe_email_admin_order_av_confirm_add_customer_details', true)){
-        
-        $body .= BABE_html_emails::email_get_row_title(__('Customer details', 'ba-book-everything'), 1);
-        
-        $body .= BABE_html_emails::email_get_row_content($customer_html);
-        
+            $body .= BABE_html_emails::email_get_row_title(__('Customer details', 'ba-book-everything'), 1);
+
+            $body .= BABE_html_emails::email_get_row_content($customer_html);
         }
         
         $body .= BABE_html_emails::email_get_row_button(__('Confirm', 'ba-book-everything'), BABE_Order::get_admin_confirmation_page($order_id, 'confirm'), 1);
         
         $body .= BABE_html_emails::email_get_row_button(__('Reject', 'ba-book-everything'), BABE_Order::get_admin_confirmation_page($order_id, 'reject'), 2);
-        
+
+        $body .= BABE_html_emails::email_get_row_button(__('Change the order conditions and ask the customer to confirm', 'ba-book-everything'), BABE_Order::get_admin_confirmation_page($order_id, 'change'), 3);
+
         /////////////////////////////
         
         $body = apply_filters('babe_email_body_admin_new_order_av_confirm', $body, $order_id);
@@ -451,15 +450,9 @@ class BABE_Emails {
          // restore global post
          $post = $prev_post;
      }
-     
-////////////////////////
-     /**
-	 * Send customer email new order created
-     * @param int $order_id
-     * @return void
-	 */
-     public static function send_email_new_order_av_confirm($order_id){
 
+     public static function send_email_new_order_av_confirm( int $order_id ): void
+     {
          global $post;
          $prev_post = $post;
 
@@ -501,6 +494,68 @@ class BABE_Emails {
         $body = BABE_html_emails::email_body_wrap($body);
 
             $subject = apply_filters('babe_email_subject_new_order_av_confirm', esc_html(sprintf(BABE_Settings::$settings['email_new_order_av_confirm_subject'], BABE_Order::get_order_number($order_id))), $order_id);
+
+            self::send_email($email_to, do_shortcode($subject), $body);
+        }
+
+         // restore global post
+         $post = $prev_post;
+     }
+
+     public static function send_email_order_customer_confirmation( int $order_id ): void
+     {
+         global $post;
+         $prev_post = $post;
+
+         if ( $order_id ){
+             // set global post to order post, required for shortcodes
+             $post = get_post($order_id);
+         }
+
+        $order_items_html = BABE_html::order_items($order_id);
+
+        $customer_html = BABE_html::order_customer_details($order_id);
+
+        $customer_details = self::get_customer_details($order_id);
+
+        $admin_to_customer_notes = BABE_Order::get_order_admin_to_customer_notes($order_id);
+
+        if ( $customer_details['email'] && !empty($admin_to_customer_notes) ){
+
+            $email_to = $customer_details['email'];
+
+            //////Make email body////////
+
+            $body = BABE_html_emails::email_get_row_header_image();
+
+            $body .= BABE_html_emails::email_get_row_title( BABE_Settings::$settings['email_order_customer_confirmation_title'] );
+
+            $body .= BABE_html_emails::email_get_row_content(
+                sprintf(
+                    BABE_Settings::$settings['email_order_customer_confirmation_message'],
+                    $customer_details['first_name'].' '.$customer_details['last_name']
+                ) . BABE_html_emails::email_wrap_notes($admin_to_customer_notes)
+            );
+
+            $body .= BABE_html_emails::email_get_row_button(__('Confirm', 'ba-book-everything'), BABE_Order::get_customer_confirmation_page($order_id, 'confirm'), 1);
+
+            $body .= BABE_html_emails::email_get_row_button(__('Reject', 'ba-book-everything'), BABE_Order::get_customer_confirmation_page($order_id, 'reject'), 2);
+
+            $body .= BABE_html_emails::email_get_row_title(__('Order #', 'ba-book-everything').BABE_Order::get_order_number($order_id), 1);
+
+            $body .= BABE_html_emails::email_get_row_content($order_items_html);
+
+            $body .= BABE_html_emails::email_get_row_title(__('Your contacts', 'ba-book-everything'), 1);
+
+            $body .= BABE_html_emails::email_get_row_content($customer_html);
+
+            /////////////////////////////
+
+            $body = apply_filters('babe_email_body_order_customer_confirmation', $body, $order_id);
+
+            $body = BABE_html_emails::email_body_wrap($body);
+
+            $subject = apply_filters('babe_email_subject_order_customer_confirmation', esc_html(sprintf(BABE_Settings::$settings['email_order_customer_confirmation_subject'], BABE_Order::get_order_number($order_id))), $order_id);
 
             self::send_email($email_to, do_shortcode($subject), $body);
         }
@@ -1007,9 +1062,6 @@ class BABE_Emails {
             ;
 		}
 		return $content;
-	}                                
-        
-////////////////////    
-}
+	}
 
-BABE_Emails::init(); 
+}

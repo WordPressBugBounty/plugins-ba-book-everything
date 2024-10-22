@@ -414,8 +414,7 @@ class BABE_My_account {
     return $output;
     
     }
-    
-/////////admin_av_confirmation////////        
+
     /**
 	 * Confirm or reject the order.
      * 
@@ -425,7 +424,7 @@ class BABE_My_account {
         
         global $post;
         
-        if (is_singular() && $post->ID == (int)BABE_Settings::$settings['my_account_page']){
+        if (is_singular() && $post->ID === (int)BABE_Settings::$settings['my_account_page']){
         
         $args = wp_parse_args( $_GET, array(
             'order_id' => 0,
@@ -1053,7 +1052,7 @@ class BABE_My_account {
 	
     $output = $content;
     
-    if ( !isset($_GET[self::$account_page_var]) || $_GET[self::$account_page_var] == 'dashboard'){
+    if ( !isset($_GET[self::$account_page_var]) || $_GET[self::$account_page_var] === 'dashboard'){
 
         //// get customer info block
         $output .= self::get_customer_info_html($user_info);
@@ -1364,7 +1363,7 @@ class BABE_My_account {
     
     $check_role = self::validate_role($user_info); 
       
-      if ($check_role == 'manager'){
+      if ($check_role === 'manager'){
          $orders = BABE_Order::get_all_orders();
          $posts_pages = BABE_Order::$get_posts_pages;
       } else {
@@ -1509,134 +1508,116 @@ class BABE_My_account {
      * @param string $column_name
      * @param int $post_id
      * @param WP_User $user_info
-     * @return array
+     * @return string
 	 */
-    public static function orders_table_content( $column_name, $post_id, $user_info ) {
-        
-      $output = '';
-      $currency = BABE_Order::get_order_currency($post_id);
-      
-    if ($column_name === 'order_num') {
-      $output .= '<a class="my_bookings_table_a_expand" href="#" data-order-id="'.$post_id.'">'.BABE_Order::get_order_number($post_id).'</a>';
-    }
-    
-    if ($column_name === 'items') {
-        
-      $order_items = BABE_Order::get_order_items($post_id);
-      $items = '<ul>';      
-      foreach($order_items as $order_item_id => $item_meta){
-        $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($item_meta['booking_obj_id']);
-        $items .= '<li>'.$item_meta['order_item_name'].'</li>';
-      }
-      $items .= '</ul>';
-        
-      $output .= '<a class="my_bookings_table_a_expand" href="#" data-order-id="'.$post_id.'">'.$items.'</a>';
-    }
-    
-    if ($column_name === 'date_from') {
-        
-      $order_items = BABE_Order::get_order_items($post_id);
-      $date_from = '<ul>';
-      
-      foreach($order_items as $order_item_id => $item_meta){
-        $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($item_meta['booking_obj_id']);
-        $date_from_obj = new DateTime($item_meta['meta']['date_from']);        
-        $date_from .= '<li>'.$date_from_obj->format(get_option('date_format').' '.get_option('time_format')).'</li>';
-      }
-      $date_from .= '</ul>';
-        
-      $output .= $date_from;
-    }
-    
-    if ($column_name === 'date_to') {
-        
-      $order_items = BABE_Order::get_order_items($post_id);
-      $date_to = '<ul>';
-      foreach($order_items as $order_item_id => $item_meta){
-        $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($item_meta['booking_obj_id']);
-        $date_to_obj = new DateTime($item_meta['meta']['date_to']);
-        if ($rules_cat['rules']['basic_booking_period'] === 'recurrent_custom'){
-            $duration = (array)get_post_meta($item_meta['booking_obj_id'], 'duration', true);
-            $duration = wp_parse_args( $duration, array(
-             'd' => 0,
-             'h' => 0,
-             'i' => 0,
-            ));
-            $date_to_obj->modify( '+'.$duration['d'].' days +'.$duration['h'].' hours +'.$duration['i'].' minutes' );
+    public static function orders_table_content( string $column_name, int $post_id, WP_User $user_info ): string
+    {
+        $output = '';
+
+        $currency = BABE_Order::get_order_currency($post_id);
+
+        if ($column_name === 'order_num') {
+            $output .= '<a class="my_bookings_table_a_expand" href="#" data-order-id="'.$post_id.'">'.BABE_Order::get_order_number($post_id).'</a>';
         }
-        $date_to .= '<li>'.$date_to_obj->format(get_option('date_format').' '.get_option('time_format')).'</li>';
-      }
-      $date_to .= '</ul>';
-      
-      $output .= $date_to;
-    }
-    
-    if ($column_name === 'guests') {
-        
-      $order_items = BABE_Order::get_order_items($post_id);
-      $guests = '<ul>';
-      foreach($order_items as $order_item_id => $item_meta){
-        $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($item_meta['booking_obj_id']);
-        $guests .= '<li>'.array_sum($item_meta['meta']['guests']).'</li>';
-      }
-      $guests .= '</ul>';  
-        
-      $output .= $guests;
-    }
 
-    if ($column_name === 'total_amount') {
-       $output .= BABE_Currency::get_currency_price(BABE_Order::get_order_total_amount($post_id), $currency);
-    }
-    
-    if ($column_name === 'prepaid_amount') {
-       $output .= BABE_Currency::get_currency_price(BABE_Order::get_order_prepaid_amount($post_id), $currency);
-    }
-    
-    if ($column_name === 'prepaid_received') {
-       $output .= BABE_Currency::get_currency_price(BABE_Order::get_order_prepaid_received($post_id), $currency);
-    }
-    
-    if ($column_name === 'status') {
-        $status = BABE_Order::get_order_status($post_id);
-      $output .= '<div class="my_account_my_bookings_order_status order_status_'.$status.'">'.( isset(BABE_Order::$order_statuses[$status]) ? BABE_Order::$order_statuses[$status] : $status).'</div>';
-      $check_role = self::validate_role($user_info); 
-      
-      if ($check_role === 'customer' && $status === 'payment_expected'){
-          $output .= '<a class="my_bookings_table_a_button btn button button_link btn-paynow" href="'.BABE_Order::get_order_payment_page($post_id).'">'.__('Pay Now', 'ba-book-everything').'</a>';
-      }
-      
-      if ($check_role === 'manager' && $status === 'av_confirmation'){
+        if ($column_name === 'items') {
 
-          $current_args[self::$account_page_var] = !empty($_GET[self::$account_page_var]) && (
-              $_GET[self::$account_page_var] === 'dashboard'
-              || $_GET[self::$account_page_var] === 'my-orders'
-              || $_GET[self::$account_page_var] === 'my-bookings'
-          ) ? $_GET[self::$account_page_var] : 'dashboard';
+            $order_items = BABE_Order::get_order_items($post_id);
+            $items = '<ul>';
+            foreach($order_items as $order_item_id => $item_meta){
+                $items .= '<li>'.$item_meta['order_item_name'].'</li>';
+            }
+            $items .= '</ul>';
 
-          $current_args['order_id'] = $post_id;
-          $current_args['order_num'] = BABE_Order::get_order_number($post_id);
-          $current_args['order_admin_hash'] = BABE_Order::get_order_admin_hash($post_id);
-          $current_args['admin_action'] = 'av_confirmation';
-          $current_args['action_value'] = 'confirm';
-          
-          $output .= '<a class="my_bookings_table_icon_button btn button icon-button-confirm" href="#" title="'.__('Confirm', 'ba-book-everything').'"><i class="fas fa-check-square"></i></a>
-          <a class="my_bookings_table_icon_button btn button icon-button-reject" href="#" title="'.__('Reject', 'ba-book-everything').'"><i class="fas fa-window-close"></i></a>';
-        
-          $output .= '<a class="my_bookings_table_a_button btn button button-disabled button_link btn-av-confirm" href="'.BABE_Settings::get_my_account_page_url($current_args).'">'.__('Confirm', 'ba-book-everything').'</a>
-          ';
-          
-          $current_args['action_value'] = 'reject';
-          
-          $output .= '
-          <a class="my_bookings_table_a_button btn button button-disabled button_link btn-av-reject" href="'.BABE_Settings::get_my_account_page_url($current_args).'">'.__('Reject', 'ba-book-everything').'</a>';
-      }
-      
+            $output .= '<a class="my_bookings_table_a_expand" href="#" data-order-id="'.$post_id.'">'.$items.'</a>';
+        }
+
+        if ($column_name === 'date_from') {
+
+            $order_items = BABE_Order::get_order_items($post_id);
+            $date_from = '<ul>';
+
+            foreach($order_items as $order_item_id => $item_meta){
+                $date_from_obj = new DateTime($item_meta['meta']['date_from']);
+                $date_from .= '<li>'.$date_from_obj->format(get_option('date_format').' '.get_option('time_format')).'</li>';
+            }
+            $date_from .= '</ul>';
+
+            $output .= $date_from;
+        }
+
+        if ($column_name === 'date_to') {
+
+            $order_items = BABE_Order::get_order_items($post_id);
+            $date_to = '<ul>';
+            foreach($order_items as $order_item_id => $item_meta){
+                $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($item_meta['booking_obj_id']);
+                $date_to_obj = new DateTime($item_meta['meta']['date_to']);
+                if ($rules_cat['rules']['basic_booking_period'] === 'recurrent_custom'){
+                    $duration = (array)get_post_meta($item_meta['booking_obj_id'], 'duration', true);
+                    $duration = wp_parse_args( $duration, array(
+                        'd' => 0,
+                        'h' => 0,
+                        'i' => 0,
+                    ));
+                    $date_to_obj->modify( '+'.$duration['d'].' days +'.$duration['h'].' hours +'.$duration['i'].' minutes' );
+                }
+                $date_to .= '<li>'.$date_to_obj->format(get_option('date_format').' '.get_option('time_format')).'</li>';
+            }
+            $date_to .= '</ul>';
+
+            $output .= $date_to;
+        }
+
+        if ($column_name === 'guests') {
+
+            $order_items = BABE_Order::get_order_items($post_id);
+            $guests = '<ul>';
+            foreach($order_items as $order_item_id => $item_meta){
+                $guests .= '<li>'.array_sum($item_meta['meta']['guests']).'</li>';
+            }
+            $guests .= '</ul>';
+
+            $output .= $guests;
+        }
+
+        if ( $column_name === 'total_amount' ) {
+            $output .= BABE_Currency::get_currency_price(BABE_Order::get_order_total_amount($post_id), $currency);
+        }
+
+        if ( $column_name === 'prepaid_amount' ) {
+            $output .= BABE_Currency::get_currency_price(BABE_Order::get_order_prepaid_amount($post_id), $currency);
+        }
+
+        if ( $column_name === 'prepaid_received' ) {
+            $output .= BABE_Currency::get_currency_price(BABE_Order::get_order_prepaid_received($post_id), $currency);
+        }
+
+        if ( $column_name === 'status' ) {
+            $status = BABE_Order::get_order_status($post_id);
+            $output .= '<div class="my_account_my_bookings_order_status order_status_'.$status.'">'.(BABE_Order::$order_statuses[$status] ?? $status).'</div>';
+            $check_role = self::validate_role($user_info);
+
+            if ( $check_role === 'customer' && $status === 'payment_expected' ){
+                $output .= '<a class="my_bookings_table_a_button btn button button_link btn-paynow" href="'.BABE_Order::get_order_payment_page($post_id).'">'.__('Pay Now', 'ba-book-everything').'</a>';
+            }
+
+            if ( $check_role === 'manager' && $status === 'av_confirmation' ){
+
+                $output .= '<div class="my_bookings_table_icon_button_wrapper">
+                <a class="my_bookings_table_icon_button icon-button-confirm" href="'.BABE_Order::get_admin_confirmation_page($post_id, 'confirm').'" title="'.__('Confirm', 'ba-book-everything').'"><i class="fas fa-check-square"></i></a>
+                
+                <a class="my_bookings_table_icon_button icon-button-reject" href="'.BABE_Order::get_admin_confirmation_page($post_id, 'reject').'" title="'.__('Reject', 'ba-book-everything').'"><i class="fas fa-window-close"></i></a>
+                
+                <a class="my_bookings_table_icon_button icon-button-change" href="'.BABE_Order::get_admin_confirmation_page($post_id, 'change').'" title="'.__('Change the order conditions and ask the customer to confirm', 'ba-book-everything').'"><i class="fas fa-envelope-open"></i></a>
+                </div>';
+            }
+        }
+
+        $output = apply_filters('babe_myaccount_my_bookings_table_content', $output, $column_name, $post_id, $user_info);
+
+        return $output;
     }
-    
-    $output = apply_filters('babe_myaccount_my_bookings_table_content', $output, $column_name, $post_id, $user_info);
-    
-    return $output;
-}
 
 ///////////////////////////////////////
   /**

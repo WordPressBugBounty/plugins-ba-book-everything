@@ -292,6 +292,51 @@ ADD KEY is_default (is_default)" );
             delete_option('BABE_db_upgrading');
         }
 
+        if (
+            version_compare( $babe_db_version, '1.7.9', '<' )
+            && !get_option('BABE_db_upgrading', false)
+            && BABE_Functions::get_current_language() === BABE_Functions::get_default_language()
+        ){
+            update_option('BABE_db_upgrading', 1);
+
+            $page_id = self::create_page('customer-confirmation', 'customer_confirmation_page', __('Customer confirmation', 'ba-book-everything'));
+
+            $current_lang = apply_filters( 'wpml_current_language', BABE_Functions::get_current_language() );
+            $all_languages = BABE_Functions::get_all_languages();
+            unset($all_languages[$current_lang]);
+
+            if ( !empty($all_languages) && BABE_Functions::is_wpml_active() ){
+
+                $wpml_element_type = apply_filters( 'wpml_element_type', 'page' );
+                $get_language_args = array('element_id' => $page_id, 'element_type' => 'page' );
+                $original_post_language_info = apply_filters( 'wpml_element_language_details', null, $get_language_args );
+
+                foreach ($all_languages as $lang_code => $lang_arr ){
+
+                    if ( !isset($original_post_language_info->trid, $original_post_language_info->language_code ) ){
+                        continue;
+                    }
+
+                    BABE_Settings::$option_name = 'babe_settings'.'_'.substr( $lang_code, 0, 2 );
+                    $lang_page_id = self::create_page( $lang_code.'-customer-confirmation', 'customer_confirmation_page', __('Customer confirmation', 'ba-book-everything'));
+
+                    $set_language_args = array(
+                        'element_id'    => $lang_page_id,
+                        'element_type'  => $wpml_element_type,
+                        'trid'   => $original_post_language_info->trid,
+                        'language_code'   => $lang_code,
+                        'source_language_code' => $original_post_language_info->language_code
+                    );
+                    do_action( 'wpml_set_element_language_details', $set_language_args );
+                }
+
+                BABE_Settings::$option_name = 'babe_settings'.'_'.$current_lang;
+            }
+
+            update_option('BABE_db_version', '1.7.9');
+            delete_option('BABE_db_upgrading');
+        }
+
         // just reset
         delete_option('BABE_db_upgrading');
 
@@ -416,12 +461,15 @@ ADD KEY is_default (is_default)" );
 	   
     global $wpdb;
     
-    $settings = !empty(get_option(BABE_Settings::$option_name)) ? get_option(BABE_Settings::$option_name) : [];
+    $settings = get_option(BABE_Settings::$option_name);
+    if ( empty($settings) ){
+        $settings = [];
+    }
     $option_value = isset($settings[$option]) ? absint($settings[$option]) : 0;
     
     if ( $option_value && get_post( $option_value ) ){
       return $option_value;
-    }  
+    }
       
     $page_found = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_name = '$slug' LIMIT 1;");
     

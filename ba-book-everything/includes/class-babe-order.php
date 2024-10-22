@@ -5,27 +5,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * BABE_Order Class.
- * Get general settings
+ * BABE_Order Class
  * @class 		BABE_Order
- * @version		1.3.0
+ * @version		1.7.9
  * @author 		Booking Algorithms
  */
-
 class BABE_Order {
     
     static $order_statuses = [];
-    static $order_defualt_statuses = [];
     static $order_default_statuses = [];
     static $order_status_router = [];
     static $order_actions = [];
-    
+
     static $get_posts_count = 0;
     static $get_posts_pages = 0;
     
     // DB tables
     static $table_order_items;
-    
+
     static $table_order_itemmeta;
     
     ///// cache
@@ -41,11 +38,8 @@ class BABE_Order {
     private static $order_meta = [];
     
     private static $order_prices = [];
-    
-//////////////////////////////
-    /**
-	 * Hook in tabs.
-	 */
+
+
     public static function init() {
 
         global $wpdb;
@@ -55,6 +49,7 @@ class BABE_Order {
         self::$order_statuses = array(
             'draft' => __( 'draft', 'ba-book-everything' ),
             'av_confirmation' => __( 'availability confirmation', 'ba-book-everything' ),
+            'customer_confirmation' => __( 'customer confirmation', 'ba-book-everything' ),
             'not_available' => __( 'not available', 'ba-book-everything' ),
             'payment_deferred' => __( 'payment deferred', 'ba-book-everything' ),
             'payment_expected' => __( 'payment expected', 'ba-book-everything' ),
@@ -65,7 +60,6 @@ class BABE_Order {
             'completed' => __( 'completed', 'ba-book-everything' ),
         );
 
-        self::$order_defualt_statuses = self::$order_statuses;
         self::$order_default_statuses = self::$order_statuses;
 
         self::$order_status_router = [
@@ -93,6 +87,9 @@ class BABE_Order {
                 'not_available' => [
                     'action' => 'order_rejected',
                     ],
+                'customer_confirmation' => [
+                    'action' => 'order_customer_confirmation',
+                    ],
                 'canceled' => [
                     'action' => 'order_canceled',
                     ],
@@ -112,6 +109,17 @@ class BABE_Order {
                     'action' => 'order_updated',
                     ],
             ],
+            'customer_confirmation' => [
+                'canceled' => [
+                    'action' => 'order_canceled',
+                    ],
+                'payment_expected' => [
+                    'action' => 'new_order_to_pay',
+                    ],
+                'payment_deferred' => [
+                    'action' => 'order_updated',
+                    ],
+            ],
             'payment_deferred' => [
                 'not_available' => [
                     'action' => 'order_canceled',
@@ -119,6 +127,9 @@ class BABE_Order {
                 'canceled' => [
                     'action' => 'order_canceled',
                     ],
+                'customer_confirmation' => [
+                    'action' => 'order_customer_confirmation',
+                ],
                 'payment_authorized' => [
                     'action' => 'order_updated',
                 ],
@@ -139,6 +150,9 @@ class BABE_Order {
                 'canceled' => [
                     'action' => 'order_canceled',
                     ],
+                'customer_confirmation' => [
+                    'action' => 'order_customer_confirmation',
+                ],
                 'payment_authorized' => [
                     'action' => 'order_updated',
                 ],
@@ -209,6 +223,9 @@ class BABE_Order {
             'new_order_av_confirm' => [
                 'title' => __( 'New order for confirmation', 'ba-book-everything' ),
             ],
+            'order_customer_confirmation' => [
+                'title' => __( 'Ask customer to confirm or reject changes in the booking', 'ba-book-everything' ),
+            ],
             'new_order_to_pay' => [
                 'title' => __( 'New order to pay', 'ba-book-everything' ),
             ],
@@ -234,23 +251,29 @@ class BABE_Order {
         add_action( 'template_redirect', array( __CLASS__, 'action_to_services'));
         add_action( 'template_redirect', array( __CLASS__, 'action_to_checkout'));
         add_action( 'template_redirect', array( __CLASS__, 'action_to_pay'));
-        
+
+        add_action( 'template_redirect', array( __CLASS__, 'action_to_admin_confirm'));
+        add_filter( 'babe_admin_confirmation_content', array( __CLASS__, 'admin_confirm_page_prepare' ), 10);
+
+        add_action( 'template_redirect', array( __CLASS__, 'action_to_customer_confirm'));
+        add_filter( 'babe_customer_confirmation_content', array( __CLASS__, 'customer_confirm_page_prepare' ), 10);
+
         add_action( 'wp_trash_post', array( __CLASS__, 'trash_order_post'));
         //add_action( 'untrash_post', array( __CLASS__, 'untrash_order_post'));
         add_action( 'before_delete_post', array( __CLASS__, 'delete_order_post'));
         
         add_filter( 'babe_services_content', array( __CLASS__, 'services_page_prepare' ), 10);
         add_filter( 'babe_checkout_content', array( __CLASS__, 'checkout_page_prepare' ), 10);
-        add_filter( 'babe_admin_confirmation_content', array( __CLASS__, 'action_to_admin_confirm' ), 10);
         add_filter( 'babe_confirmation_content', array( __CLASS__, 'confirm_page_prepare' ), 10);
 
         add_action( 'wp_ajax_request_booking', array( __CLASS__, 'ajax_request_booking'));
         add_action( 'wp_ajax_nopriv_request_booking', array( __CLASS__, 'ajax_request_booking'));
 
         add_action( 'babe_payments_before_do_complete_order', array( __CLASS__, 'switch_locale_by_order_id'), 10, 1);
+
+        add_filter( 'babe_get_active_payment_methods', [ __CLASS__, 'force_order_payment_method' ], 100, 2 );
 	}
 
-    ///////////////////////
     /**
      * Init settings
      *
@@ -264,8 +287,7 @@ class BABE_Order {
 
         self::$order_status_router = apply_filters('babe_order_status_router', self::$order_status_router);
     }
-    
-///////////////////////
+
      /**
 	 * Change order title
      * @param array $data
@@ -273,30 +295,27 @@ class BABE_Order {
      * @return array
 	 */
     public static function change_order_title($data, $postarr){
-      if ($data['post_type'] == BABE_Post_types::$order_post_type) {
-        
-      // If it is our form has not been submitted, so we dont want to do anything
-      if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-        return $data;
-        
-        $data['post_title'] = isset($postarr['_order_number']) ? $postarr['_order_number'] : $data['post_title'];
-        
-        $data['post_name'] = sanitize_title($data['post_title']);
-      }
-        return $data; 
-    }    
 
-///////////////////////
+        if (
+            $data['post_type'] !== BABE_Post_types::$order_post_type
+            || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+        ) {
+            return $data;
+        }
+
+        $data['post_title'] = $postarr['_order_number'] ?? $data['post_title'];
+        $data['post_name'] = sanitize_title($data['post_title']);
+        return $data;
+    }
+
      /**
 	 * Generate unique order number
      * @return string
 	 */
     public static function generate_order_num( $title = '', $post_id = 0 ){
-
         if ( empty($title) ){
             $title = self::generate_order_title();
         }
-
         return apply_filters('babe_generate_order_num', $title, $post_id);
     }
 
@@ -307,14 +326,10 @@ class BABE_Order {
     public static function generate_order_title(){
 
         $date_now_obj = BABE_Functions::datetime_local();
-
         $output = $date_now_obj->format('ymd-His'). random_int(100, 999);
-        $output = apply_filters('babe_generate_order_title', $output);
-
-        return $output;
+        return apply_filters('babe_generate_order_title', $output);
     }
-    
-///////////////////////
+
      /**
 	 * Generate unique order hash
      * @param string $id
@@ -322,12 +337,9 @@ class BABE_Order {
 	 */
     public static function generate_order_hash($id){
         $output = hash( 'sha256', uniqid($id, true));
-        $output = apply_filters('babe_generate_order_hash', $output, $id);
-        
-        return $output; 
-    }    
-    
-//////////////////////////////////////                       
+        return apply_filters('babe_generate_order_hash', $output, $id);
+    }
+
      /**
 	 * Update order hash
      * @param int $post_id
@@ -351,52 +363,62 @@ class BABE_Order {
        
        unset(self::$order_meta[$post_id]);
     }
-    
-//////////////////////////////////////                       
+
      /**
 	 * Get order hash
      * @param int $order_id
      * @return string
 	 */
     public static function get_order_hash( $order_id ) {
-
        return get_post_meta($order_id, '_order_hash', true);
     }
-    
-//////////////////////////////////////                       
+
      /**
 	 * Get order admin hash
      * @param int $order_id
      * @return string
 	 */
     public static function get_order_admin_hash( $order_id ) {
-
        return get_post_meta($order_id, '_order_admin_hash', true);
-    }    
-    
-//////////////////////////////////////                       
+    }
+
      /**
 	 * Get order currency
      * @param int $order_id
      * @return string
 	 */
     public static function get_order_currency( $order_id ) {
-
        return get_post_meta($order_id, '_order_currency', true);
     }
-    
-//////////////////////////////////////                       
+
      /**
 	 * Get order customer email
      * @param int $order_id
      * @return string
 	 */
     public static function get_order_customer_email( $order_id ) {
-
        return get_post_meta($order_id, 'email', true);
     }
-    
-//////////////////////////////////////                       
+
+    /**
+     * Get order admin notes for the customer
+     * @param int $order_id
+     * @return string
+     */
+    public static function get_order_admin_to_customer_notes( $order_id ){
+        return get_post_meta($order_id, 'admin_to_customer_notes', true);
+    }
+
+    public static function update_order_admin_to_customer_notes( int $order_id, ?string $notes ): void
+    {
+        if ( empty($notes) ){
+            delete_post_meta($order_id, 'admin_to_customer_notes');
+        } else {
+            update_post_meta($order_id, 'admin_to_customer_notes', $notes);
+        }
+        unset(self::$order_meta[$order_id]);
+    }
+
      /**
 	 * Get order customer details
      * @param int $order_id
@@ -410,20 +432,17 @@ class BABE_Order {
        return apply_filters( 'babe_order_customer_details',
            $output,
            $order_id);
-    }            
-    
-//////////////////////////////////////                       
+    }
+
      /**
 	 * Get order customer
      * @param int $order_id
      * @return int
 	 */
     public static function get_order_customer( $order_id ) {
-
        return absint(get_post_meta($order_id, '_customer_user', true));
     }
-    
-//////////////////////////////////////                       
+
      /**
 	 * Update order customer
      * @param int $order_id
@@ -433,40 +452,31 @@ class BABE_Order {
     public static function update_order_customer( $order_id, $customer_id ) {
         
        update_post_meta($order_id, '_customer_user', $customer_id);
-       
        unset(self::$order_meta[$order_id]);
     }
-    
-//////////////////////////////////////                       
+
      /**
 	 * Update order refunded amount
      * 
      * @param int $order_id
      * @param float $amount
-     * 
      * @return void
 	 */
     public static function update_order_refunded_amount( $order_id, $amount ) {
-       
-       $amount = (float)$amount + (float)get_post_meta($order_id, '_refunded_amount', true);
-        
-       update_post_meta($order_id, '_refunded_amount', $amount);
+        $amount = (float)$amount + (float)get_post_meta($order_id, '_refunded_amount', true);
+        update_post_meta($order_id, '_refunded_amount', $amount);
+        unset(self::$order_meta[$order_id]);
+    }
 
-       unset(self::$order_meta[$order_id]);
-    }             
-    
-//////////////////////////////////////                       
      /**
 	 * Get order status
      * @param int $order_id
      * @return string
 	 */
     public static function get_order_status( $order_id ) {
+        return get_post_meta($order_id, '_status', true);
+    }
 
-       return get_post_meta($order_id, '_status', true);
-    }    
-    
-//////////////////////////////////////                       
      /**
 	 * Get order number
      * @param int $order_id
@@ -479,18 +489,15 @@ class BABE_Order {
            $order_id);
     }
 
-//////////////////////////////////////
     /**
      * Get order id by order number
      * @param string $order_num
      * @return int
      */
     public static function get_order_id_by_order_number( $order_num ) {
-
         return self::get_order_id_by_meta('_order_number', sanitize_text_field($order_num) );
     }
-    
-////////////////////////
+
      /**
 	 * Get order total amount
      * @param int $order_id
@@ -502,8 +509,7 @@ class BABE_Order {
             (float)get_post_meta($order_id, '_total_amount', true),
             $order_id);
      }
-     
-////////////////////////
+
      /**
 	 * Get order prepaid amount
      * @param int $order_id
@@ -516,13 +522,10 @@ class BABE_Order {
             $order_id);
      }
 
-//////////////////////////////////////                       
      /**
 	 * Update order prepaid amount
-     * 
      * @param int $order_id
      * @param float $amount
-     * 
      * @return void
 	 */
     public static function update_order_prepaid_amount( $order_id, $amount ) {
@@ -531,25 +534,19 @@ class BABE_Order {
        unset(self::$order_meta[$order_id]);
     }
 
-////////////////////////
     /**
      * Get order payment gateway fee percents
-     *
      * @param int $order_id
      * @return float
      */
     public static function get_order_payment_gateway_fee_percents($order_id ){
-
         return (float)get_post_meta($order_id, '_payment_gateway_fee_percents', true);
     }
 
-//////////////////////////////////////
     /**
      * Update order payment gateway fee percents
-     *
      * @param int $order_id
      * @param string $percents
-     *
      * @return void
      */
     public static function update_order_payment_gateway_fee_percents( $order_id, $percents ) {
@@ -558,25 +555,19 @@ class BABE_Order {
         unset(self::$order_meta[$order_id]);
     }
 
-////////////////////////
     /**
      * Get order payment gateway fee title
-     *
      * @param int $order_id
      * @return string
      */
     public static function get_order_payment_gateway_fee_title( $order_id ){
-
         return get_post_meta($order_id, '_payment_gateway_fee_title', true);
     }
 
-//////////////////////////////////////
     /**
      * Update order payment gateway fee title
-     *
      * @param int $order_id
      * @param string $title
-     *
      * @return void
      */
     public static function update_order_payment_gateway_fee_title( $order_id, $title ) {
@@ -585,40 +576,30 @@ class BABE_Order {
         unset( self::$order_meta[$order_id] );
     }
 
-////////////////////////
     /**
      * Get order payment gateway name
-     *
      * @param int $order_id
      * @return string
      */
     public static function get_order_payment_gateway_name( $order_id ){
-
-        return get_post_meta($order_id, '_payment_method', true);
+        return self::get_order_payment_method( $order_id );
     }
 
-//////////////////////////////////////
     /**
      * Update order payment gateway name
      *
      * @param int $order_id
      * @param string $name
-     *
      * @return void
      */
     public static function update_order_payment_gateway_name( $order_id, $name ) {
-
-        update_post_meta($order_id, '_payment_method', $name );
-        unset( self::$order_meta[$order_id] );
+        self::update_order_payment_method( $order_id, $name );
     }
 
-//////////////////////////////////////
     /**
      * Update order payment method (gateway name)
-     *
      * @param int $order_id
      * @param string $method
-     *
      * @return void
      */
     public static function update_order_payment_method( $order_id, $method ) {
@@ -626,38 +607,30 @@ class BABE_Order {
         update_post_meta($order_id, '_payment_method', $method );
         unset( self::$order_meta[$order_id] );
     }
-         
-////////////////////////
+
      /**
 	 * Get order prepaid received
      * @param int $order_id
      * @return float
 	 */
      public static function get_order_prepaid_received($order_id){
-
         return (float)get_post_meta($order_id, '_prepaid_received', true);
      }
-     
-//////////     
+
      /**
-	 * Get order prepaid received
+	 * Get order refunded amount
      * @param int $order_id
      * @return float
 	 */
      public static function get_order_refunded_amount($order_id){
-
-        return (float)get_post_meta($order_id, '_refunded_amount', true);
-        
+         return (float)get_post_meta($order_id, '_refunded_amount', true);
      }
-     
-//////////////////////////////////////                       
+
      /**
 	 * Update order prepaid received
-     * 
      * @param int $order_id
      * @param float $amount
-     * 
-     * @return int
+     * @return void
 	 */
     public static function update_order_prepaid_received( $order_id, $amount ) {
        
@@ -667,63 +640,50 @@ class BABE_Order {
        
        unset(self::$order_meta[$order_id]);
     }
-    
-////////////////////////
+
      /**
 	 * Get order coupon num
      * @param int $order_id
      * @return string
 	 */
      public static function get_order_coupon_num($order_id){
-
         return get_post_meta($order_id, '_coupon_num', true);
      }
-     
-////////////////////////
+
      /**
 	 * Get order coupon amount applied
      * @param int $order_id
      * @return float
 	 */
      public static function get_order_coupon_amount_applied($order_id){
-
         return (float)get_post_meta($order_id, '_coupon_amount_applied', true);
-     }              
-     
-////////////////////////
+     }
+
      /**
 	 * Get order payment method
      * @param int $order_id
-     * @return float
+     * @return string
 	 */
-     public static function get_order_payment_method($order_id){
-
+     public static function get_order_payment_method( int $order_id ){
         return get_post_meta($order_id, '_payment_method', true);
      }
-     
-////////////////////////
+
      /**
 	 * Get order payment token id
-     * 
      * @param int $order_id
-     * 
      * @return int
 	 */
      public static function get_order_payment_token_id($order_id){
-
         return absint(get_post_meta($order_id, '_payment_token_id', true));
-     }               
-     
-////////////////////////
+     }
+
      /**
 	 * Get order payment model
      * @param int $order_id
-     * @return float
+     * @return string
 	 */
      public static function get_order_payment_model($order_id){
-
         return get_post_meta($order_id, '_payment_model', true);
-        
      }
      
 ////////////////////////
@@ -937,11 +897,11 @@ class BABE_Order {
      */
     public static function wp_update_order_meta_check($check, $post_id, $meta_key, $meta_value, $prev_value) {
        
-       if ( BABE_Post_types::$order_post_type == get_post_type($post_id) && $meta_key == '_status'){
+       if ( BABE_Post_types::$order_post_type == get_post_type($post_id) && $meta_key === '_status'){
         
           $old_status = self::get_order_status($post_id);
           
-          if ($old_status == 'canceled'){
+          if ($old_status === 'canceled'){
               $check = false; 
           }
        }
@@ -974,10 +934,33 @@ class BABE_Order {
               do_action('babe_order_status_updated', $post_id, $status, $old_status);
           }
 
+          // save update time in post
+          wp_update_post( ['ID' => $post_id,], false, false );
+
           $output = true;
        }
        
        return $output;
+    }
+
+    public static function force_order_payment_method(
+        array $payment_methods_arr,
+        ?int $order_id
+    ): array
+    {
+        if ( $order_id === null || !BABE_Settings::$settings['only_payment_gateway_from_deposit'] ) {
+            return $payment_methods_arr;
+        }
+
+        $prepaid_received = BABE_Order::get_order_prepaid_received($order_id);
+        $order_payment_method = BABE_Order::get_order_payment_method($order_id);
+
+        if( $prepaid_received && isset($payment_methods_arr[$order_payment_method]) ){
+            $filtered_payment_methods[$order_payment_method] = $payment_methods_arr[$order_payment_method];
+            $payment_methods_arr = $filtered_payment_methods;
+        }
+
+        return $payment_methods_arr;
     }
     
 ////////////////////////
@@ -2044,15 +2027,13 @@ class BABE_Order {
         
         return self::get_order_number($order_id) == $order_num && self::get_order_admin_hash($order_id) == $order_admin_hash ? true : false;
         
-     }         
-    
-////////action_to_checkout/////////////                                          
+     }
+
      /**
 	 * Redirect to checkout page
-     * @return void
 	 */
-     public static function action_to_checkout(){
-
+     public static function action_to_checkout(): void
+     {
          if (
              !isset($_POST['booking_obj_id'], $_POST['action'])
              || $_POST['action'] !== 'to_checkout'
@@ -2135,32 +2116,42 @@ class BABE_Order {
              wp_safe_redirect($new_url);
          }
      }
-     
-////////action_to_services/////////////                                          
+
      /**
 	 * Redirect to services page
-     * @return
 	 */
-     public static function action_to_services(){
-        
-        if (isset($_POST['booking_obj_id']) && BABE_Post_types::is_post_booking_obj($_POST['booking_obj_id']) && isset($_POST['action']) && $_POST['action'] == 'to_services'){
-            
-            $post_arr = self::sanitize_booking_vars($_POST);
-            
-            if (!empty($post_arr['guests']) && $post_arr['date_from'] && $post_arr['date_to']){
-                
-                $av_guests = BABE_Calendar_functions::check_booking_obj_av($post_arr['booking_obj_id'], $post_arr['date_from'], $post_arr['date_to'], $post_arr['guests']);
-                if ($av_guests){
-                    $url_arr = $_POST;
-                    unset($url_arr['action']);
-                    $url_arr['current_action'] = 'to_services';
-                    $new_url = BABE_Settings::get_services_page_url($url_arr);
-                    wp_safe_redirect($new_url);
-                }
-            }
-        }
-        
-        return;
+     public static function action_to_services(): void
+     {
+         if (
+             !isset( $_POST['booking_obj_id'], $_POST['action'] )
+             || !BABE_Post_types::is_post_booking_obj($_POST['booking_obj_id'])
+             || $_POST['action'] !== 'to_services'
+         ){
+             return;
+         }
+
+         $post_arr = self::sanitize_booking_vars($_POST);
+
+         if (
+             empty($post_arr['guests'])
+             || empty($post_arr['date_from'])
+             || empty($post_arr['date_to'])
+         ){
+             return;
+         }
+
+         $av_guests = BABE_Calendar_functions::check_booking_obj_av(
+             $post_arr['booking_obj_id'],
+             $post_arr['date_from'],
+             $post_arr['date_to'],
+             $post_arr['guests']
+         );
+
+         if ( $av_guests ){
+             unset($post_arr['action']);
+             $post_arr['current_action'] = 'to_services';
+             wp_safe_redirect( BABE_Settings::get_services_page_url($post_arr) );
+         }
      }     
      
 ////////checkout_page_prepare/////////////                                          
@@ -2298,67 +2289,64 @@ class BABE_Order {
         } //// end if is_order_valid
         
         return $output;
-     }     
-     
-//////////////////////////////
+     }
+
     /**
 	 * Sanitize checkout vars
-     * @param array $arr
-     * @return array
 	 */
-    public static function sanitize_checkout_vars($arr){
-        
-    $output = [];
-    
-    $output['order_id'] = isset($arr['order_id']) ? absint($arr['order_id']) : 0;
-    
-    $output['order_num'] = isset($arr['order_num']) ? sanitize_text_field($arr['order_num']) : '';
-    
-    $output['order_hash'] = isset($arr['order_hash']) ? sanitize_text_field($arr['order_hash']) : '';
-    
-    $output['action'] = isset($arr['action']) ? sanitize_text_field($arr['action']) : '';
-    
-    $output['first_name'] = isset($arr['first_name']) ? sanitize_text_field($arr['first_name']) : '';
-    $output['last_name'] = isset($arr['last_name']) ? sanitize_text_field($arr['last_name']) : '';
-    $output['email'] = isset($arr['email']) ? sanitize_email($arr['email']) : '';
-    $output['email_check'] = isset($arr['email_check']) ? sanitize_email($arr['email_check']) : '';
-    $output['phone'] = isset($arr['phone']) ? sanitize_text_field($arr['phone']) : '';
+    public static function sanitize_checkout_vars( array $arr ): array
+    {
+        $output = [];
 
-    if ( !empty($arr['extra_guests']) && is_array($arr['extra_guests']) ){
+        $output['order_id'] = isset($arr['order_id']) ? absint($arr['order_id']) : 0;
 
-        $ages_arr = BABE_Post_types::get_ages_arr_ordered_by_id();
+        $output['order_num'] = isset($arr['order_num']) ? sanitize_text_field($arr['order_num']) : '';
 
-        $i = 0;
+        $output['order_hash'] = isset($arr['order_hash']) ? sanitize_text_field($arr['order_hash']) : '';
 
-	    foreach ($arr['extra_guests'] as $ind => $guest_data){
+        $output['action'] = isset($arr['action']) ? sanitize_text_field($arr['action']) : '';
 
-	        if ( empty($guest_data) || !is_array($guest_data) ){
-	            continue;
-            }
+        $output['first_name'] = isset($arr['first_name']) ? sanitize_text_field($arr['first_name']) : '';
+        $output['last_name'] = isset($arr['last_name']) ? sanitize_text_field($arr['last_name']) : '';
+        $output['email'] = isset($arr['email']) ? sanitize_email($arr['email']) : '';
+        $output['email_check'] = isset($arr['email_check']) ? sanitize_email($arr['email_check']) : '';
+        $output['phone'] = isset($arr['phone']) ? sanitize_text_field($arr['phone']) : '';
 
-	        foreach ($guest_data as $guest_data_key => $guest_data_value){
+        if ( !empty($arr['extra_guests']) && is_array($arr['extra_guests']) ){
 
-                $guest_data_key = sanitize_key($guest_data_key);
+            $ages_arr = BABE_Post_types::get_ages_arr_ordered_by_id();
 
-	            if ( !in_array($guest_data_key, ['first_name', 'last_name', 'age_group']) ){
+            $i = 0;
+
+            foreach ($arr['extra_guests'] as $ind => $guest_data){
+
+                if ( empty($guest_data) || !is_array($guest_data) ){
                     continue;
                 }
 
-	            if ( $guest_data_key === 'age_group' ){
-                    $guest_data_value = (int)$guest_data_value;
-                    if ( !isset($ages_arr[$guest_data_value]) ){
+                foreach ($guest_data as $guest_data_key => $guest_data_value){
+
+                    $guest_data_key = sanitize_key($guest_data_key);
+
+                    if ( !in_array($guest_data_key, ['first_name', 'last_name', 'age_group']) ){
                         continue;
                     }
-                } else {
-                    $guest_data_value = sanitize_text_field($guest_data_value);
+
+                    if ( $guest_data_key === 'age_group' ){
+                        $guest_data_value = (int)$guest_data_value;
+                        if ( !isset($ages_arr[$guest_data_value]) ){
+                            continue;
+                        }
+                    } else {
+                        $guest_data_value = sanitize_text_field($guest_data_value);
+                    }
+
+                    $output['extra_guests'][$i][$guest_data_key] = $guest_data_value;
                 }
 
-                $output['extra_guests'][$i][$guest_data_key] = $guest_data_value;
+                $i++;
             }
-
-            $i++;
-	    }
-    }
+        }
 
         if ( !empty($arr['billing_address']) && is_array($arr['billing_address']) ){
 
@@ -2377,113 +2365,125 @@ class BABE_Order {
             $output['billing_address']['address'] = !empty($arr['billing_address']['address']) ? sanitize_text_field($arr['billing_address']['address']) : '';
         }
 
-    if (isset($arr['payment']['payment_method'])){
-       $output['payment']['payment_method'] = sanitize_key($arr['payment']['payment_method']);
+        if (isset($arr['payment']['payment_method'])){
+            $output['payment']['payment_method'] = sanitize_key($arr['payment']['payment_method']);
+        }
+
+        $output['payment']['amount_to_pay'] = isset($arr['payment']['amount_to_pay']) && $arr['payment']['amount_to_pay'] === 'deposit' ? 'deposit' : 'full';
+
+        $output['payment']['terms_check'] = !empty($arr['payment']['terms_check']) ? 'agree' : '';
+
+        $output = apply_filters('babe_sanitize_checkout_vars', $output, $arr);
+
+        return $output;
     }
-    
-    $output['payment']['amount_to_pay'] = isset($arr['payment']['amount_to_pay']) && $arr['payment']['amount_to_pay'] === 'deposit' ? 'deposit' : 'full';
-    
-    $output['payment']['terms_check'] = !empty($arr['payment']['terms_check']) ? 'agree' : '';
-    
-    $output = apply_filters('babe_sanitize_checkout_vars', $output, $arr);
-    
-    return $output;
-    }     
-     
-////////action_to_pay/////////////                                          
+
      /**
 	 * Perform payment actions
-     * @return void
 	 */
-     public static function action_to_pay(){
-        
+     public static function action_to_pay(): void
+     {
         $args = wp_parse_args( $_POST, array(
             'order_id' => 0,
             'order_num' => '',
             'order_hash' => '',
             'action' => ''
         ));
-        
-        /// is order data valid
-        
+
         $order_id = absint($args['order_id']);
-        
-        if (($args['action'] === 'to_pay' || ($args['action'] === 'to_av_confirm' && BABE_Settings::$settings['order_availability_confirm'] !== 'auto')) && self::is_order_valid($order_id, $args['order_num'], $args['order_hash'])){
-            
-            $order_status = self::get_order_status($order_id);
-            
-            //// sanitize $_POST vars
-            $args = self::sanitize_checkout_vars($args);
-            
-            $check = $args['first_name'] && $args['last_name'] && $args['email'] && $args['email'] == $args['email_check'] && $args['phone'];
-            $check = apply_filters('babe_order_to_pay_ready', $check, $args);
-            
-            if ( $check && ($order_status === 'draft' || $order_status === 'payment_expected') ){
-                
-                // update order meta
-                $order_meta = $args; // already sanitized
-                unset($order_meta['order_id']);
-                unset($order_meta['order_num']);
-                unset($order_meta['order_hash']);
-                unset($order_meta['action']);
-                unset($order_meta['current_action']);
-                unset($order_meta['email_check']);
-                unset($order_meta['payment']);
 
-                $order_meta = apply_filters('babe_order_before_update_meta', $order_meta, $order_id);
-                foreach($order_meta as $order_meta_key => $order_meta_value){
-                    update_post_meta($order_id, $order_meta_key, $order_meta_value);
-                }
-                
-               // create or get customer 
-               $customer_id = BABE_Users::create_customer($args['email'], $order_meta);
-               
-               if ($customer_id){
-                
-                self::update_order_customer($order_id, $customer_id);
+         if (
+             (
+                 $args['action'] !== 'to_pay'
+                 && (
+                     $args['action'] !== 'to_av_confirm'
+                     || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+                 )
+             )
+             || !self::is_order_valid($order_id, $args['order_num'], $args['order_hash'])
+         ){
+             return;
+         }
 
-                $url_args = [
-                    'order_id' => $order_id,
-                    'order_num' => $args['order_num'],
-                    'order_hash' => $args['order_hash'],
-                    'current_action' => 'to_checkout',
-                ];
+         $order_status = self::get_order_status($order_id);
 
-	           $total_amount = BABE_Order::get_order_total_amount($order_id);
-               $current_url = BABE_Settings::get_checkout_page_url($url_args);
-               $url_args['current_action'] = 'to_confirm';
-               $success_url = BABE_Settings::get_confirmation_page_url($url_args);
+         $args = self::sanitize_checkout_vars($args);
 
-	           if ( $total_amount == 0 ){
-	           	// order is free or coupon have covered full price.
-		           self::update_order_status($order_id, 'payment_received');
-		           do_action('babe_order_completed', $order_id);
-		           wp_safe_redirect($success_url);
+         $check = $args['first_name'] && $args['last_name'] && $args['email']
+             && $args['email'] === $args['email_check'] && $args['phone']
+         ;
+         $check = apply_filters('babe_order_to_pay_ready', $check, $args);
 
-	           } elseif ($args['action'] == 'to_pay' && isset($args['payment']['payment_method'])) {
+         if (
+             !$check
+             || (
+                 $order_status !== 'draft'
+                 && $order_status !== 'payment_expected'
+             )
+         ){
+             return;
+         }
 
-                   do_action('babe_order_before_to_pay', $order_id, $args['payment']['payment_method'], $args);
+         $order_meta = $args; // already sanitized
+         unset(
+             $order_meta['order_id'],
+             $order_meta['order_num'],
+             $order_meta['order_hash'],
+             $order_meta['action'],
+             $order_meta['current_action'],
+             $order_meta['email_check'],
+             $order_meta['payment']
+         );
 
-                   //// do payment actions
-                   do_action('babe_order_to_pay_by_'.$args['payment']['payment_method'], $order_id, $args, $current_url, $success_url);
+         $order_meta = apply_filters('babe_order_before_update_meta', $order_meta, $order_id);
+         foreach($order_meta as $order_meta_key => $order_meta_value){
+             update_post_meta($order_id, $order_meta_key, $order_meta_value);
+         }
 
-                   do_action('babe_order_after_to_pay', $order_id, $args['payment']['payment_method'], $args);
-               
-               } elseif ($args['action'] == 'to_av_confirm' && $order_status == 'draft'){
-                  // update order status to av_confirmation
-                  self::update_order_status($order_id, 'av_confirmation');
-                  
-                  //// do av confirm actions
-                  do_action('babe_order_to_av_confirm', $order_id, $args);
-                  
-                  wp_safe_redirect($success_url);
-                  
-               }
-               
-               } //// end if $customer_id
-                
-            } //// end if $check
-        }
+         // create or get customer
+         $customer_id = BABE_Users::create_customer($args['email'], $order_meta);
+
+         if ( !$customer_id ){
+             return;
+         }
+
+         self::update_order_customer($order_id, $customer_id);
+
+         $url_args = [
+             'order_id' => $order_id,
+             'order_num' => $args['order_num'],
+             'order_hash' => $args['order_hash'],
+             'current_action' => 'to_checkout',
+         ];
+
+         $total_amount = BABE_Order::get_order_total_amount($order_id);
+         $current_url = BABE_Settings::get_checkout_page_url($url_args);
+         $url_args['current_action'] = 'to_confirm';
+         $success_url = BABE_Settings::get_confirmation_page_url($url_args);
+
+         if ( $total_amount == 0 ){
+             // order is free or coupon have covered full price.
+             self::update_order_status($order_id, 'payment_received');
+             do_action('babe_order_completed', $order_id);
+             wp_safe_redirect($success_url);
+
+         } elseif ($args['action'] === 'to_pay' && isset($args['payment']['payment_method'])) {
+
+             do_action('babe_order_before_to_pay', $order_id, $args['payment']['payment_method'], $args);
+
+             //// do payment actions
+             do_action('babe_order_to_pay_by_'.$args['payment']['payment_method'], $order_id, $args, $current_url, $success_url);
+
+             do_action('babe_order_after_to_pay', $order_id, $args['payment']['payment_method'], $args);
+
+         } elseif ($args['action'] === 'to_av_confirm' && $order_status === 'draft'){
+
+             self::update_order_status($order_id, 'av_confirmation');
+
+             do_action('babe_order_to_av_confirm', $order_id, $args);
+
+             wp_safe_redirect($success_url);
+         }
      }
      
 ////////////////////////////
@@ -2514,15 +2514,10 @@ class BABE_Order {
         }    
         
         return $output;
-     }      
-     
-////////////////////////////
-    /**
-	 * Add checkout form to page.
-     * @return string
-	 */
-    public static function action_to_admin_confirm($content){
+     }
 
+    public static function admin_confirm_page_prepare( string $content ): string
+    {
         $output = $content;
         
         $args = wp_parse_args( $_GET, array(
@@ -2531,45 +2526,216 @@ class BABE_Order {
             'order_admin_hash' => '',
             'current_action' => '',
             'action_update' => '',
-            'check_update' => '',
         ));
         
         $order_id = absint($args['order_id']);
-        
+
         if (
-            $args['current_action'] === 'to_admin_confirm'
-            && BABE_Settings::$settings['order_availability_confirm'] !== 'auto'
-            && self::is_order_admin_valid($order_id, $args['order_num'], $args['order_admin_hash'])
+            $args['current_action'] !== 'to_admin_confirm'
+            || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+            || !self::is_order_admin_valid($order_id, $args['order_num'], $args['order_admin_hash'])
         ){
-            
-            $args['order_status'] = self::get_order_status($order_id);
-            
-            if ($args['check_update'] && 'av_confirmation' === $args['order_status']){
+            return $output;
+        }
 
-                if ($args['action_update'] === 'confirm'){
-
-                    $active_payment_methods = BABE_Settings::get_active_payment_methods($order_id);
-                    reset( $active_payment_methods );
-                    $payment_method = (string)key( $active_payment_methods );
-
-                    if( count($active_payment_methods) === 1 && $payment_method === 'cash' ){
-                        $new_order_status = 'payment_deferred';
-                    } else {
-                        $new_order_status = 'payment_expected';
-                    }
-                } else {
-                    $new_order_status = 'not_available';
-                }
-
-                self::update_order_status($order_id, $new_order_status);
-                $args['order_status'] = $new_order_status;
-            }
-            
-            $output .= BABE_html::admin_order_confirm_page_content($args);
-        }    
+        $args['order_status'] = self::get_order_status($order_id);
+        $output .= BABE_html::admin_order_confirm_page_content($args);
         
         return $output;
      }
+
+     public static function action_to_admin_confirm(): void
+     {
+         global $post;
+
+         if (
+             !isset(
+                 $_POST['check_update'],
+                 $_POST['nonce'],
+                 $_GET['current_action'],
+                 $_GET['order_id'],
+                 $_GET['order_num'],
+                 $_GET['order_admin_hash'],
+                 $_GET['action_update']
+             )
+             || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+             || (int)$_POST['check_update'] !== 1
+             || !in_array($_GET['action_update'], [
+                 'confirm',
+                 'reject',
+                 'change',
+             ])
+             || (
+                 $_GET['action_update'] === 'change'
+                 && empty($_POST['admin_order_change_message'])
+             )
+             || !is_singular()
+             || $post->ID !== (int)BABE_Settings::$settings['admin_confirmation_page']
+             || $_GET['current_action'] !== 'to_admin_confirm'
+             || !wp_verify_nonce($_POST['nonce'], BABE_html::$nonce_title)
+             || !self::is_order_admin_valid(
+                 (int)$_GET['order_id'],
+                 $_GET['order_num'],
+                 $_GET['order_admin_hash']
+             )
+         ){
+             return;
+         }
+
+         $order_id = (int)$_GET['order_id'];
+
+         $order_status = self::get_order_status($order_id);
+
+         if ( $order_status !== 'av_confirmation' ){
+             return;
+         }
+
+         // already validated
+         $action_update = $_GET['action_update'];
+
+         switch ($action_update){
+             case 'reject':
+                 $new_order_status = 'not_available';
+                 break;
+
+             case 'change':
+                 $new_order_status = 'customer_confirmation';
+                 $message = sanitize_textarea_field($_POST['admin_order_change_message']);
+                 self::update_order_admin_to_customer_notes($order_id, $message);
+                 break;
+
+             case 'confirm':
+             default:
+                 $active_payment_methods = BABE_Settings::get_active_payment_methods($order_id);
+                 reset( $active_payment_methods );
+                 $payment_method = (string)key( $active_payment_methods );
+
+                 if( count($active_payment_methods) === 1 && $payment_method === 'cash' ){
+                     $new_order_status = 'payment_deferred';
+                 } else {
+                     $new_order_status = 'payment_expected';
+                 }
+                 break;
+         }
+
+         self::update_order_status($order_id, $new_order_status);
+
+         $args = array(
+             'order_id' => $order_id,
+             'order_num' => $_GET['order_num'], // already validated
+             'order_admin_hash' => $_GET['order_admin_hash'], // already validated
+             'current_action' => 'to_admin_confirm',
+             'action_update' => $action_update,
+         );
+
+         $new_url = BABE_Settings::get_admin_confirmation_page_url($args);
+         wp_safe_redirect($new_url);
+     }
+
+    public static function customer_confirm_page_prepare( string $content ): string
+    {
+        $output = $content;
+
+        $args = wp_parse_args( $_GET, array(
+            'order_id' => 0,
+            'order_num' => '',
+            'order_hash' => '',
+            'current_action' => '',
+            'action_update' => '',
+        ));
+
+        $order_id = absint($args['order_id']);
+
+        if (
+            $args['current_action'] !== 'to_customer_confirm'
+            || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+            || !self::is_order_valid($order_id, $args['order_num'], $args['order_hash'])
+        ){
+            return $output;
+        }
+
+        $args['order_status'] = self::get_order_status($order_id);
+        $output .= BABE_html::customer_order_confirm_page_content($args);
+
+        return $output;
+    }
+
+    public static function action_to_customer_confirm(): void
+    {
+        global $post;
+
+        if (
+            !isset(
+                $_POST['check_update'],
+                $_POST['nonce'],
+                $_GET['current_action'],
+                $_GET['order_id'],
+                $_GET['order_num'],
+                $_GET['order_hash'],
+                $_GET['action_update']
+            )
+            || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+            || (int)$_POST['check_update'] !== 1
+            || !in_array($_GET['action_update'], [
+                'confirm',
+                'reject',
+            ])
+            || !is_singular()
+            || $post->ID !== (int)BABE_Settings::$settings['customer_confirmation_page']
+            || $_GET['current_action'] !== 'to_customer_confirm'
+            || !wp_verify_nonce($_POST['nonce'], BABE_html::$nonce_title)
+            || !self::is_order_valid(
+                (int)$_GET['order_id'],
+                $_GET['order_num'],
+                $_GET['order_hash']
+            )
+        ){
+            return;
+        }
+
+        $order_id = (int)$_GET['order_id'];
+
+        $order_status = self::get_order_status($order_id);
+
+        if ( $order_status !== 'customer_confirmation' ){
+            return;
+        }
+
+        // already validated
+        $action_update = $_GET['action_update'];
+
+        switch ($action_update){
+            case 'reject':
+                $new_order_status = 'canceled';
+                break;
+
+            case 'confirm':
+            default:
+                $active_payment_methods = BABE_Settings::get_active_payment_methods($order_id);
+                reset( $active_payment_methods );
+                $payment_method = (string)key( $active_payment_methods );
+
+                if( count($active_payment_methods) === 1 && $payment_method === 'cash' ){
+                    $new_order_status = 'payment_deferred';
+                } else {
+                    $new_order_status = 'payment_expected';
+                }
+                break;
+        }
+
+        self::update_order_status($order_id, $new_order_status);
+
+        $args = array(
+            'order_id' => $order_id,
+            'order_num' => $_GET['order_num'], // already validated
+            'order_hash' => $_GET['order_hash'], // already validated
+            'current_action' => 'to_customer_confirm',
+            'action_update' => $action_update,
+        );
+
+        $new_url = BABE_Settings::get_customer_confirmation_page_url($args);
+        wp_safe_redirect($new_url);
+    }
      
 ///////////////////////////////////////
     /**
@@ -2579,19 +2745,29 @@ class BABE_Order {
      * @return string
 	 */
     public static function get_admin_confirmation_page($order_id, $confirm_action = 'confirm') {
-        
-        $order_admin_hash = self::get_order_admin_hash($order_id);
-        $order_number = self::get_order_number($order_id);
-        
+
         $args = array(
            'order_id' => $order_id,
-           'order_num' => $order_number,
-           'order_admin_hash' => $order_admin_hash,
+           'order_num' => self::get_order_number($order_id),
+           'order_admin_hash' => self::get_order_admin_hash($order_id),
            'current_action' => 'to_admin_confirm',
            'action_update' => $confirm_action,
         );
         
         return BABE_Settings::get_admin_confirmation_page_url($args);
+    }
+
+    public static function get_customer_confirmation_page($order_id, $confirm_action = 'confirm') {
+
+        $args = array(
+            'order_id' => $order_id,
+            'order_num' => self::get_order_number($order_id),
+            'order_hash' => self::get_order_hash($order_id),
+            'current_action' => 'to_customer_confirm',
+            'action_update' => $confirm_action,
+        );
+
+        return BABE_Settings::get_customer_confirmation_page_url($args);
     }
     
 ///////////////////////////////////////

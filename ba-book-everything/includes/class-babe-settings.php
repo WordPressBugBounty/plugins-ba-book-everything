@@ -132,12 +132,14 @@ class BABE_Settings {
             'terms_page' => 0,
             'my_account_page' => 0,
             'admin_confirmation_page' => 0,
+            'customer_confirmation_page' => 0,
             'checkout_add_billing_address' => 0,
             'disable_guest_bookings' => 0,
             'use_minimized_css' => 0,
             'use_minimized_js' => 0,
             'order_availability_confirm' => 'auto',
             'order_payment_processing_waiting' => 30,
+            'only_payment_gateway_from_deposit' => 0,
             'payment_methods' => array( 0 => 'cash'),
             'currency_place' => 'left',
             'currency' => 'USD',
@@ -175,16 +177,25 @@ class BABE_Settings {
             'email_admin_new_order_av_confirm_subject' => __('Availability request', 'ba-book-everything'),
             'email_admin_new_order_av_confirm_title' => __('New Order is waiting for confirmation', 'ba-book-everything'),
             'email_admin_new_order_av_confirm_message' => __('Please, confirm or reject this Order.', 'ba-book-everything'),
+
+            'email_order_customer_confirmation_subject' => __('Action required to your order #%s', 'ba-book-everything'),
+            'email_order_customer_confirmation_title' => __('Important changes to your order', 'ba-book-everything'),
+            'email_order_customer_confirmation_message' => __('Hello, %1$s
+
+There have been changes to your order that require your attention and feedback. Please read the following details and use the buttons below to inform us of your decision.', 'ba-book-everything'),
+
             'email_new_order_av_confirm_subject' => __('Your order #%s', 'ba-book-everything'),
             'email_new_order_av_confirm_title' => __('New Order created', 'ba-book-everything'),
             'email_new_order_av_confirm_message' => __('Hello, %s
 
 Thank you for booking! Your Order is waiting for availability confirmation. We will send you a confirmation letter as soon as possible.', 'ba-book-everything'),
+
             'email_order_updated_subject' => __('Your order #%s is updated', 'ba-book-everything'),
             'email_order_updated_title' => __('Your order has been updated', 'ba-book-everything'),
             'email_order_updated_message' => __('Hello, %1$s
 
 Your order has been updated. Please, find details below.', 'ba-book-everything'),
+
             'email_new_order_subject' => __('Your order #%s', 'ba-book-everything'),
             'email_new_order_title' => __('Your order has been received', 'ba-book-everything'),
             'email_new_order_message' => __('Hello, %1$s
@@ -225,6 +236,7 @@ Your order has been canceled:', 'ba-book-everything'),
             'email_color_button' => '#ff4800',
             'email_color_button_yes' => '#9acd32',
             'email_color_button_no' => '#F64020',
+            'email_color_button_change' => '#e5a320',
             'voucher_left_message' => '',
             'voucher_right_message' => '',
             'voucher_footer_message' => '',
@@ -323,15 +335,10 @@ Your order has been canceled:', 'ba-book-everything'),
     public static function get_rating_stars_num(): int
     {
         return (int)self::$settings['rating_stars_num'];
-    }            
-    
-///////////////////////////////////////
-    /**
-	 * Get active payment methods.
-     * @return array
-	 */
-    public static function get_active_payment_methods( ?int $order_id = null ) {
-        
+    }
+
+    public static function get_active_payment_methods( ?int $order_id = null ): array
+    {
         $payment_methods_arr = [];
 
         foreach(self::$settings['payment_methods'] as $ind => $method){
@@ -348,81 +355,52 @@ Your order has been canceled:', 'ba-book-everything'),
 
         return apply_filters( 'babe_get_active_payment_methods', $payment_methods_arr, $order_id );
     }
-    
-///////////////////////////////////////
-    /**
-	 * Is payment method available.
-     * @param string $method
-     * @return boolean
-	 */
-    public static function is_payment_method_available($method) {
-        
+
+    public static function is_payment_method_available( string $method): bool
+    {
         return in_array($method, self::$settings['payment_methods']);
     }
-    
-///////////////////////////////////////
-    /**
-	 * Get my account page url.
-     * @param array $args
-     * @return string
-	 */
-    public static function get_my_account_page_url($args = array()) {
-        
+
+    public static function get_my_account_page_url( array $args = [] ): string
+    {
         return BABE_Functions::get_page_url_with_args(self::$settings['my_account_page'], $args);
-    }            
-    
-///////////////////////////////////////
-    /**
-	 * Get search result page url.
-     * @return string
-	 */
-    public static function get_search_result_page_url() {
+    }
+
+    public static function get_search_result_page_url(): string
+    {
         return self::$settings['search_result_page'] ? get_permalink(self::$settings['search_result_page']) : '';
     }
-    
-///////////////////////////////////////
-    /**
-	 * Get checkout page url.
-     * @param array $args
-     * @return string
-	 */
-    public static function get_checkout_page_url($args = array()) {
 
+    public static function get_checkout_page_url( array $args = [] ): string
+    {
         return add_query_arg( $args, get_permalink(self::$settings['checkout_page']) );
     }
-    
-///////////////////////////////////////
-    /**
-	 * Get services page url.
-     * @param array $args
-     * @return string
-	 */
-    public static function get_services_page_url($args = array()) {
-        
-        return add_query_arg( $args, get_permalink(self::$settings['services_page']) );
-    }    
-    
-///////////////////////////////////////
-    /**
-	 * Get confirmation page url.
-     * @param array $args
-     * @return string
-	 */
-    public static function get_confirmation_page_url($args = array()) {
 
+    public static function get_services_page_url( array $args = [] ): string
+    {
+        return add_query_arg( $args, get_permalink(self::$settings['services_page']) );
+    }
+
+    public static function get_confirmation_page_url( array $args = [] ): string
+    {
         return add_query_arg( $args, get_permalink(self::$settings['confirmation_page']) );
     }
-    
-///////////////////////////////////////
+
     /**
-	 * Get admin confirmation page url.
-     * @param array $args
-     * @return string
+	 * Get admin confirmation page url
 	 */
-    public static function get_admin_confirmation_page_url($args = array()) {
-        
+    public static function get_admin_confirmation_page_url( array $args = [] ): string
+    {
         return add_query_arg( $args, get_permalink(self::$settings['admin_confirmation_page']) );
-    }    
+    }
+
+    /**
+     * Get customer confirmation page url to confirm or reject order changes
+     */
+    public static function get_customer_confirmation_page_url( array $args = [] ): string
+    {
+        return add_query_arg( $args, get_permalink(self::$settings['customer_confirmation_page']) );
+    }
     
 ///////////////////////////////////////
     /**

@@ -202,6 +202,7 @@
     border-bottom: none;
     font-size: 15px;
     width: 100%;
+    border-spacing: 0;
 }
 
 .table_order_items_details > tr, .table_order_items_details > tbody > tr > td{
@@ -223,12 +224,28 @@
     margin: 0;
 }
 
+.table_order_item_row_details{
+    border-spacing: 0;
+}
+
 .table_order_item_row_details td{
     padding: 2px 5px;
 }
 
 .table_order_items_details td.order_item_info_title{
     font-size: 20px;
+}
+
+.admin_to_customer_notes{
+    border: 1px solid #ffecb5;
+    border-radius: 5px;
+    padding: 10px;
+    color: #664d03;
+    background-color: #fff3cd;
+}
+
+.order_item_info_guests .order_item_td_value{
+    display: block;
 }
 
 .order_item_td_label{
@@ -262,6 +279,7 @@
 .order_item_age_prices, .order_item_services{
     border: none;
     margin: 0;
+    border-spacing: 0;
 }
 
 .order_item_age_prices td, .order_item_services td{

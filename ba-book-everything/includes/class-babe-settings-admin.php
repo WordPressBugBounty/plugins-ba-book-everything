@@ -685,6 +685,15 @@ function setup_demo_content(i){
         );
 
         add_settings_field(
+            'customer_confirmation_page', // ID
+            __('Customer page for order confirmation (for manually availability confirmation)','ba-book-everything'), // Title
+            array( __CLASS__, 'setting_page_select' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_general',  // Section
+            array('option' => 'customer_confirmation_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
             'my_account_page', // ID
             __('My Account page','ba-book-everything'), // Title
             array( __CLASS__, 'setting_page_select' ), // Callback
@@ -1050,6 +1059,15 @@ function setup_demo_content(i){
             __('Payments','ba-book-everything'), // Title
             '__return_false', // Callback
             BABE_Settings::$option_menu_slug // Page
+        );
+
+        add_settings_field(
+            'only_payment_gateway_from_deposit', // ID
+            __('For all subsequent payments only allow the payment gateway that was used for the deposit','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_payment', // Section
+            array('option' => 'only_payment_gateway_from_deposit', 'settings_name' => BABE_Settings::$option_name) // Args array
         );
         
         add_settings_field(
@@ -1447,7 +1465,16 @@ function setup_demo_content(i){
             'setting_section_emails', // Section
             array('option' => 'email_color_button_no', 'settings_name' => BABE_Settings::$option_name) // Args array
         );
-        
+
+        add_settings_field(
+            'email_color_button_change', // ID
+            __('Change button color','ba-book-everything'), // Title
+            array( __CLASS__, 'color_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_emails', // Section
+            array('option' => 'email_color_button_change', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
         ////////////////
         
         do_action('babe_settings_after_email_fields', BABE_Settings::$option_menu_slug, BABE_Settings::$option_name);
@@ -1605,7 +1632,7 @@ function setup_demo_content(i){
 
         add_settings_field(
             'email_new_order_av_confirm_separator', // ID
-            __('Customer availability confirmation email', 'ba-book-everything'), // Title
+            __('Customer is waiting for availability confirmation on admin side', 'ba-book-everything'), // Title
             '__return_false', // Callback
             BABE_Settings::$option_menu_slug, // Page
             'setting_section_emails',
@@ -1637,6 +1664,44 @@ function setup_demo_content(i){
             BABE_Settings::$option_menu_slug, // Page
             'setting_section_emails',  // Section
             array('option' => 'email_new_order_av_confirm_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        //-----------------------//
+
+        add_settings_field(
+            'email_order_customer_confirmation_separator', // ID
+            __('Customer needs to confirm or reject changes to the booking', 'ba-book-everything'), // Title
+            '__return_false', // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_emails',
+            array('class' => 'babe_settings_subtitle')
+        );
+
+        add_settings_field(
+            'email_order_customer_confirmation_subject', // ID
+            __('Subject', 'ba-book-everything'), // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_emails',  // Section
+            array('option' => 'email_order_customer_confirmation_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'email_order_customer_confirmation_title', // ID
+            __('Body title', 'ba-book-everything'), // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_emails',  // Section
+            array('option' => 'email_order_customer_confirmation_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'email_order_customer_confirmation_message', // ID
+            __('Body message', 'ba-book-everything'), // Title
+            array( __CLASS__, 'textarea_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_emails',  // Section
+            array('option' => 'email_order_customer_confirmation_message', 'settings_name' => BABE_Settings::$option_name) // Args array
         );
 
         //-----------------------//
@@ -1930,6 +1995,10 @@ function setup_demo_content(i){
         $new_input['email_admin_new_order_av_confirm_title'] = sanitize_text_field($input['email_admin_new_order_av_confirm_title']);
         $new_input['email_admin_new_order_av_confirm_message'] = wp_kses_post($input['email_admin_new_order_av_confirm_message']);
 
+        $new_input['email_order_customer_confirmation_subject'] = sanitize_text_field($input['email_order_customer_confirmation_subject']);
+        $new_input['email_order_customer_confirmation_title'] = sanitize_text_field($input['email_order_customer_confirmation_title']);
+        $new_input['email_order_customer_confirmation_message'] = wp_kses_post($input['email_order_customer_confirmation_message']);
+
         $new_input['email_new_order_av_confirm_subject'] = sanitize_text_field($input['email_new_order_av_confirm_subject']);
         $new_input['email_new_order_av_confirm_title'] = sanitize_text_field($input['email_new_order_av_confirm_title']);
         $new_input['email_new_order_av_confirm_message'] = wp_kses_post($input['email_new_order_av_confirm_message']);
@@ -2018,6 +2087,7 @@ function setup_demo_content(i){
           $new_input['my_account_page'] = absint($input['my_account_page']);
           $new_input['terms_page'] = absint($input['terms_page']);
           $new_input['admin_confirmation_page'] = absint($input['admin_confirmation_page']);
+          $new_input['customer_confirmation_page'] = absint($input['customer_confirmation_page']);
 
           $currency_code_options = BABE_Currency::get_currencies();
           $currency = sanitize_text_field($input['currency']);
@@ -2077,8 +2147,12 @@ function setup_demo_content(i){
           $new_input['email_color_button'] = $input['email_color_button'];
           $new_input['email_color_button_yes'] = $input['email_color_button_yes'];
           $new_input['email_color_button_no'] = $input['email_color_button_no'];
+          $new_input['email_color_button_change'] = $input['email_color_button_change'];
 
           ///////////////////
+
+          $new_input['only_payment_gateway_from_deposit'] = absint($input['only_payment_gateway_from_deposit']);
+
           $payment_methods_arr = isset($input['payment_methods']) ? (array)$input['payment_methods'] : array();
           $payment_methods_arr = empty($payment_methods_arr) ? array( 0 => 'cash') : $payment_methods_arr;
 

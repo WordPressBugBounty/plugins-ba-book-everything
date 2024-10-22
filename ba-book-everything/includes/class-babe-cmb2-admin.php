@@ -1561,8 +1561,13 @@ class BABE_CMB2_admin {
          'type'    => 'text',
          'default' => 0,
       ) );
-      
-      
+
+      $cmb->add_field( array(
+         'name' => __( 'Order clarification from the administrator to the client', 'ba-book-everything' ),
+         'desc' => __( 'Will be shown in the order details and in emails to the client', 'ba-book-everything' ),
+         'id'   => 'admin_to_customer_notes',
+         'type'    => 'textarea_small',
+      ) );
     }
     
 ///////////////////////////////////////

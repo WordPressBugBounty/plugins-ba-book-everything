@@ -60,6 +60,8 @@ class BABE_shortcodes {
 
         add_shortcode( 'babe-order-number', array( __CLASS__, 'shortcode_order_router' ) );
 
+        add_shortcode( 'babe-order-admin-notes', array( __CLASS__, 'shortcode_order_router' ) );
+
         add_shortcode( 'babe-email-button', array( __CLASS__, 'shortcode_order_router' ) );
 
         add_shortcode( 'babe-email-header-image', array( __CLASS__, 'shortcode_email_header_image' ) );
@@ -93,6 +95,15 @@ class BABE_shortcodes {
                 break;
             case 'admin_confirmation_reject':
                 $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_admin_confirmation_page($order_id, 'reject'), 2);
+                break;
+            case 'admin_confirmation_change':
+                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_admin_confirmation_page($order_id, 'change'), 3);
+                break;
+            case 'customer_confirmation_success':
+                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_customer_confirmation_page($order_id, 'confirm'), 1);
+                break;
+            case 'customer_confirmation_reject':
+                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_customer_confirmation_page($order_id, 'reject'), 2);
                 break;
             case 'my_account':
                 $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Settings::get_my_account_page_url());
@@ -199,6 +210,31 @@ class BABE_shortcodes {
         ), $atts, $tag );
 
         return BABE_Order::get_order_number($order_id);
+    }
+
+    /** To use in emails */
+    public static function get_order_admin_notes($order_id, $atts, $content, $tag ) {
+
+        global $current_screen;
+
+        $admin_to_customer_notes = BABE_Order::get_order_admin_to_customer_notes($order_id);
+
+        if (
+            is_admin()
+            && !empty($_POST['admin_to_customer_notes'])
+            && !empty($current_screen->post_type)
+            && $current_screen->post_type === BABE_Post_types::$order_post_type
+            && $current_screen->base === 'post'
+        ){
+            $post_data = sanitize_textarea_field($_POST['admin_to_customer_notes']);
+            if ( $post_data !== $admin_to_customer_notes ){
+                $admin_to_customer_notes = $post_data;
+            }
+        }
+
+        return BABE_html_emails::email_wrap_notes(
+            $admin_to_customer_notes
+        );
     }
 
     //////////////////////////////

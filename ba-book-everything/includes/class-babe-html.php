@@ -4,6 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+BABE_html::init();
+
 /**
  * BABE_html Class.
  * 
@@ -11,7 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @version		1.3.9
  * @author 		Booking Algorithms
  */
-
 class BABE_html {
     
     // variables to use
@@ -22,11 +23,8 @@ class BABE_html {
     private static $order_items = array();
     
     private static $order_customer_details = array();
-    
-//////////////////////////////
-    /**
-	 * Hook in tabs.
-	 */
+
+
     public static function init() {
         
         add_filter( 'the_content', array( __CLASS__, 'post_content'), 10, 1 );
@@ -108,8 +106,8 @@ class BABE_html {
     /**
 	 * Hook in init
 	 */
-    public static function action_init() {
-
+    public static function action_init(): void
+    {
         if ( wp_doing_ajax() ){
             $current_language = BABE_Functions::get_current_language();
             if ( isset($_GET['lang']) && $current_language != $_GET['lang'] ){
@@ -122,14 +120,13 @@ class BABE_html {
           remove_filter('the_content', 'qtranxf_useCurrentLanguageIfNotFoundShowAvailable', 100);
           add_filter('the_content', 'qtranxf_useCurrentLanguageIfNotFoundShowAvailable', 0);
         }
-    }        
-    
-//////////////////////////////
+    }
+
     /**
 	 * Enqueue assets.
 	 */
-    public static function wp_enqueue_scripts() {
-
+    public static function wp_enqueue_scripts(): void
+    {
         global $post;
         
         wp_enqueue_script( 'babe-select2-js', plugins_url( "js/select2.full.min.js", BABE_PLUGIN ), array('jquery'), BABE_VERSION, true );
@@ -347,13 +344,9 @@ class BABE_html {
 
     /**
      * Add billing address fields to the checkout form
-     *
-     * @param string $output
-     * @param array $args
-     * @return string
      */
-     public static function add_address_fields( $output, $args ){
-
+     public static function add_address_fields( string $output, array $args ): string
+     {
          if ( !BABE_Settings::$settings['checkout_add_billing_address'] ){
              return $output;
          }
@@ -420,16 +413,11 @@ class BABE_html {
          return $output;
      }
 
-//////////////////////////////
     /**
      * Add extra guest details to the checkout form
-     *
-     * @param string $output
-     * @param array $args
-     * @return string
      */
-     public static function extended_guest_fields( $output, $args ){
-
+     public static function extended_guest_fields( string $output, array $args ): string
+     {
     	if( empty($args['order_id']) ){
 		    return $output;
 	    }
@@ -512,8 +500,6 @@ class BABE_html {
 	    return $output;
      }
 
-//////////////////////////////////////////////
-    
     /**
      * Loads scripts as async or defer to improve site perfomance.
      */
@@ -523,158 +509,116 @@ class BABE_html {
             'babe-modal-js' => 1,
          );
    
-         if (isset($scripts[$handle])) {
+         if ( isset($scripts[$handle]) ) {
             return str_replace(' src', ' async="async" src', $tag);
          }
      
          return $tag;
-    } 
-            
-////////////////////////////
+    }
+
     /**
-	 * Add content to booking_obj page.
-     * @param string $content
-     * @return string
+	 * Add content to booking_obj page
 	 */
-    public static function post_content($content){
+    public static function post_content( string $content ): string
+    {
         global $post;
         $output = $content;
 
-        if (is_single() && in_the_loop() && is_main_query()){
-          if ($post->post_type == BABE_Post_types::$booking_obj_post_type){  
-            
+        if ( !is_single() || !in_the_loop() || !is_main_query() ){
+            return $output;
+        }
+
+        if ( $post->post_type === BABE_Post_types::$booking_obj_post_type ){
+
             $babe_post = BABE_Post_types::get_post($post->ID);
-            if (!empty($babe_post)){
-              remove_filter( 'the_content', array( __CLASS__, 'post_content'), 10 );
-              $output = apply_filters( 'babe_post_content', $content, $post->ID, $babe_post);
+            if ( !empty($babe_post) ){
+                remove_filter( 'the_content', array( __CLASS__, 'post_content'), 10 );
+                return apply_filters( 'babe_post_content', $content, $post->ID, $babe_post);
             }
-          }
-          
-          if ($post->post_type == BABE_Post_types::$mpoints_post_type){            
+        }
+
+        if ( $post->post_type === BABE_Post_types::$mpoints_post_type ){
+
             remove_filter( 'the_content', array( __CLASS__, 'post_content'), 10 );
-            $output = $content;
-            
+
             $address_arr['address'] = get_post_meta($post->ID, 'address', true);
             $address_arr['ID'] = $post->ID;
-            
             $output .= self::block_address_map_with_direction($address_arr);
-          }             
         }
-        
+
         return $output; 
     }
 
-////////////////////////////
     /*
-	 * Add slider to booking_obj page.
-     *
-     * @param string $content
-     * @param int $post_id
-     * @param array $post - BABE post
-     * @return string
+	 * Add slider to booking_obj page
 	 */
-    public static function babe_post_content_block_slider($content, $post_id, $post){
-
+    public static function babe_post_content_block_slider( string $content, int $post_id, array $post ): string
+    {
         return $content.self::block_slider($post);
-
     }
 
-////////////////////////////
     /*
-	 * Add item code to booking_obj page.
-     *
-     * @param string $content
-     * @param int $post_id
-     * @param array $post - BABE post
-     * @return string
+	 * Add item code to booking_obj page
 	 */
-    public static function babe_post_content_item_code($content, $post_id, $post){
-
+    public static function babe_post_content_item_code( string $content, int $post_id, array $post ): string
+    {
         $content .= isset($post['code']) && $post['code'] ? '<div class="item_code">'.__( 'Item Code:', 'ba-book-everything' ).' <strong><span itemprop="productID">'.$post['code'].'</span></strong></div>' : '';
 
         return $content;
-
     }
 
-////////////////////////////
     /*
-	 * Add star rating to booking_obj page.
-     *
-     * @param string $content
-     * @param int $post_id
-     * @param array $post - BABE post
-     * @return string
+	 * Add star rating to booking_obj page
 	 */
-    public static function babe_post_content_star_rating($content, $post_id, $post){
-
+    public static function babe_post_content_star_rating( string $content, int $post_id, array $post ): string
+    {
         return $content.BABE_Rating::post_stars_rendering($post_id);
-
     }
 
-////////////////////////////
     /*
-	 * Add "price from" to booking_obj page.
-     *
-     * @param string $content
-     * @param int $post_id
-     * @param array $post - BABE post
-     * @return string
+	 * Add "price from" to booking_obj page
 	 */
-    public static function babe_post_content_price_from($content, $post_id, $post){
-
+    public static function babe_post_content_price_from( string $content, int $post_id, array $post ): string
+    {
         $content .= self::block_price_from($post);
 
         $content .= apply_filters( 'babe_post_content_after_price', '', $content, $post_id, $post);
 
         return $content;
-
     }
 
-////////////////////////////
     /*
-	 * Add event date to booking_obj page.
-     *
-     * @param string $content
-     * @param int $post_id
-     * @param array $post - BABE post
-     * @return string
+	 * Add event date to booking_obj page
 	 */
-    public static function babe_post_content_event_date($content, $post_id, $post){
-
+    public static function babe_post_content_event_date( string $content, int $post_id, array $post ): string
+    {
         $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($post_id);
 
-        if ($rules_cat['rules']['basic_booking_period'] == 'single_custom'){
-
-            $date_from_obj = new DateTime( BABE_Calendar_functions::date_to_sql($post['start_date']).' '.$post['start_time']);
-            $date_to_obj = new DateTime( BABE_Calendar_functions::date_to_sql($post['end_date']).' '.$post['end_time']);
-
-            $dates = $date_from_obj->format(get_option('date_format').' '.get_option('time_format')).' - ';
-
-            if ( $date_from_obj->format('Y-m-d') != $date_to_obj->format('Y-m-d') ){
-                $dates .= $date_to_obj->format(get_option('date_format')).' ';
-            }
-
-            $dates .= $date_to_obj->format( get_option('time_format') );
-
-            $content .= '<div class="single_event_dates">'.__( 'When:', 'ba-book-everything' ).' <span class="single_event_dates_value">'.$dates.'</span></div>';
-
+        if ( $rules_cat['rules']['basic_booking_period'] !== 'single_custom' ){
+            return $content;
         }
 
-        return $content;
+        $date_from_obj = new DateTime( BABE_Calendar_functions::date_to_sql($post['start_date']).' '.$post['start_time']);
+        $date_to_obj = new DateTime( BABE_Calendar_functions::date_to_sql($post['end_date']).' '.$post['end_time']);
 
+        $dates = $date_from_obj->format(get_option('date_format').' '.get_option('time_format')).' - ';
+
+        if ( $date_from_obj->format('Y-m-d') !== $date_to_obj->format('Y-m-d') ){
+            $dates .= $date_to_obj->format(get_option('date_format')).' ';
+        }
+
+        $dates .= $date_to_obj->format( get_option('time_format') );
+
+        $content .= '<div class="single_event_dates">'.__( 'When:', 'ba-book-everything' ).' <span class="single_event_dates_value">'.$dates.'</span></div>';
+
+        return $content;
     }
 
-////////////////////////////
     /*
-	 * Add main content tabs to booking_obj page.
-     *
-     * @param string $content
-     * @param int $post_id
-     * @param array $post - BABE post
-     * @return string
+	 * Add main content tabs to booking_obj page
 	 */
-    public static function babe_post_content_tabs($content, $post_id, $post){
-
+    public static function babe_post_content_tabs( string $content, int $post_id, array $post ): string
+    {
         $output = '';
 
         $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($post_id);
@@ -837,41 +781,26 @@ class BABE_html {
         }
 
         return $output;
-
     }
 
-////////////////////////////
     /*
-	 * Add related items to booking_obj page.
-     *
-     * @param string $content
-     * @param int $post_id
-     * @param array $post - BABE post
-     * @return string
+	 * Add related items to booking_obj page
 	 */
-    public static function babe_post_content_block_related($content, $post_id, $post){
-
+    public static function babe_post_content_block_related( string $content, int $post_id, array $post ): string
+    {
         $block_related = self::block_related($post);
         $block_related_title = apply_filters( 'babe_post_content_related_title', __( 'You may like', 'ba-book-everything' ));
         $content .= $block_related ? '<h3 class="babe_post_content_title">'.esc_html($block_related_title).'</h3>'.$block_related : '';
 
         return $content;
-
     }
 
-////////////////////////////
     /*
 	 * Add our template content to booking_obj page.
-     * @param string $content
-     * @param int $post_id
-     * @param array $post - BABE post
-     * @return string
 	 */
-    public static function babe_post_content($content, $post_id, $post){
-        
-        $output = '';
-
-        $output .= apply_filters( 'babe_post_content_before_tabs', '', $post_id, $post);
+    public static function babe_post_content( string $content, int $post_id, array $post ): string
+    {
+        $output = apply_filters( 'babe_post_content_before_tabs', '', $post_id, $post);
 
         $output .= apply_filters( 'babe_post_content_tabs', $content, $post_id, $post);
 
@@ -879,46 +808,44 @@ class BABE_html {
         
         return $output; 
     }
-    
-///////////////////////////        
+
     /**
-	 * Add price from to booking_obj page.
-     * @param array $post - BABE post array
-     * @return string
+	 * Add price from to booking_obj page
 	 */
-    public static function block_price_from($post){
+    public static function block_price_from( array $post ): string
+    {
         $output = '';
 
-        if (
-            !isset($post['discount_price_from'])
-            || !isset($post['price_from'])
-            || !isset($post['discount_date_to'])
-            || !isset($post['discount'])
+        if ( !isset(
+            $post['discount_price_from'],
+            $post['price_from'],
+            $post['discount_date_to'],
+            $post['discount'])
         ){
             $prices = BABE_Post_types::get_post_price_from($post['ID']);
         } else {
             $prices = $post;
         }
 
-        if (!empty($prices)){
+        if ( empty($prices) ){
+            return $output;
+        }
 
-            $save = '';
+        $save = '';
 
-            if ($prices['discount_price_from'] < $prices['price_from']){
+        if ($prices['discount_price_from'] < $prices['price_from']){
 
-                $date_to_obj = new DateTime($prices['discount_date_to']);
+            $date_to_obj = new DateTime($prices['discount_date_to']);
 
-                $save = '<span class="item_info_price_from_discount">'.BABE_Currency::get_currency_price($prices['price_from']).'</span><span class="item_info_price_from_save">'.__( 'Save ', 'ba-book-everything' ).$prices['discount'].'%</span>
+            $save = '<span class="item_info_price_from_discount">'.BABE_Currency::get_currency_price($prices['price_from']).'</span><span class="item_info_price_from_save">'.__( 'Save ', 'ba-book-everything' ).$prices['discount'].'%</span>
             <div class="item_info_discount_expired"><i class="far fa-clock"></i> '.__( 'Offer Ends: ', 'ba-book-everything' ).$date_to_obj->format(get_option('date_format')).'</div>
             ';
-            }
+        }
 
-            $output .= '<div class="item_info_price">
+        $output .= '<div class="item_info_price">
        <label>'. sprintf( BABE_Settings::get_option('price_from_label') , BABE_Currency::get_currency() ).'</label>
        <span class="item_info_price_from">'.BABE_Currency::get_currency_price($prices['discount_price_from']).'</span>'.$save.'
     </div>';
-
-        }
     
         return $output; 
     }
@@ -1100,43 +1027,43 @@ class BABE_html {
             )
             .'</script>';
     }
-    
-///////////////////////////        
-    /**
-	 * Add unitegallery to booking_obj page.
-     * @param array $post - we're looking for $post['images'] array here
-     * @return string
-	 */
-    public static function block_slider($post){
-    
-    $output = '';
-    
-    $files = isset($post['images']) ? (array)$post['images'] : array();
 
-    if(!BABE_Settings::$settings['unitegallery_remove'] && !empty($files)){
-        
-      $thumbnail = apply_filters('babe_slider_img_thumbnail', 'thumbnail');
-      $full = apply_filters('babe_slider_img_full', 'full');     
-      // Loop through them and output an image
-      foreach ( $files as $file ) {
-        if (is_array($file) && isset($file['image_id']) && $file['image_id']){
-        $image_full_arr = wp_get_attachment_image_src( $file['image_id'], $full );
-        $image_thumb_arr = wp_get_attachment_image_src( $file['image_id'], $thumbnail );
-        $description = !empty($file['description']) ? ' data-description="'.esc_attr($file['description']).'"' : '' ;
-        
-        $output .= '
+    /**
+	 * Add unitegallery to booking_obj page
+	 */
+    public static function block_slider( array $post ): string
+    {
+        $output = '';
+
+        $files = isset($post['images']) ? (array)$post['images'] : [];
+
+        if( BABE_Settings::$settings['unitegallery_remove'] || empty($files) ){
+            return $output;
+        }
+
+        $thumbnail = apply_filters('babe_slider_img_thumbnail', 'thumbnail');
+        $full = apply_filters('babe_slider_img_full', 'full');
+
+        foreach ( $files as $file ) {
+            if ( is_array($file) && !empty($file['image_id']) ){
+
+                $image_full_arr = wp_get_attachment_image_src( $file['image_id'], $full );
+                $image_thumb_arr = wp_get_attachment_image_src( $file['image_id'], $thumbnail );
+                $description = !empty($file['description']) ? ' data-description="'.esc_attr($file['description']).'"' : '' ;
+                $output .= '
         <img src="'.$image_thumb_arr[0].'" data-image="'.$image_full_arr[0].'"'.$description.'/>
         ';
+            }
         }
-      } //// end foreach
-      
-      if ($output){
-        
-         $unitegallery_settings = BABE_Settings::$unitegallery;
-         $js_arr = array();
-         
-         foreach($unitegallery_settings as $key => $value){
-            
+
+        if ( empty($output) ){
+            return $output;
+        }
+
+        $js_arr = [];
+
+        foreach( BABE_Settings::$unitegallery as $key => $value ){
+
             if ($value === null){
                 $value_str = 'null';
             } elseif ($value === true){
@@ -1148,123 +1075,132 @@ class BABE_html {
             } else {
                 $value_str = '"'.$value.'"';
             }
-            
+
             $js_arr[] = $key.':'.$value_str;
-         }
-         $js = implode(', ', $js_arr);
+        }
+        $js = implode(', ', $js_arr);
 
-         $add_class = !empty(BABE_Settings::$settings['content_in_tabs']) ? ' babe_slider_tabs_content' : '';
+        $add_class = !empty(BABE_Settings::$settings['content_in_tabs']) ? ' babe_slider_tabs_content' : '';
 
-         $output = '
+        return '
          <div class="babe_slider'.$add_class.'" id="unitegallery" style="display:none;">
              '.$output.'
          </div>
          ';
-      }
-    
     }
-    
-    return $output;
-}
-    
-////////////////////////////
+
     /**
-	 * Add our content to pages.
-     * @param string $content
-     * @return string
+	 * Add our content to pages
 	 */
-    public static function pages_content($content){
+    public static function pages_content( string $content ): string
+    {
         global $post;
         $output = $content;
-        
-        if (is_singular() && in_the_loop() && is_main_query()){
 
-        if ($post->ID === (int)BABE_Settings::$settings['services_page'] && isset($_GET['current_action']) && $_GET['current_action'] === 'to_services'){
-            remove_filter( 'the_content', array( __CLASS__, 'pages_content'), 10 );
-            $output = apply_filters( 'babe_services_content', $content);
+        if ( !is_singular() || !in_the_loop() || !is_main_query() ){
+            return $output;
         }
-        
-        if ($post->ID === (int)BABE_Settings::$settings['checkout_page'] && isset($_GET['current_action']) && $_GET['current_action'] === 'to_checkout'){
+
+        if (
+            $post->ID === (int)BABE_Settings::$settings['services_page']
+            && isset($_GET['current_action'])
+            && $_GET['current_action'] === 'to_services'
+        ){
             remove_filter( 'the_content', array( __CLASS__, 'pages_content'), 10 );
-            $output = apply_filters( 'babe_checkout_content', $content);
+            return apply_filters( 'babe_services_content', $content);
         }
-        
-        if ($post->ID === (int)BABE_Settings::$settings['confirmation_page'] && isset($_GET['current_action']) && $_GET['current_action'] === 'to_confirm'){
+
+        if (
+            $post->ID === (int)BABE_Settings::$settings['checkout_page']
+            && isset($_GET['current_action'])
+            && $_GET['current_action'] === 'to_checkout'
+        ){
             remove_filter( 'the_content', array( __CLASS__, 'pages_content'), 10 );
-            $output = apply_filters( 'babe_confirmation_content', $content);
+            return apply_filters( 'babe_checkout_content', $content);
         }
-        
-        if ($post->ID === (int)BABE_Settings::$settings['admin_confirmation_page'] && isset($_GET['current_action']) && $_GET['current_action'] === 'to_admin_confirm'){
+
+        if (
+            $post->ID === (int)BABE_Settings::$settings['confirmation_page']
+            && isset($_GET['current_action'])
+            && $_GET['current_action'] === 'to_confirm'
+        ){
             remove_filter( 'the_content', array( __CLASS__, 'pages_content'), 10 );
-            $output = apply_filters( 'babe_admin_confirmation_content', $content);
+            return apply_filters( 'babe_confirmation_content', $content);
         }
-        
-        if ($post->ID === (int)BABE_Settings::$settings['my_account_page']){
+
+        if (
+            $post->ID === (int)BABE_Settings::$settings['admin_confirmation_page']
+            && isset($_GET['current_action'])
+            && $_GET['current_action'] === 'to_admin_confirm'
+        ){
             remove_filter( 'the_content', array( __CLASS__, 'pages_content'), 10 );
-            $output = apply_filters( 'babe_my_account_content', $content);
+            return apply_filters( 'babe_admin_confirmation_content', $content);
         }
-        
+
+        if (
+            $post->ID === (int)BABE_Settings::$settings['customer_confirmation_page']
+            && isset($_GET['current_action'])
+            && $_GET['current_action'] === 'to_customer_confirm'
+        ){
+            remove_filter( 'the_content', array( __CLASS__, 'pages_content'), 10 );
+            return apply_filters( 'babe_customer_confirmation_content', $content);
+        }
+
+        if (
+            $post->ID === (int)BABE_Settings::$settings['my_account_page']
+        ){
+            remove_filter( 'the_content', array( __CLASS__, 'pages_content'), 10 );
+            return apply_filters( 'babe_my_account_content', $content);
         }
         
         return $output; 
-    }    
-    
-///////////page_search_result///////////
+    }
+
     /**
-	 * Add search result to page.
-     * @param string $content
-     * @return string
+	 * Add search result to page
 	 */
-    public static function page_search_result($content){
+    public static function page_search_result( string $content ): string
+    {
         global $post;
         $output = $content;
-        
-        if (in_the_loop() && is_main_query()){
-        
-          $add_search_result_to_page = is_page() && $post->ID == BABE_Settings::$settings['search_result_page'];
-          $add_search_result_to_page = apply_filters('babe_add_search_result_to_page', $add_search_result_to_page, $post);
-        
-          if ($add_search_result_to_page){
-            remove_filter( 'the_content', array( __CLASS__, 'page_search_result'), 10 );
-            $output .= self::get_search_result(BABE_Settings::$settings['results_view']);
-            
-            $output .= '<div id="babe_search_result_refresh">
+
+        if ( !in_the_loop() || !is_main_query() ){
+            return $output;
+        }
+
+        $add_search_result_to_page = is_page() && $post->ID === (int)BABE_Settings::$settings['search_result_page'];
+        $add_search_result_to_page = apply_filters('babe_add_search_result_to_page', $add_search_result_to_page, $post);
+
+        if ( !$add_search_result_to_page ){
+            return $output;
+        }
+
+        remove_filter( 'the_content', array( __CLASS__, 'page_search_result'), 10 );
+        $output .= self::get_search_result(BABE_Settings::$settings['results_view']);
+
+        $output .= '<div id="babe_search_result_refresh">
                <i class="fas fa-spinner fa-spin fa-3x"></i>
             </div>';
-            
-            $output = apply_filters('babe_search_result_content', $output, $post);
-          }
-        } 
-        
-        return $output; 
+
+        return apply_filters('babe_search_result_content', $output, $post);
     }
 
     /**
-	 * Add price from and rating to search result items.
-     * @param string $description
-     * @param array $post
-     * @return string
+	 * Add price from and rating to search result items
 	 */
-    public static function search_result_description_price($description, $post){
-        $output = '';
-        
-        $output .= BABE_Rating::post_stars_rendering($post['ID']);
-        
-        $output .= self::block_price_from($post);
-        
-        $output .= $description;
-    
-        return $output; 
+    public static function search_result_description_price( string $description, array $post): string
+    {
+        return BABE_Rating::post_stars_rendering($post['ID'])
+            . self::block_price_from($post)
+            . $description
+            ;
     }
-    
-////////////////////////////
+
     /**
 	 * Get search result
-     * @param string $view
-     * @return string
 	 */
-    public static function get_search_result($view = 'full') {
-        
+    public static function get_search_result( string $view = 'full'): string
+    {
         $output = '';
         
         $args = wp_parse_args( $_GET, array(
@@ -1331,20 +1267,14 @@ class BABE_html {
 
         $output .= BABE_Functions::pager($posts_pages);
 
-        $output = apply_filters('babe_search_result_html', $output, $posts, $posts_pages);
-        
-        return $output;
+        return apply_filters('babe_search_result_html', $output, $posts, $posts_pages);
     }
 
-////////////////////////////
     /**
      * Get post preview html
-     * @param array $post BABE post array
-     * @param string $view - full or grid
-     * @return string
      */
-    public static function get_post_preview_html($post, $view = '') {
-
+    public static function get_post_preview_html( array $post, string $view = '' ): string
+    {
         $view = !$view ? BABE_Settings::$settings['results_view'] : $view;
 
         $thumbnail = apply_filters('babe_search_result_img_thumbnail', 'ba-thumbnail-sq');
@@ -1377,8 +1307,7 @@ class BABE_html {
 						</div>';
         }
 
-
-        $output = $view == 'full' ? apply_filters('babe_search_result_view_full', '
+        $output = $view === 'full' ? apply_filters('babe_search_result_view_full', '
           <div class="block_search_res">
             <div class="search_res_img">
             '.$image.'
@@ -1418,34 +1347,29 @@ class BABE_html {
         return $output;
     }
 
-/////////////get_search_form///////////////
     /**
-	 * Get search form html.
-     * @param string $title
-     * @return string
+	 * Get search form html
 	 */
-    public static function get_search_form($title = ''){
-        
-        $output = BABE_Search_From::render_form($title);
-        return $output;
-   
-   }                
-    
-////////////////////////////
-    /**
-	 * Add steps to booking_obj page.
-     * @param array $post
-     * @return string
-	 */
-    public static function block_steps($post){
+    public static function get_search_form( string $title = '' ): string
+    {
+        return BABE_Search_From::render_form($title);
+    }
 
+    /**
+	 * Add steps to booking_obj page
+	 */
+    public static function block_steps( array $post ): string
+    {
         $output = '';
-        $results = array();
-        
-        if (!empty($post) && isset($post['steps']) && !empty($post['steps'])){
-           
-              foreach($post['steps'] as $step){
-                if (isset($step['attraction']) && isset($step['title'])){
+
+        if ( empty($post['steps']) ){
+            return $output;
+        }
+
+        $results = [];
+
+        foreach($post['steps'] as $step){
+            if (isset($step['attraction']) && isset($step['title'])){
                 $step_block = '<div class="block_step">
                 <div class="block_step_title collapse-title">
                 <h4>'.apply_filters('translate_text', $step['title']).'</h4>
@@ -1456,26 +1380,25 @@ class BABE_html {
                 </div>
               </div>';
                 $results[] = apply_filters('babe_post_step_block_html', $step_block, $step);
-                }
-              }
-              
-              $output .= '<div id="block_steps">
+            }
+        }
+
+        $output .= '<div id="block_steps">
               '.implode('', $results).'
               </div>';
-            
-        } //// end if !empty($post['steps'])    
-        
-        return $output; 
+
+        return $output;
     }
 
-    public static function block_custom_section( array $post ){
-
+    public static function block_custom_section( array $post ): string
+    {
         $output = '';
-        $results = array();
 
         if ( empty($post['custom_section'][0]['title']) ){
             return $output;
         }
+
+        $results = [];
 
         foreach ($post['custom_section'] as $ind => $custom_section){
 
@@ -1496,35 +1419,31 @@ class BABE_html {
 
         return $output;
     }
-    
-////////////////////////////
-    /**
-	 * Add FAQs to booking_obj page.
-     * 
-     * @param array $post - BABE post
-     * @return string
-	 */
-    public static function block_faqs($post){
 
+    /**
+	 * Add FAQs to booking_obj page
+	 */
+    public static function block_faqs( array $post ): string
+    {
         $output = '';
-        $results = array();
-        
-        if (!empty($post) && isset($post['faq']) && !empty($post['faq'])){
-            
-             $faqs_arr = BABE_Post_types::get_post_faq($post);
-             
-             if (!empty($faqs_arr)){
-                
-                $i = 0;
-                
-              foreach($faqs_arr as $faq){
-                
-                $add_class = '';
-                /// add class 'block_active' if we need to open item by default
-                //$add_class = !$i ? ' block_active' : '';
-                $add_class = apply_filters('babe_post_faq_block_html_active_item', $add_class, $faq, $i);
-                
-                $qa_block = '<div class="block_faq accordion-block'.$add_class.'">
+        $faqs_arr = BABE_Post_types::get_post_faq($post);
+
+        if ( empty($faqs_arr) ){
+            return $output;
+        }
+
+        $results = [];
+
+        $i = 0;
+
+        foreach( $faqs_arr as $faq ){
+
+            $add_class = '';
+            /// add class 'block_active' if we need to open item by default
+            //$add_class = !$i ? ' block_active' : '';
+            $add_class = apply_filters('babe_post_faq_block_html_active_item', $add_class, $faq, $i);
+
+            $qa_block = '<div class="block_faq accordion-block'.$add_class.'">
                 <div class="block_faq_title accordion-title">
                 <h4>'.apply_filters('translate_text', $faq['post_title']).'</h4>
                 <span><i class="fas fa-chevron-down"></i></span>
@@ -1533,51 +1452,45 @@ class BABE_html {
                 '.apply_filters('the_content', $faq['post_content']).'
                 </div>
               </div>';
-                $results[] = apply_filters('babe_post_faq_block_html', $qa_block, $faq, $i);
-                $i++;
-              }
-              
-              $output .= '<div id="block_faqs">
+            $results[] = apply_filters('babe_post_faq_block_html', $qa_block, $faq, $i);
+            $i++;
+        }
+
+        $output .= '<div id="block_faqs">
               '.implode('', $results).'
               </div>';
-                
-             }
-   
-        } //// end if !empty($post['faq'])    
         
         return $output; 
     }
-    
-////////////////////////////
+
     /**
 	 * Add related items to booking_obj page
-     * 
-     * @param array $post - BABE post
-     * @return string
 	 */
-    public static function block_related($post) {
-        
+    public static function block_related( array $post ): string
+    {
         $output = '';
-        $results = array();
-        
-        if (!empty($post) && isset($post['related_items']) && !empty($post['related_items'])){
-            
-          $related_arr = BABE_Post_types::get_post_related($post);
-          
-          $thumbnail = apply_filters('babe_post_related_item_thumbnail', 'ba-thumbnail-sq');
-          $excerpt_length = apply_filters('post_related_item_excerpt_length', 13);
-        
-          foreach($related_arr as $related_post){
-            
+
+        if ( empty($post['related_items']) ){
+            return $output;
+        }
+
+        $related_arr = BABE_Post_types::get_post_related($post);
+        $results = [];
+
+        $thumbnail = apply_filters('babe_post_related_item_thumbnail', 'ba-thumbnail-sq');
+        $excerpt_length = apply_filters('post_related_item_excerpt_length', 13);
+
+        foreach($related_arr as $related_post){
+
             $item_url = BABE_Functions::get_page_url_with_args($related_post['ID'], $_GET);
-            
+
             $image_srcs = wp_get_attachment_image_src( get_post_thumbnail_id( $related_post['ID'] ), $thumbnail);
             $image = $image_srcs ? '<a href="'.$item_url.'"><img src="'.$image_srcs[0].'"></a>' : '';
-            
+
             $price_old = $related_post['discount_price_from'] < $related_post['price_from'] ? '<span class="item_info_price_old">' . BABE_Currency::get_currency_price( $related_post['price_from'] ) . '</span>' : '';
-				
-			$discount = $related_post['discount'] ? '<div class="item_info_price_discount">-' . $related_post['discount'] . '%</div>' : '';
-            
+
+            $discount = $related_post['discount'] ? '<div class="item_info_price_discount">-' . $related_post['discount'] . '%</div>' : '';
+
             $results[] = apply_filters('babe_post_related_item_html', '
           <div class="babe_all_items_item block_related_item">
 				<div class="babe_all_items_item_inner">
@@ -1603,88 +1516,78 @@ class BABE_html {
 				</div>
 			</div>
            ', $related_post, $image);
-           
-          } /// end foreach $related_post
-        
-          if (!empty($results)){
-            
-             $output .= '<div id="block_related">
+        }
+
+        if ( !empty($results) ){
+
+            $output .= '<div id="block_related">
               <div class="babe_shortcode_block_inner">
               '.implode('', $results).'
               </div>
             </div>';
-          }
-        
-          $output = apply_filters('babe_post_related_block_html', $output, $related_arr);
-        
         }
-        
-        return $output;
-    }    
-    
-///////////////////////////////   
-/////ajax_get_meeting_points////    
+
+        return apply_filters('babe_post_related_block_html', $output, $related_arr);
+    }
+
     /**
-	 * Get post meeting points as formatted string.
-     * @return void
+	 * Get post meeting points as formatted string
 	 */
-    public static function ajax_get_meeting_points() {
+    public static function ajax_get_meeting_points(): void
+    {
         $output = '';
-        
-        $results = array();
-        
+
         if (
-            isset($_POST['post_id'], $_POST['lat'], $_POST['lng'], $_POST['nonce'])
-            && BABE_Post_types::is_post_booking_obj($_POST['post_id'])
-            && wp_verify_nonce($_POST['nonce'], self::$nonce_title)
+            !isset($_POST['post_id'], $_POST['lat'], $_POST['lng'], $_POST['nonce'])
+            || !BABE_Post_types::is_post_booking_obj($_POST['post_id'])
+            || !wp_verify_nonce($_POST['nonce'], self::$nonce_title)
         ){
-            
-          $post_id = (int)$_POST['post_id'];
-          $post = BABE_Post_types::get_post($post_id);
-          $lat = (float)$_POST['lat'];
-          $lng = (float)$_POST['lng'];
-          
-          if (isset($post['meeting_points'], $post['meeting_place']) && $post['meeting_place'] === 'point'){
-            
-           $meeting_points = BABE_Post_types::get_post_meeting_points($post);
-           
-           if (!empty($meeting_points)){
-              foreach($meeting_points as $point_id => $meeting_point){      
-                $distance = BABE_Functions::distance($meeting_point['lat'], $meeting_point['lng'], $lat, $lng);
-                $distance = (int)($distance * 1000000);
-                $results[$distance] = '<div class="meeting_point" data-point-id="'.$point_id.'">
+            echo $output;
+            wp_die();
+        }
+
+        $post_id = (int)$_POST['post_id'];
+        $post = BABE_Post_types::get_post($post_id);
+        $lat = (float)$_POST['lat'];
+        $lng = (float)$_POST['lng'];
+        $meeting_points = BABE_Post_types::get_post_meeting_points($post);
+
+        if ( empty($meeting_points) ){
+            echo $output;
+            wp_die();
+        }
+
+        $results = [];
+
+        foreach($meeting_points as $point_id => $meeting_point){
+            $distance = BABE_Functions::distance($meeting_point['lat'], $meeting_point['lng'], $lat, $lng);
+            $distance = (int)($distance * 1000000);
+            $results[$distance] = '<div class="meeting_point" data-point-id="'.$point_id.'">
                 <div class="meeting_point_description">
                 <h4>'.implode(', ', $meeting_point['times']).' '.$meeting_point['address'].'</h4>
                 '.$meeting_point['description'].'
                 </div>
                 <button class="btn button add_destination" data-lat="'.$meeting_point['lat'].'" data-lng="'.$meeting_point['lng'].'" data-address="'.$meeting_point['address'].'" data-point-id="'.$point_id.'">'.__('Select address', 'ba-book-everything').'</button>
               </div>';
-              }
-              
-              /// sort results
-              if (!empty($results)){
-                ksort($results, SORT_NUMERIC);
-                $results = array_slice($results, 0, 5, true);
-              }
-              
-              $output .= '<h4>'.__('Select meeting point', 'ba-book-everything').'<a href="#booking_form">'.__('Go to Booking form', 'ba-book-everything').'</a></h4>'.implode('', $results);
-            
-           } //// end if !empty($meeting_points)
-            
-          } //// end if !empty($post) 
         }
+
+        /// sort results
+        if ( !empty($results) ){
+            ksort($results, SORT_NUMERIC);
+            $results = array_slice($results, 0, 5, true);
+        }
+
+        $output .= '<h4>'.__('Select meeting point', 'ba-book-everything').'<a href="#booking_form">'.__('Go to Booking form', 'ba-book-everything').'</a></h4>'.implode('', $results);
+
         echo $output;
         wp_die();
     }
 
-////////////////////////////////    
-/////ajax_booking_calculate////    
     /**
-	 * Get booking price.
-     * @return void
+	 * Get booking price
 	 */
-    public static function ajax_booking_calculate() {
-
+    public static function ajax_booking_calculate(): void
+    {
         $output = '';
 
         if (
@@ -1739,16 +1642,13 @@ class BABE_html {
         
         echo $output;
         wp_die();
-    }        
+    }
 
-//////////////////////////////    
-/////ajax_get_times_guests////    
     /**
 	 * Get available times and guests select for booking form.
-     * @return
 	 */
-    public static function ajax_get_times_guests() {
-
+    public static function ajax_get_times_guests(): void
+    {
         $output = array(
             'av_guests' => 0,
             'time_lines' => '',
@@ -1781,13 +1681,15 @@ class BABE_html {
         if ($rules_cat['rules']['basic_booking_period'] === 'recurrent_custom'){
 
             $av_times_arr = self::booking_form_av_times($post_id, $date_from);
-            if(!empty($av_times_arr)){
+
+            if( !empty($av_times_arr) ){
+
                 $output = $av_times_arr;
+
             } else {
                 $output['av_guests'] = 0;
                 $output['time_lines'] = '';
             }
-
         } else {
             //// or av_guests
             $output['av_guests'] = BABE_Calendar_functions::get_av_guests($post_id, $date_from, $date_to);
@@ -1796,8 +1698,13 @@ class BABE_html {
 
         $guests = !empty( $_POST['guests'] ) && is_array( $_POST['guests'] ) ? array_map('absint', $_POST['guests']) : array();
 
-        //// booking_form_select_guests
-        $output['select_guests'] = self::booking_form_select_guests($post_id, $output['av_guests'], $date_from, $date_to, $guests);
+        $output['select_guests'] = self::booking_form_select_guests(
+            $post_id,
+            $output['av_guests'],
+            $date_from,
+            $date_to,
+            $guests
+        );
 
         $babe_post = BABE_Post_types::get_post($post_id);
 
@@ -2036,9 +1943,8 @@ class BABE_html {
             $ignor_stop_booking
         );
         
-    }    
-    
-////////////////////////////
+    }
+
     /**
 	 * Create select guests input fields.
      * 
@@ -2047,11 +1953,17 @@ class BABE_html {
      * @param string $date_from - Y-m-d H:i:s, must be valid
      * @param string $date_to - Y-m-d H:i:s, must be valid
      * @param array $selected_guests_arr - [$age_id => $guests_num]
-     * 
      * @return string
 	 */
-    public static function booking_form_select_guests($post_id, $max_guests = 0, $date_from = '', $date_to ='', $selected_guests_arr = array()){
-        
+    public static function booking_form_select_guests(
+        int $post_id,
+        int $max_guests = 0,
+        string $date_from = '',
+        string $date_to ='',
+        array $selected_guests_arr = [],
+        array $order_item_args = []
+    ): string
+    {
         $output = '';
         
         $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($post_id);
@@ -2089,7 +2001,13 @@ class BABE_html {
             }
         }
 
-        $av_cal = BABE_Calendar_functions::get_av_cal($post_id, $date_from, $date_to);
+        $av_cal = BABE_Calendar_functions::get_av_cal(
+            $post_id,
+            $date_from,
+            $date_to,
+            $order_item_args,
+            !empty($order_item_args)
+        );
 
         if( empty($av_cal) ){
             return $output;
@@ -2416,7 +2334,13 @@ class BABE_html {
 
                 $guests = array_map('absint', $guests);
 
-                $guests_output = self::booking_form_select_guests($post_id, $av_guests, $date_from_sql, $date_to_sql, $guests);
+                $guests_output = self::booking_form_select_guests(
+                    $post_id,
+                    $av_guests,
+                    $date_from_sql,
+                    $date_to_sql,
+                    $guests
+                );
 
             } else {
 
@@ -3095,18 +3019,10 @@ class BABE_html {
         } /// end for $i
     
         return $output;
-    }                
-    
-////////////////////////////
-    /**
-	 * Add checkout form to page.
-     * 
-     * @param array $args
-     * 
-     * @return string
-	 */
-    public static function admin_order_confirm_page_content($args){
+    }
 
+    public static function admin_order_confirm_page_content( array $args ): string
+    {
         $output = '';
         
         $args = wp_parse_args( $args, array(
@@ -3116,39 +3032,162 @@ class BABE_html {
             'order_status' => '',
             'current_action' => '',
             'action_update' => '',
-            'check_update' => '',
         ));
         
-        if ('av_confirmation' != $args['order_status']){
-            //// Order is confirmed or rejected
+        if ( $args['order_status'] !== 'av_confirmation' ){
+
+            $output .= '<h4 class="babe_message_order babe_message_order_'.$args['action_update'].'">';
+
+            switch( $args['order_status'] ){
+                case 'payment_expected':
+                case 'payment_deferred':
+                case 'payment_received':
+                case 'payment_authorized':
+                case 'completed':
+                    $message = sprintf(__( 'Order #%s is confirmed.', 'ba-book-everything' ), $args['order_num']);
+                    break;
+                case 'customer_confirmation':
+                    $message = sprintf(__( 'Asked the customer to confirm or decline the changes to the order #%s', 'ba-book-everything' ), $args['order_num']);
+                    break;
+                case 'not_available':
+                case 'canceled':
+                    $message = sprintf(__( 'Order #%s is rejected.', 'ba-book-everything' ), $args['order_num']);
+                    break;
+                default:
+                    $message = '';
+                    break;
+            }
             
-            $add_class = $args['order_status'] != 'not_available' ? 'confirm' : 'reject';
-            
-            $output .= '<h4 class="babe_message_order babe_message_order_'.$add_class.'">';
-            
-            $output .= $args['order_status'] != 'not_available' ? sprintf(__( 'Order #%s is confirmed.', 'ba-book-everything' ), $args['order_num']) : sprintf(__( 'Order #%s is rejected.', 'ba-book-everything' ), $args['order_num']);
-            
-            $output .= '</h4>';
+            $output .= $message . '</h4>';
             
         } else {
-            $args['check_update'] = 1;
+
+            $output .= '<form id="admin_order_availability_action" name="admin_order_availability_action" method="post" action="">
             
-            unset($args['order_status']);
-            
-            $message = $args['action_update'] == 'confirm' ? __( 'Confirm Order #', 'ba-book-everything' ) : __( 'Reject Order #', 'ba-book-everything' );
-            
-            $message .= $args['order_num'];
-            
-            $url = BABE_Settings::get_admin_confirmation_page_url($args);
-            
-            //// Button as url with $message and check_update = 1
+            <input type="hidden" name="nonce" value="'.wp_create_nonce(BABE_html::$nonce_title).'">
+            <input type="hidden" name="check_update" value="1">
+            ';
+
+            switch( $args['action_update'] ){
+                case 'confirm':
+                    $output .= '<div>'.__( 'Please click the button below to confirm the order:', 'ba-book-everything' ).'</div>';
+                    $button_title = __( 'Confirm Order', 'ba-book-everything' );
+                    break;
+                case 'change':
+                    $button_title = __( 'Ask customer to confirm or reject changes to the booking', 'ba-book-everything' );
+                    $output .= '<label for="admin_order_change_message">'.__( 'Please describe below any changes to the booking that the client will need to confirm:', 'ba-book-everything' ).'</label>
+                    <textarea name="admin_order_change_message" id="admin_order_change_message" class="babe_admin_order_change_message" required="required"></textarea>';
+                    break;
+                case 'reject':
+                default:
+                    $output .= '<div>'.__( 'Please click the button below to reject the order:', 'ba-book-everything' ).'</div>';
+                    $button_title = __( 'Reject Order', 'ba-book-everything' );
+                    break;
+            }
+
             $output .= '<div class="babe_admin_order_confirm">
-              <a href="'.$url.'" class="babe_button_admin_order babe_button_admin_order_'.$args['action_update'].'">'.$message.'</a>
+              <button type="submit" class="button btn babe_button_admin_order babe_button_admin_order_'.$args['action_update'].'">'.$button_title.'</button>
             </div>';
+
+            $output .= '</form>';
         }
+
+        $output .= '<p>'.__( 'Order #', 'ba-book-everything' ).$args['order_num'].'</p>';
+
+        $output .= BABE_html::order_items($args['order_id']);
+        $output .= BABE_html::order_customer_details($args['order_id']);
         
         return $output; 
-    }    
+    }
+
+    public static function customer_order_confirm_page_content( array $args ): string
+    {
+        $output = '';
+
+        $args = wp_parse_args( $args, array(
+            'order_id' => 0,
+            'order_num' => '',
+            'order_hash' => '',
+            'order_status' => '',
+            'current_action' => '',
+            'action_update' => '',
+        ));
+
+        if ( $args['order_status'] !== 'customer_confirmation' ){
+
+            $output .= '<h4 class="babe_message_order babe_message_order_'.$args['action_update'].'">';
+
+            switch( $args['order_status'] ){
+                case 'payment_expected':
+                case 'payment_deferred':
+                case 'payment_received':
+                case 'payment_authorized':
+                case 'completed':
+                    $message = sprintf(__( 'Order #%s is confirmed.', 'ba-book-everything' ), $args['order_num']);
+                    break;
+                case 'not_available':
+                case 'canceled':
+                    $message = sprintf(__( 'Order #%s is canceled.', 'ba-book-everything' ), $args['order_num']);
+                    break;
+                default:
+                    $message = '';
+                    break;
+            }
+
+            $output .= $message . '</h4>';
+
+            if ( $args['order_status'] === 'payment_expected' ){
+
+                $output .= '<div>'._x( 'Your order is confirmed, but not completed. To complete your order, please click the button below to make a payment', 'customer_confirmation', 'ba-book-everything' )
+                    .'</div>'
+                    .'<div class="babe_order_confirm">
+              <a href="'.BABE_Order::get_order_payment_page($args['order_id']).'" class="babe_button_order babe_button_order_to_pay">'.__('Pay Now!', 'ba-book-everything').'</a>
+            </div>';
+            }
+
+        } else {
+
+            $output .= '<form id="customer_order_confirmation_action" name="customer_order_confirmation_action" method="post" action="">
+            
+            <input type="hidden" name="nonce" value="'.wp_create_nonce(BABE_html::$nonce_title).'">
+            <input type="hidden" name="check_update" value="1">
+            ';
+
+            switch( $args['action_update'] ){
+                case 'confirm':
+                    $output .= '<div>'.__( 'Please click the button below to confirm changes to the order:', 'ba-book-everything' )
+                        .'</div>'
+                        .'<div class="admin_to_customer_notes">'
+                        .BABE_Order::get_order_admin_to_customer_notes($args['order_id'])
+                        .'</div>'
+                    ;
+                    $button_title = __( 'Confirm changes to the Order', 'ba-book-everything' );
+                    break;
+                case 'reject':
+                default:
+                    $output .= '<div>'.__( 'Please click the button below to cancel the order:', 'ba-book-everything' ).'</div>';
+                    $button_title = __( 'Cancel Order', 'ba-book-everything' );
+                    break;
+            }
+
+            $output .= '<div class="babe_admin_order_confirm">
+              <button type="submit" class="button btn babe_button_admin_order babe_button_admin_order_'.$args['action_update'].'">'.$button_title.'</button>
+            </div>';
+
+            $output .= '</form>';
+        }
+
+        if ( $args['order_status'] === 'canceled' || $args['order_status'] === 'not_available'){
+            return $output;
+        }
+
+        $output .= '<p>'.__( 'Order #', 'ba-book-everything' ).$args['order_num'].'</p>';
+
+        $output .= BABE_html::order_items($args['order_id']);
+        $output .= BABE_html::order_customer_details($args['order_id']);
+
+        return $output;
+    }
     
 ////////////////////////////
     /**
@@ -3178,7 +3217,7 @@ class BABE_html {
 
         $currency = BABE_Order::get_order_currency($order_id);
 
-        $output .= '<table class="table_order_items_details"><tbody>';
+        $output .= '<table class="table_order_items_details" cellpadding="0" cellspacing="0"><tbody>';
 
         $subtotal = 0;
         $taxes_amount = 0;
@@ -3210,7 +3249,7 @@ class BABE_html {
             $output .= '<tr><td class="order_item_row_image">'.$image.'</td>';
 
             $output .= '<td class="order_item_row_details order_item_row_main_details">
-                <table class="table_order_item_row_details"><tbody>
+                <table class="table_order_item_row_details" cellpadding="0" cellspacing="0"><tbody>
                 
                 <tr><td class="order_item_info order_item_info_title">
                 '.$title.'
@@ -3251,7 +3290,10 @@ class BABE_html {
             $meeting_points_arr = BABE_Post_types::get_post_meeting_points($post);
             $meeting_point_id = isset($item['meta']['booking_meeting_point']) ? (int)$item['meta']['booking_meeting_point'] : '';
 
-            if (!empty($meeting_points_arr) && $meeting_point_id && isset($meeting_points_arr[$meeting_point_id])){
+            if (
+                $meeting_point_id
+                && isset($meeting_points_arr[$meeting_point_id])
+            ){
                 $mp_html = '
                   <tr><td class="order_item_info order_item_info_meeting_point">
                   <span class="order_item_td_label">'.__( 'Departure from:', 'ba-book-everything' ).'</span>
@@ -3275,14 +3317,19 @@ class BABE_html {
 
             } ///// end if !empty($meeting_points_arr)
 
-            if (!isset($rules_cat['category_meta']['categories_remove_guests']) || !$rules_cat['category_meta']['categories_remove_guests']){
+            if (
+                !isset($rules_cat['category_meta']['categories_remove_guests'])
+                || !$rules_cat['category_meta']['categories_remove_guests']
+            ){
                 /// Prices by age $item['meta']['price_arr']
                 $label_guests = $rules_cat['rules']['booking_mode'] === 'tickets' ? __( 'Tickets:', 'ba-book-everything' ) : __( 'Guests:', 'ba-book-everything' );
 
                 $guests_html = '
                   <tr><td class="order_item_info order_item_info_guests">
                   <span class="order_item_td_label">'.$label_guests.'</span>
-                  <span class="order_item_td_value"><table class="order_item_age_prices"><tbody>';
+                  <span class="order_item_td_value">
+                  <table class="order_item_age_prices" cellpadding="0" cellspacing="0"><tbody>
+                  ';
 
                 foreach($item['meta']['guests'] as $age_id => $guests_num){
 
@@ -3330,6 +3377,17 @@ class BABE_html {
                 $output = apply_filters('babe_order_items_after_guests', $output, $post, $rules_cat, $item, $total_item_prices);
             }
 
+            $admin_to_customer_notes = BABE_Order::get_order_admin_to_customer_notes($order_id);
+
+            if ( !empty($admin_to_customer_notes) ){
+                $output .= '
+                  <tr><td class="order_item_info order_item_info_admin_to_customer_notes">
+                  <div class="admin_to_customer_notes">
+                  '.$admin_to_customer_notes
+                  .'</div>
+                  </td></tr>';
+            }
+
             $output = apply_filters('babe_order_items_after_main_rows', $output, $post, $rules_cat, $item, $total_item_prices);
 
             $output .= '
@@ -3353,7 +3411,7 @@ class BABE_html {
             }
 
             $output .= '
-                <table class="table_order_item_total_price"><tbody>
+                <table class="table_order_item_total_price" cellpadding="0" cellspacing="0"><tbody>
                 <tr><td class="order_item_total_price">'.BABE_Currency::get_currency_price($guests_price, $currency).'
                 </td></tr>
                 '.$discount_note.'
@@ -3416,7 +3474,7 @@ class BABE_html {
                     $output .= '
                </td>
                <td class="order_item_row_price">
-                <table class="table_order_item_total_price"><tbody>
+                <table class="table_order_item_total_price" cellpadding="0" cellspacing="0"><tbody>
                 <tr><td class="order_item_total_price">'.BABE_Currency::get_currency_price($price, $currency).'
                 </td></tr>
                 </tbody></table>
@@ -3764,8 +3822,8 @@ class BABE_html {
 
         $order_meta = BABE_Order::get_order_customer_details($order_id);
         
-        unset($order_meta['email_check']);
-        
+        unset($order_meta['email_check'], $order_meta['admin_to_customer_notes']);
+
         $order_meta = apply_filters('babe_order_customer_details_fields', $order_meta, $order_id);
         
         $output .= '<table class="table_customer_details" cellpadding="0" cellspacing="0"><tbody>';
@@ -4192,7 +4250,7 @@ class BABE_html {
         ));
         
         $order_id = $args['order_id'];
-        
+
         ///// messages for $args['order_status']
         if (
             $args['order_status']
@@ -5426,10 +5484,5 @@ class BABE_html {
         }
         
         return $output; 
-    }    
-
-////////////////////////////
-    
+    }
 }
-
-BABE_html::init();

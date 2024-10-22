@@ -234,6 +234,11 @@ class BABE_html_emails {
         
         return $output; 
     }
+
+    public static function email_wrap_notes( string $content ): string
+    {
+        return '<div class="admin_to_customer_notes">'.$content.'</div>';
+    }
     
 //////////////email_get_row_separator//////////////
     /**

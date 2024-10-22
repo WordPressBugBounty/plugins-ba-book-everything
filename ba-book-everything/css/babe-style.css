@@ -1093,6 +1093,7 @@ td.not_available4.ui-datepicker-unselectable.ui-state-disabled > a{
 .table_order_items_details, table.table_order_items_details{
     border: 1px solid #dfdfdf;
     font-size: 15px;
+    border-spacing: 0;
 }
 
 .table_order_items_details > tr, .table_order_items_details > tbody > tr > td, .table_order_items_details > tbody > tr:last-child > td{
@@ -1118,6 +1119,11 @@ td.not_available4.ui-datepicker-unselectable.ui-state-disabled > a{
     margin: 0;
 }
 
+.table_order_item_total_price, table.table_order_item_total_price,
+.table_order_item_row_details, .table_customer_details, .order_item_age_prices{
+    border-spacing: 0;
+}
+
 .table_order_item_row_details td, table.table_order_item_row_details td{
     border: none;
 }
@@ -1128,6 +1134,18 @@ td.not_available4.ui-datepicker-unselectable.ui-state-disabled > a{
 
 .table_order_items_details td.order_item_info_title{
     font-size: 20px;
+}
+
+.admin_to_customer_notes{
+    border: 1px solid #ffecb5;
+    border-radius: 5px;
+    padding: 10px;
+    color: #664d03;
+    background-color: #fff3cd;
+}
+
+.order_item_info_guests .order_item_td_value{
+    display: block;
 }
 
 .order_item_td_label{
@@ -1540,6 +1558,10 @@ table.order_item_age_prices td, table.order_item_age_prices td{
     background-color: #F64020;
 }
 
+.babe_button_admin_order_change{
+    background-color: #e5a320;
+}
+
 .babe_message_order{
     border: 1px solid #dfdfdf;
     padding: 20px;
@@ -1559,7 +1581,7 @@ table.order_item_age_prices td, table.order_item_age_prices td{
     background-color: antiquewhite;
 }
 
-.babe_message_order_status_av_confirmation{
+.babe_message_order_status_av_confirmation, .babe_message_order_change{
     border-color: cornflowerblue;
     background-color: gainsboro;
 }
@@ -2204,12 +2226,24 @@ table.order_item_age_prices td, table.order_item_age_prices td{
     font-size: 1.5rem;
 }
 
+.my_bookings_table_icon_button_wrapper{
+    display: flex;
+    justify-content: space-around;
+}
+
 .my_bookings_table_icon_button.icon-button-confirm{
     color: #9acd32;
+    margin: 0;
 }
 
 .my_bookings_table_icon_button.icon-button-reject{
     color: #F64020;
+    margin: 0;
+}
+
+.my_bookings_table_icon_button.icon-button-change{
+    color: #e5a320;
+    margin: 0;
 }
 
 #my_account_page_wrapper .my_bookings_table_a_button.btn-av-confirm{

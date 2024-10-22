@@ -140,6 +140,16 @@ a{
    font-weight:bold; 
 }
 
+.button_td3{
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    vertical-align: middle;
+    background-color:<?php echo BABE_Settings::$settings['email_color_button_change']; ?>;
+    color:#ffffff;
+    font-weight:bold;
+}
+
 .button_a{
    text-decoration: none;
    color: #ffffff;
@@ -224,6 +234,23 @@ a{
 .table_order_items_details a{
     text-decoration:none;
     color: <?php echo BABE_Settings::$settings['email_color_link']; ?>;
+}
+
+.table_order_item_total_price, table.table_order_item_total_price,
+.table_order_item_row_details, .table_customer_details, .order_item_age_prices{
+    border-spacing: 0;
+}
+
+.admin_to_customer_notes{
+    border: 1px solid #ffecb5;
+    border-radius: 5px;
+    padding: 10px;
+    color: #664d03;
+    background-color: #fff3cd;
+}
+
+.order_item_info_guests .order_item_td_value{
+    display: block;
 }
 
 .order_item_row_image{

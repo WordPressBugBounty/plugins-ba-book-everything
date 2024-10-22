@@ -1969,103 +1969,92 @@ class BABE_Post_types {
     
 //////////////////////////////
     /**
-	 * Get post FAQs.
-     * @param array $post
-     * @return array
+	 * Get post FAQs
 	 */
-    public static function get_post_faq($post) {
-        
-        $output = array();
-          
-        if (!empty($post) && isset($post['ID']) && isset($post['faq']) && !empty($post['faq'])){
-            
-          $ids = (array)$post['faq'];
-            
-          if (!empty($ids)){
-             $ids = array_map( 'intval', $ids );
-                
-             $args = array(
-                'post_type'   => self::$faq_post_type,
-                'numberposts' => -1,
-                'post__in' => $ids,
-                'post_status' => 'publish',
-                'orderby' => 'menu_order',
-                'order' => 'ASC',
-                'suppress_filters' => false,
-             );
-             
-             $args = apply_filters('babe_get_post_faq_args', $args, $post);
-             
-             $posts_obj = get_posts( $args );
-             $output = json_decode(json_encode($posts_obj), true);
-          } //// end if !empty $ids   
-       } /// end if !empty $post      
-             
-       return $output;
-    
-    }
-    
-//////////////////////////////
-    /**
-	 * Get post related items.
-     * 
-     * @param array $post
-     * @return array
-	 */
-    public static function get_post_related($post) {
-        
+    public static function get_post_faq( array $post): array
+    {
         $output = [];
 
-        if (isset(self::$post_related[$post['ID']])){
+        if ( empty($post['faq']) ){
+            return $output;
+        }
+
+        $ids = array_map( 'intval', (array)$post['faq'] );
+
+        $args = array(
+            'post_type'   => self::$faq_post_type,
+            'numberposts' => -1,
+            'post__in' => $ids,
+            'post_status' => 'publish',
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
+            'suppress_filters' => false,
+        );
+
+        $args = apply_filters('babe_get_post_faq_args', $args, $post);
+
+        $posts_obj = get_posts( $args );
+        $output = json_decode(json_encode($posts_obj), true);
+
+        return $output;
+    }
+
+    /**
+	 * Get post related items
+	 */
+    public static function get_post_related( array $post ): array
+    {
+        $output = [];
+
+        if ( isset(self::$post_related[$post['ID']]) ){
             return self::$post_related[$post['ID']];
         }
-          
-        if (!empty($post) && isset($post['ID']) && isset($post['related_items']) && !empty($post['related_items'])){
-            
-          $ids = (array)$post['related_items'];
-            
-          if (!empty($ids)){
-             $ids = array_map( 'intval', $ids );
-                
-             $args = array(
-                'post__in' => $ids,
-             );
-             
-             $args = apply_filters('babe_get_post_related', $args, $post);
-             
-             $output = self::get_posts( $args );
-          } //// end if !empty $ids   
-       } /// end if !empty $post
+
+        if ( empty($post['related_items']) ){
+            return $output;
+        }
+
+        $ids = array_map( 'intval', (array)$post['related_items'] );
+
+        $args = array(
+            'post__in' => $ids,
+        );
+
+        $args = apply_filters('babe_get_post_related', $args, $post);
+
+        $output = self::get_posts( $args );
 
         self::$post_related[$post['ID']] = $output;
-             
-       return $output;
-    
-    }             
-    
-/////////////////////    
+
+        return $output;
+    }
+
     /**
-	 * Get post meeting points.
-     * @param array $post
-     * @return array
+	 * Get post meeting points
 	 */
-    public static function get_post_meeting_points($post) {
-        $output = array();
-          
-          if (!empty($post) && isset($post['meeting_points']) && isset($post['meeting_place']) && $post['meeting_place'] == 'point'){
-           
-           foreach($post['meeting_points'] as $meeting_point){
-            
-              $place_id = $meeting_point['place'];
-              $address_arr = get_post_meta($place_id, 'address', true);
-              $description = get_post_meta($place_id, 'description', true);
-              $lat = isset($address_arr['latitude']) ? $address_arr['latitude'] : 0;
-              $lng = isset($address_arr['longitude']) ? $address_arr['longitude'] : 0;
-              $address = isset($address_arr['address']) ? apply_filters('translate_text', $address_arr['address']) : '';
-              
-              $times = array();
-              if (!empty($post['schedule'])){
-                 foreach($post['schedule'] as $schedule){
+    public static function get_post_meeting_points( array $post ): array
+    {
+        $output = [];
+
+        if (
+            !isset($post['meeting_points'], $post['meeting_place'])
+            || $post['meeting_place'] !== 'point'
+        ){
+            return $output;
+        }
+
+        foreach($post['meeting_points'] as $meeting_point){
+
+            $place_id = $meeting_point['place'];
+            $address_arr = get_post_meta($place_id, 'address', true);
+            $description = get_post_meta($place_id, 'description', true);
+            $lat = isset($address_arr['latitude']) ? $address_arr['latitude'] : 0;
+            $lng = isset($address_arr['longitude']) ? $address_arr['longitude'] : 0;
+            $address = isset($address_arr['address']) ? apply_filters('translate_text', $address_arr['address']) : '';
+
+            $times = array();
+            if (!empty($post['schedule'])){
+                foreach($post['schedule'] as $schedule){
                     foreach($schedule as $time){
                         if ( $time === '0:00 am' ){
                             $time = '12:00 am';
@@ -2079,24 +2068,22 @@ class BABE_Post_types {
                         }
                         $times[$time] = $date_tmp->format(get_option('time_format'));
                     }
-                 }
-              }
-              $times = array_unique($times);
-              
-              $output[$place_id] = array(
-                 'title' => get_the_title($place_id),
-                 'address' => $address,
-                 'lat' => $lat,
-                 'lng' => $lng,
-                 'description' => $description,
-                 'times' => $times,
-                 'permalink' => get_permalink($place_id),
-                 'point_id' => $place_id,
-              );
-           } //// end foreach $post['meeting_points']
-            
-          } //// end if !empty($post) 
-        
+                }
+            }
+            $times = array_unique($times);
+
+            $output[$place_id] = array(
+                'title' => get_the_title($place_id),
+                'address' => $address,
+                'lat' => $lat,
+                'lng' => $lng,
+                'description' => $description,
+                'times' => $times,
+                'permalink' => get_permalink($place_id),
+                'point_id' => $place_id,
+            );
+        }
+
         return $output;
     }
     

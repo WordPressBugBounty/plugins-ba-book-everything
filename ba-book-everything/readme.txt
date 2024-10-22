@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.6.2
-Stable tag: 1.7.8
+Stable tag: 1.7.10
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,14 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.10 =
+* Fixed a js issue with locked order confirmation buttons on My account page
+
+= 1.7.9 =
+* Added new order status "customer_confirmation" which can be used with manual order confirmation mode to provide changes to the booking in a note form and ask a customer to confirm or reject the order
+* Added an option so that for all subsequent payments only allow the payment gateway that was used for the deposit (BA Settings admin menu)
+* Fixed an issue with an undefined array key "wp_import" in class-babe-import-export.php
 
 = 1.7.8 =
 * Fixed a coupon payment activation issue when coupon was not applied to an order

@@ -438,6 +438,7 @@ public static function pager($max_num_pages){
             $current_language => [
                 'native_name' => $current_language_name,
                 'translated_name' => $current_language_name,
+                'default_locale' => get_locale(),
                 'language_code' => $current_language_name,
                 'url' => home_url( $wp->request ),
             ]

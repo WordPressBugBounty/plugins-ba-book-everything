@@ -41,8 +41,6 @@ class BABE_Payments {
         
         add_action( 'init', array( __CLASS__, 'rewrite_rule'), 1 );
         add_action( 'init', array( __CLASS__, 'init_settings'), 11 );
-
-        add_action( 'babe_checkout_payment_gateway_selected', array( __CLASS__, 'checkout_payment_gateway_selected'), 10, 2 );
         
         add_action( 'template_redirect', array( __CLASS__, 'payment_server_response'), 1);
 	}
@@ -73,7 +71,7 @@ class BABE_Payments {
 
         if ( $order_coupon_num && $order_coupon_amount && $total_with_coupon == 0 ){
 
-            update_post_meta($order_id, '_payment_method', 'coupon');
+            BABE_Order::update_order_payment_method( $order_id, 'coupon' );
 
             add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'switch_to_coupon_payment_method'), 100 );
 
@@ -88,9 +86,8 @@ class BABE_Payments {
             add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'remove_coupon_payment_method'), 100 );
 
             $payment_method = get_post_meta($order_id, '_payment_method', true);
-            if ( empty($payment_method) || 'coupon' === $payment_method ){
-                $payment_methods_arr = BABE_Settings::get_active_payment_methods($order_id);
-                update_post_meta($order_id, '_payment_method', key($payment_methods_arr) );
+            if ( 'coupon' === $payment_method ){
+                BABE_Order::set_order_default_payment_gateway($order_id);
             }
         }
     }
@@ -106,42 +103,6 @@ class BABE_Payments {
     {
         unset( $payment_methods_arr['coupon'] );
         return $payment_methods_arr;
-    }
-
-    /**
-     * Init $payment_methods array
-     *
-     * @param int $order_id
-     * @param string $method
-     * @return void
-     */
-    public static function checkout_payment_gateway_selected( $order_id, $payment_method = ''){
-
-        $active_payment_methods = BABE_Settings::get_active_payment_methods($order_id);
-
-        if ( empty($payment_method) ){
-            reset( $active_payment_methods );
-            $payment_method = (string)key( $active_payment_methods );
-        }
-
-        BABE_Order::update_order_payment_method( $order_id, $payment_method );
-
-        if (
-            !empty(BABE_Settings::$settings[$payment_method.'_payment_gateway_fee_title'])
-            && !empty(BABE_Settings::$settings[$payment_method.'_payment_gateway_fee_percents'])
-        ){
-
-            BABE_Order::update_order_payment_gateway_fee_percents( $order_id, BABE_Settings::$settings[$payment_method.'_payment_gateway_fee_percents'] );
-            BABE_Order::update_order_payment_gateway_fee_title( $order_id, BABE_Settings::$settings[$payment_method.'_payment_gateway_fee_title'] );
-        } else {
-            // reset payment gateway fee for current order
-            BABE_Order::update_order_payment_gateway_fee_percents( $order_id, 0 );
-            BABE_Order::update_order_payment_gateway_fee_title( $order_id, '' );
-        }
-
-        if ( $payment_method ){
-            do_action( 'babe_checkout_payment_gateway_selected_'.$payment_method, $order_id);
-        }
     }
     
 ////////////////////////

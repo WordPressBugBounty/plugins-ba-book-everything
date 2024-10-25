@@ -272,6 +272,8 @@ class BABE_Order {
         add_action( 'babe_payments_before_do_complete_order', array( __CLASS__, 'switch_locale_by_order_id'), 10, 1);
 
         add_filter( 'babe_get_active_payment_methods', [ __CLASS__, 'force_order_payment_method' ], 100, 2 );
+
+        add_action( 'babe_checkout_payment_gateway_selected', [ __CLASS__, 'checkout_payment_gateway_selected' ], 10, 2 );
 	}
 
     /**
@@ -576,6 +578,21 @@ class BABE_Order {
         unset( self::$order_meta[$order_id] );
     }
 
+    public static function update_order_payment_gateway_data( int $order_id, string $payment_method )
+    {
+        if (
+            !empty(BABE_Settings::$settings[$payment_method.'_payment_gateway_fee_title'])
+            && !empty(BABE_Settings::$settings[$payment_method.'_payment_gateway_fee_percents'])
+        ){
+            self::update_order_payment_gateway_fee_percents( $order_id, BABE_Settings::$settings[$payment_method.'_payment_gateway_fee_percents'] );
+            self::update_order_payment_gateway_fee_title( $order_id, BABE_Settings::$settings[$payment_method.'_payment_gateway_fee_title'] );
+        } else {
+            // reset payment gateway fee for current order
+            self::update_order_payment_gateway_fee_percents( $order_id, 0 );
+            self::update_order_payment_gateway_fee_title( $order_id, '' );
+        }
+    }
+
     /**
      * Get order payment gateway name
      * @param int $order_id
@@ -605,6 +622,11 @@ class BABE_Order {
     public static function update_order_payment_method( $order_id, $method ) {
 
         update_post_meta($order_id, '_payment_method', $method );
+        unset( self::$order_meta[$order_id] );
+    }
+
+    public static function delete_order_payment_method( $order_id ) {
+        delete_post_meta($order_id, '_payment_method');
         unset( self::$order_meta[$order_id] );
     }
 
@@ -1562,6 +1584,7 @@ class BABE_Order {
 
          $item_prices = self::get_order_prices($order_id);
          $all_items = self::get_order_items($order_id);
+         $order_item = reset($all_items);
 
          foreach($item_prices as $order_item_id => $item_price_arr){
 
@@ -1574,8 +1597,15 @@ class BABE_Order {
          update_post_meta($order_id, '_total_amount', $amount);
          update_post_meta($order_id, '_payment_model', $payment_model);
 
+         $booking_obj_id = (int)$order_item['booking_obj_id'];
+         $deposit_fixed = (float)get_post_meta($booking_obj_id, 'deposit_fixed', true);
+         $order_status = self::get_order_status($order_id);
+         $prepaid_received = self::get_order_prepaid_received($order_id);
+
          if ( $payment_model === 'full' ){
              update_post_meta($order_id, '_prepaid_amount', $amount);
+         } elseif( $order_status === 'draft' && !$deposit_fixed && !$prepaid_received ) {
+             update_post_meta($order_id, '_prepaid_amount', $prepaid_amount);
          }
 
          unset(self::$order_meta[$order_id]);
@@ -1739,15 +1769,13 @@ class BABE_Order {
      /**
 	 * Action on delete post
      * @param int $order_id
-     * @return
+     * @return void
 	 */
-     public static function delete_order_post($order_id){
-        
+     public static function delete_order_post( $order_id ){
         $post_type = get_post_type( $order_id );
-        if( $post_type == BABE_Post_types::$order_post_type ) { 
+        if( $post_type === BABE_Post_types::$order_post_type ) {
            self::delete_order($order_id);
         }
-    
     }             
      
 ////////////////////////
@@ -2087,7 +2115,9 @@ class BABE_Order {
          reset($payment_methods_arr);
          $payment_method = key($payment_methods_arr);
 
-         do_action('babe_checkout_payment_gateway_selected', $order_id, $payment_method);
+         if ( BABE_Settings::$settings['order_availability_confirm'] === 'auto' ){
+             do_action('babe_checkout_payment_gateway_selected', $order_id, $payment_method);
+         }
 
          $price_arr = BABE_Prices::get_obj_total_price_arr($post_arr['booking_obj_id'], $post_arr['date_from'], $post_arr['guests'], $post_arr['date_to'], $post_arr['services'], $post_arr['fees'], $order_id);
 
@@ -2152,83 +2182,131 @@ class BABE_Order {
              $post_arr['current_action'] = 'to_services';
              wp_safe_redirect( BABE_Settings::get_services_page_url($post_arr) );
          }
-     }     
-     
-////////checkout_page_prepare/////////////                                          
+     }
+
      /**
 	 * Checkout page prepare
      * @return string
 	 */
      public static function checkout_page_prepare($content){
-        
-        $output = $content;
-        
-        $args = (array)wp_parse_args( $_GET, array(
-            'order_id' => 0,
-            'order_num' => '',
-            'order_hash' => '',
-        ));
-        
-        /// is order data valid
-        
-        $order_id = absint($args['order_id']);
-        
-        if (self::is_order_valid($order_id, $args['order_num'], $args['order_hash'])){
-        
-        /// get order meta
-        $order_meta = self::get_order_meta($order_id);
 
-        if ( empty($order_meta) ){
-            return $output;
-        }
-        
-        $args['total_amount'] = $order_meta['_total_amount'];
-        $args['prepaid_amount'] = $order_meta['_prepaid_amount'];
-        $args['payment_model'] = $order_meta['_payment_model'];
-        $args['order_currency'] = $order_meta['_order_currency'];
-        
-        $order_status = $order_meta['_status'];
-        
-        /// clear order meta
-        $order_meta = self::clear_order_meta($order_meta);
-        $args['meta'] = $order_meta;
-        
-        if ( $order_status === 'payment_expected' || $order_status === 'draft'){
-        
-        if (!isset($order_meta['first_name'])){
-            /// get user meta if user is logged in
-            $user_info = wp_get_current_user();
-            if ( $user_info != null && $user_info->ID > 0){
-                
-                $args['meta']['email'] = $user_info->user_email;
-                $args['meta']['email_check'] = $user_info->user_email;
-                $args['meta']['first_name'] = $user_info->first_name;
-                $args['meta']['last_name'] = $user_info->last_name;
-                
-                $contacts = get_user_meta($user_info->ID, 'contacts', 1);
-                if (is_array($contacts)){
-                    $args['meta'] += $contacts;
-                }
-            }
-        } else {
-            $args['meta']['email_check'] = $args['meta']['email'];
-        }
-        
-        //// select action
-        if ($order_status === 'payment_expected' || ($order_status === 'draft' && BABE_Settings::$settings['order_availability_confirm'] === 'auto' )){
-            $args['action'] = 'to_pay';
-        } else {
-            $args['action'] = 'to_av_confirm';
-        }
-        
-        $output .= BABE_html::checkout_form($args);
-        
-        } //// end if payment_expected or draft
-        
-        } //// end if is_order_valid
-        
-        return $output;
+         $output = $content;
+
+         $args = (array)wp_parse_args( $_GET, array(
+             'order_id' => 0,
+             'order_num' => '',
+             'order_hash' => '',
+         ));
+
+         $order_id = absint($args['order_id']);
+
+         if ( !self::is_order_valid($order_id, $args['order_num'], $args['order_hash']) ){
+             return $output;
+         }
+
+         $order_meta = self::get_order_meta($order_id);
+
+         if ( empty($order_meta) ){
+             return $output;
+         }
+
+         $args['total_amount'] = $order_meta['_total_amount'];
+         $args['prepaid_amount'] = $order_meta['_prepaid_amount'];
+         $args['payment_model'] = $order_meta['_payment_model'];
+         $args['order_currency'] = $order_meta['_order_currency'];
+
+         $order_status = $order_meta['_status'];
+
+         /// clear order meta
+         $order_meta = self::clear_order_meta($order_meta);
+         $args['meta'] = $order_meta;
+
+         if ( $order_status !== 'payment_expected' && $order_status !== 'draft' ){
+             return $output;
+         }
+
+         if ( !isset($order_meta['first_name']) ){
+             /// get user meta if user is logged in
+             $user_info = wp_get_current_user();
+             if ( $user_info != null && $user_info->ID > 0){
+
+                 $args['meta']['email'] = $user_info->user_email;
+                 $args['meta']['email_check'] = $user_info->user_email;
+                 $args['meta']['first_name'] = $user_info->first_name;
+                 $args['meta']['last_name'] = $user_info->last_name;
+
+                 $contacts = get_user_meta($user_info->ID, 'contacts', 1);
+                 if (is_array($contacts)){
+                     $args['meta'] += $contacts;
+                 }
+             }
+         } else {
+             $args['meta']['email_check'] = $args['meta']['email'];
+         }
+
+         //// select action
+         if (
+             $order_status === 'payment_expected'
+             || (
+                 $order_status === 'draft'
+                 && BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+             )
+         ){
+             $args['action'] = 'to_pay';
+
+             $order_payment_method = self::get_order_payment_method($order_id);
+
+             if ( empty($order_payment_method) ){
+                 self::set_order_default_payment_gateway($order_id);
+                 $order_meta = self::get_order_meta($order_id);
+                 $args['total_amount'] = $order_meta['_total_amount'];
+                 $args['prepaid_amount'] = $order_meta['_prepaid_amount'];
+             }
+
+         } else {
+             $args['action'] = 'to_av_confirm';
+         }
+
+         $output .= BABE_html::checkout_form($args);
+
+         return $output;
      }
+
+    public static function set_order_default_payment_gateway( int $order_id ): void
+    {
+        $payment_methods_arr = BABE_Settings::get_active_payment_methods();
+        reset($payment_methods_arr);
+        $payment_method = key($payment_methods_arr);
+
+        do_action('babe_checkout_payment_gateway_selected', $order_id, $payment_method);
+
+        self::recalculate_order_total_amount($order_id);
+
+        do_action('babe_after_set_order_default_payment_gateway', $order_id, $payment_method);
+    }
+
+    /**
+     * Init $payment_methods array
+     *
+     * @param int $order_id
+     * @param string $method
+     * @return void
+     */
+    public static function checkout_payment_gateway_selected(
+        int $order_id,
+        string $payment_method = ''
+    ){
+        if ( empty($payment_method) ){
+            $active_payment_methods = BABE_Settings::get_active_payment_methods($order_id);
+            reset( $active_payment_methods );
+            $payment_method = (string)key( $active_payment_methods );
+        }
+
+        self::update_order_payment_method( $order_id, $payment_method );
+        self::update_order_payment_gateway_data( $order_id, $payment_method );
+
+        do_action( 'babe_checkout_payment_gateway_selected_'.$payment_method, $order_id);
+    }
      
 ////////services_page_prepare/////////////                                          
      /**

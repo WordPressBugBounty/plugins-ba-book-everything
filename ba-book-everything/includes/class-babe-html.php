@@ -3694,7 +3694,10 @@ class BABE_html {
 
         $order_id = absint($args['order_id']);
 
-        if ( !isset($all_payment_methods[$payment_method]) || !BABE_Order::is_order_valid($order_id, $args['order_num'], $args['order_hash']) ){
+        if (
+            !isset($all_payment_methods[$payment_method])
+            || !BABE_Order::is_order_valid($order_id, $args['order_num'], $args['order_hash'])
+        ){
             echo json_encode($output);
             wp_die();
         }
@@ -4126,7 +4129,7 @@ class BABE_html {
 
                 foreach($payment_methods_arr as $method => $method_title){
 
-                    $tab_start_active = $method == $order_payment_method ? ' tab_active' : '';
+                    $tab_start_active = $method === $order_payment_method ? ' tab_active' : '';
 
                     $payment_titles .= '<span class="payment_method_title payment_method_title_'
                         .$method

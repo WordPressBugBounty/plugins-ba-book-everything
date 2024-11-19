@@ -45,200 +45,6 @@ class BABE_Order {
         global $wpdb;
         self::$table_order_itemmeta = $wpdb->prefix.'babe_order_itemmeta';
         self::$table_order_items = $wpdb->prefix.'babe_order_items';
-        
-        self::$order_statuses = array(
-            'draft' => __( 'draft', 'ba-book-everything' ),
-            'av_confirmation' => __( 'availability confirmation', 'ba-book-everything' ),
-            'customer_confirmation' => __( 'customer confirmation', 'ba-book-everything' ),
-            'not_available' => __( 'not available', 'ba-book-everything' ),
-            'payment_deferred' => __( 'payment deferred', 'ba-book-everything' ),
-            'payment_expected' => __( 'payment expected', 'ba-book-everything' ),
-            'payment_processing' => __( 'payment processing', 'ba-book-everything' ),
-            'payment_authorized' => __( 'payment authorized', 'ba-book-everything' ),
-            'payment_received' => __( 'payment received', 'ba-book-everything' ),
-            'canceled' => __( 'canceled', 'ba-book-everything' ),
-            'completed' => __( 'completed', 'ba-book-everything' ),
-        );
-
-        self::$order_default_statuses = self::$order_statuses;
-
-        self::$order_status_router = [
-            'draft' => [
-                'av_confirmation' => [
-                    'action' => 'new_order_av_confirm',
-                    ],
-                'payment_received' => [
-                    'action' => 'new_order',
-                    ],
-                'payment_authorized' => [
-                    'action' => 'new_order',
-                ],
-                'payment_expected' => [
-                    'action' => 'new_order_to_pay',
-                    ],
-                'payment_deferred' => [
-                    'action' => 'new_order',
-                    ],
-                'completed' => [
-                    'action' => 'new_order',
-                    ],
-            ],
-            'av_confirmation' => [
-                'not_available' => [
-                    'action' => 'order_rejected',
-                    ],
-                'customer_confirmation' => [
-                    'action' => 'order_customer_confirmation',
-                    ],
-                'canceled' => [
-                    'action' => 'order_canceled',
-                    ],
-                'payment_authorized' => [
-                    'action' => 'order_updated',
-                ],
-                'payment_received' => [
-                    'action' => 'order_updated',
-                    ],
-                'payment_expected' => [
-                    'action' => 'new_order_to_pay',
-                    ],
-                'payment_deferred' => [
-                    'action' => 'order_updated',
-                    ],
-                'completed' => [
-                    'action' => 'order_updated',
-                    ],
-            ],
-            'customer_confirmation' => [
-                'canceled' => [
-                    'action' => 'order_canceled',
-                    ],
-                'payment_expected' => [
-                    'action' => 'new_order_to_pay',
-                    ],
-                'payment_deferred' => [
-                    'action' => 'order_updated',
-                    ],
-            ],
-            'payment_deferred' => [
-                'not_available' => [
-                    'action' => 'order_canceled',
-                    ],
-                'canceled' => [
-                    'action' => 'order_canceled',
-                    ],
-                'customer_confirmation' => [
-                    'action' => 'order_customer_confirmation',
-                ],
-                'payment_authorized' => [
-                    'action' => 'order_updated',
-                ],
-                'payment_received' => [
-                    'action' => 'order_updated',
-                    ],
-                'payment_expected' => [
-                    'action' => 'new_order_to_pay',
-                    ],
-                'completed' => [
-                    'action' => 'order_updated',
-                    ],
-            ],
-            'payment_expected' => [
-                'not_available' => [
-                    'action' => 'order_canceled',
-                    ],
-                'canceled' => [
-                    'action' => 'order_canceled',
-                    ],
-                'customer_confirmation' => [
-                    'action' => 'order_customer_confirmation',
-                ],
-                'payment_authorized' => [
-                    'action' => 'order_updated',
-                ],
-                'payment_received' => [
-                    'action' => 'order_updated',
-                    ],
-                'payment_deferred' => [
-                    'action' => 'order_updated',
-                    ],
-                'completed' => [
-                    'action' => 'order_updated',
-                    ],
-            ],
-            'payment_processing' => [
-                'not_available' => [
-                    'action' => 'order_canceled',
-                    ],
-                'canceled' => [
-                    'action' => 'order_canceled',
-                    ],
-                'payment_authorized' => [
-                    'action' => 'order_updated',
-                ],
-                'payment_received' => [
-                    'action' => 'order_updated',
-                    ],
-                'payment_deferred' => [
-                    'action' => 'order_updated',
-                    ],
-                'completed' => [
-                    'action' => 'order_updated',
-                    ],
-            ],
-            'payment_received' => [
-                'canceled' => [
-                    'action' => 'order_canceled',
-                    ],
-                'payment_expected' => [
-                    'action' => 'new_order_to_pay',
-                    ],
-                'payment_deferred' => [
-                    'action' => 'order_updated',
-                    ],
-                'completed' => [
-                    'action' => 'order_updated',
-                    ],
-            ],
-            'completed' => [
-                'canceled' => [
-                    'action' => 'order_canceled',
-                    ],
-                'payment_received' => [
-                    'action' => 'order_updated',
-                    ],
-                'payment_expected' => [
-                    'action' => 'new_order_to_pay',
-                    ],
-                'payment_deferred' => [
-                    'action' => 'order_updated',
-                    ],
-            ],
-        ];
-
-        self::$order_actions = [
-            'new_order' => [
-                'title' => __( 'New order', 'ba-book-everything' ),
-            ],
-            'new_order_av_confirm' => [
-                'title' => __( 'New order for confirmation', 'ba-book-everything' ),
-            ],
-            'order_customer_confirmation' => [
-                'title' => __( 'Ask customer to confirm or reject changes in the booking', 'ba-book-everything' ),
-            ],
-            'new_order_to_pay' => [
-                'title' => __( 'New order to pay', 'ba-book-everything' ),
-            ],
-            'order_updated' => [
-                'title' => __( 'Order updated', 'ba-book-everything' ),
-            ],
-            'order_rejected' => [
-                'title' => __( 'Order rejected', 'ba-book-everything' ),
-            ],
-            'order_canceled' => [
-                'title' => __( 'Order canceled', 'ba-book-everything' ),
-            ],
-        ];
 
         add_action( 'init', array( __CLASS__, 'init_settings'), 20 );
         
@@ -283,9 +89,203 @@ class BABE_Order {
      */
     public static function init_settings(){
 
+        self::$order_statuses = array(
+            'draft' => __( 'draft', 'ba-book-everything' ),
+            'av_confirmation' => __( 'availability confirmation', 'ba-book-everything' ),
+            'customer_confirmation' => __( 'customer confirmation', 'ba-book-everything' ),
+            'not_available' => __( 'not available', 'ba-book-everything' ),
+            'payment_deferred' => __( 'payment deferred', 'ba-book-everything' ),
+            'payment_expected' => __( 'payment expected', 'ba-book-everything' ),
+            'payment_processing' => __( 'payment processing', 'ba-book-everything' ),
+            'payment_authorized' => __( 'payment authorized', 'ba-book-everything' ),
+            'payment_received' => __( 'payment received', 'ba-book-everything' ),
+            'canceled' => __( 'canceled', 'ba-book-everything' ),
+            'completed' => __( 'completed', 'ba-book-everything' ),
+        );
+
+        self::$order_default_statuses = self::$order_statuses;
+
         self::$order_statuses = apply_filters('babe_order_statuses', self::$order_statuses);
 
+        self::$order_actions = [
+            'new_order' => [
+                'title' => __( 'New order', 'ba-book-everything' ),
+            ],
+            'new_order_av_confirm' => [
+                'title' => __( 'New order for confirmation', 'ba-book-everything' ),
+            ],
+            'order_customer_confirmation' => [
+                'title' => __( 'Ask customer to confirm or reject changes in the booking', 'ba-book-everything' ),
+            ],
+            'new_order_to_pay' => [
+                'title' => __( 'New order to pay', 'ba-book-everything' ),
+            ],
+            'order_updated' => [
+                'title' => __( 'Order updated', 'ba-book-everything' ),
+            ],
+            'order_rejected' => [
+                'title' => __( 'Order rejected', 'ba-book-everything' ),
+            ],
+            'order_canceled' => [
+                'title' => __( 'Order canceled', 'ba-book-everything' ),
+            ],
+        ];
+
         self::$order_actions = apply_filters('babe_order_actions', self::$order_actions);
+
+        self::$order_status_router = [
+            'draft' => [
+                'av_confirmation' => [
+                    'action' => 'new_order_av_confirm',
+                ],
+                'payment_received' => [
+                    'action' => 'new_order',
+                ],
+                'payment_authorized' => [
+                    'action' => 'new_order',
+                ],
+                'payment_expected' => [
+                    'action' => 'new_order_to_pay',
+                ],
+                'payment_deferred' => [
+                    'action' => 'new_order',
+                ],
+                'completed' => [
+                    'action' => 'new_order',
+                ],
+            ],
+            'av_confirmation' => [
+                'not_available' => [
+                    'action' => 'order_rejected',
+                ],
+                'customer_confirmation' => [
+                    'action' => 'order_customer_confirmation',
+                ],
+                'canceled' => [
+                    'action' => 'order_canceled',
+                ],
+                'payment_authorized' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_received' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_expected' => [
+                    'action' => 'new_order_to_pay',
+                ],
+                'payment_deferred' => [
+                    'action' => 'order_updated',
+                ],
+                'completed' => [
+                    'action' => 'order_updated',
+                ],
+            ],
+            'customer_confirmation' => [
+                'canceled' => [
+                    'action' => 'order_canceled',
+                ],
+                'payment_expected' => [
+                    'action' => 'new_order_to_pay',
+                ],
+                'payment_deferred' => [
+                    'action' => 'order_updated',
+                ],
+            ],
+            'payment_deferred' => [
+                'not_available' => [
+                    'action' => 'order_canceled',
+                ],
+                'canceled' => [
+                    'action' => 'order_canceled',
+                ],
+                'customer_confirmation' => [
+                    'action' => 'order_customer_confirmation',
+                ],
+                'payment_authorized' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_received' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_expected' => [
+                    'action' => 'new_order_to_pay',
+                ],
+                'completed' => [
+                    'action' => 'order_updated',
+                ],
+            ],
+            'payment_expected' => [
+                'not_available' => [
+                    'action' => 'order_canceled',
+                ],
+                'canceled' => [
+                    'action' => 'order_canceled',
+                ],
+                'customer_confirmation' => [
+                    'action' => 'order_customer_confirmation',
+                ],
+                'payment_authorized' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_received' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_deferred' => [
+                    'action' => 'order_updated',
+                ],
+                'completed' => [
+                    'action' => 'order_updated',
+                ],
+            ],
+            'payment_processing' => [
+                'not_available' => [
+                    'action' => 'order_canceled',
+                ],
+                'canceled' => [
+                    'action' => 'order_canceled',
+                ],
+                'payment_authorized' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_received' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_deferred' => [
+                    'action' => 'order_updated',
+                ],
+                'completed' => [
+                    'action' => 'order_updated',
+                ],
+            ],
+            'payment_received' => [
+                'canceled' => [
+                    'action' => 'order_canceled',
+                ],
+                'payment_expected' => [
+                    'action' => 'new_order_to_pay',
+                ],
+                'payment_deferred' => [
+                    'action' => 'order_updated',
+                ],
+                'completed' => [
+                    'action' => 'order_updated',
+                ],
+            ],
+            'completed' => [
+                'canceled' => [
+                    'action' => 'order_canceled',
+                ],
+                'payment_received' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_expected' => [
+                    'action' => 'new_order_to_pay',
+                ],
+                'payment_deferred' => [
+                    'action' => 'order_updated',
+                ],
+            ],
+        ];
 
         self::$order_status_router = apply_filters('babe_order_status_router', self::$order_status_router);
     }

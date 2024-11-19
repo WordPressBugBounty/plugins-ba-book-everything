@@ -51,32 +51,34 @@ class BABE_Calendar_functions {
            self::$week_sunday = 7;
            self::$week_last_day = 7;
         }
-        
-        self::$months_names = self::get_months_arr();       
+
+        add_action( 'init', array( __CLASS__, 'init_settings'), 0 );
 	}
-///////////////////////////////////////
-///////////////////////////////////////
+
+    public static function init_settings(): void
+    {
+        self::$months_names = self::get_months_arr();
+    }
+
     /**
 	 * Get months locale names.
      * @return array
 	 */
-    public static function get_months_arr(){ 
-    
-    return array(
-      'January' => __('January', 'ba-book-everything' ),
-      'February' => __('February', 'ba-book-everything' ),
-      'March' => __('March', 'ba-book-everything' ),
-      'April' => __('April', 'ba-book-everything' ),
-      'May' => __('May', 'ba-book-everything' ),
-      'June' => __('June', 'ba-book-everything' ),
-      'July' => __('July', 'ba-book-everything' ),
-      'August' => __('August', 'ba-book-everything' ),
-      'September' => __('September', 'ba-book-everything' ),
-      'October' => __('October', 'ba-book-everything' ),
-      'November' => __('November', 'ba-book-everything' ),
-      'December' => __('December', 'ba-book-everything' ),
-     );
-          
+    public static function get_months_arr(){
+        return array(
+            'January' => __('January', 'ba-book-everything' ),
+            'February' => __('February', 'ba-book-everything' ),
+            'March' => __('March', 'ba-book-everything' ),
+            'April' => __('April', 'ba-book-everything' ),
+            'May' => __('May', 'ba-book-everything' ),
+            'June' => __('June', 'ba-book-everything' ),
+            'July' => __('July', 'ba-book-everything' ),
+            'August' => __('August', 'ba-book-everything' ),
+            'September' => __('September', 'ba-book-everything' ),
+            'October' => __('October', 'ba-book-everything' ),
+            'November' => __('November', 'ba-book-everything' ),
+            'December' => __('December', 'ba-book-everything' ),
+        );
     }
     
 ///////////////////////////////////////
@@ -700,7 +702,13 @@ class BABE_Calendar_functions {
      * @return array
      * @throws Exception
      */
-     public static function get_av_cal($booking_obj_id, $date_from = '', $date_to = '', $order_item_args = [], $ignore_stop_booking = false){
+     public static function get_av_cal(
+         $booking_obj_id,
+         $date_from = '',
+         $date_to = '',
+         $order_item_args = [],
+         $ignore_stop_booking = false
+     ){
         
         global $wpdb;
         
@@ -828,7 +836,32 @@ class BABE_Calendar_functions {
 
          //////////////
         
-        $query = "SELECT DISTINCT *, DATE_FORMAT(av.date_from, '%Y-%m-%d') AS cal_date, DATE_FORMAT(av.date_from, '%H:%i') AS cal_time, CAST(DATE_FORMAT(av.date_from, '%Y') AS UNSIGNED) AS cal_year, CAST(DATE_FORMAT(av.date_from, '%m') AS UNSIGNED) AS cal_month, CAST(DATE_FORMAT(av.date_from, '%d') AS UNSIGNED) AS cal_day, (".$max_guests." - av.guests) AS av_guests, ".$av_day_exp." AS cal_day_num, IF( LOCATE( CONCAT('i:', ".$av_day_exp.", ';'), t_rate.start_days) > 0, 1, 0) AS start_day
+        $query = "SELECT DISTINCT av.*, 
+        DATE_FORMAT(av.date_from, '%Y-%m-%d') AS cal_date, 
+        DATE_FORMAT(av.date_from, '%H:%i') AS cal_time, 
+        CAST(DATE_FORMAT(av.date_from, '%Y') AS UNSIGNED) AS cal_year, 
+        CAST(DATE_FORMAT(av.date_from, '%m') AS UNSIGNED) AS cal_month, 
+        CAST(DATE_FORMAT(av.date_from, '%d') AS UNSIGNED) AS cal_day, 
+        (".$max_guests." - av.guests) AS av_guests, 
+        ".$av_day_exp." AS cal_day_num, 
+        IF( LOCATE( CONCAT('i:', ".$av_day_exp.", ';'), t_rate.start_days) > 0, 1, 0) AS start_day,
+        t_rate.rate_id,
+        t_rate.rate_title,
+        t_rate.date_from AS rate_date_from,
+        t_rate.date_to AS rate_date_to,
+        t_rate.apply_days,
+        t_rate.start_days,
+        t_rate.min_booking_period,
+        t_rate.max_booking_period,
+        t_rate.price_from,
+        t_rate.price_general,
+        t_rate.prices_conditional,
+        t_rate.rate_order,
+        t_rate.booking_obj_id AS rate_booking_obj_id,
+        cds.category_id,
+        cds.deactivate_date_from,
+        cds.deactivate_date_to
+        
         FROM ".self::$table_av_cal." av
         
         LEFT JOIN 
@@ -838,21 +871,16 @@ class BABE_Calendar_functions {
         WHERE category_id = ". (int)$category_id ."
         ) cds ON cds.deactivate_date_from <= av.date_from AND cds.deactivate_date_to >= av.date_from
         
-        INNER JOIN # get rates
-        (
-        SELECT rate_id, booking_obj_id AS rate_booking_obj_id, rate_title, date_from AS rate_date_from, date_to AS rate_date_to, apply_days, start_days, min_booking_period, max_booking_period, price_from, price_general, prices_conditional, rate_order
-        FROM ".BABE_Prices::$table_rate."
-        WHERE booking_obj_id = ".$booking_obj_id." 
-        ORDER BY rate_booking_obj_id ASC, rate_order ASC, price_from ASC, rate_date_from DESC, rate_date_to DESC
-        LIMIT 1000
-        ) t_rate ON av.booking_obj_id = t_rate.rate_booking_obj_id AND ( t_rate.rate_date_to >= av.date_from OR t_rate.rate_date_to IS NULL ) AND ( t_rate.rate_date_from <= av.date_from OR t_rate.rate_date_from IS NULL ) AND ( LOCATE( CONCAT('i:', ".$av_day_exp.", ';'), t_rate.apply_days) > 0 )
+        # get rates
+        INNER JOIN ".BABE_Prices::$table_rate." t_rate ON av.booking_obj_id = t_rate.booking_obj_id 
+        AND ( t_rate.date_to >= av.date_from OR t_rate.date_to IS NULL ) 
+        AND ( t_rate.date_from <= av.date_from OR t_rate.date_from IS NULL ) 
+        AND ( LOCATE( CONCAT('i:', ".$av_day_exp.", ';'), t_rate.apply_days) > 0 )
         
-        WHERE (
-           av.booking_obj_id = ".$booking_obj_id."
+        WHERE av.booking_obj_id = ".$booking_obj_id."
            AND av.date_from >= '".$datetime_from."'
            AND av.date_from <= '".$datetime_to."'
            AND cds.category_id IS NULL
-        )
         ".$group_by."
         ORDER BY av.date_from ASC, t_rate.rate_order ASC
 ";
@@ -900,7 +928,12 @@ class BABE_Calendar_functions {
                      } else {
 
                          $tmpDateFrom = new DateTime( $before_date );
-                         $dayRate = BABE_Prices::selectRate( $output[$before_date]['rates'], $tmpDateFrom, $tmpDateFrom );
+                         $dayRate = BABE_Prices::selectRate(
+                             $booking_obj_id,
+                             $output[$before_date]['rates'],
+                             $tmpDateFrom,
+                             $tmpDateFrom
+                         );
 
                          $output[$before_date]['rate_id'] = $dayRate['rate_id'];
                          $output[$before_date]['rate_title'] = $dayRate['rate_title'];
@@ -982,7 +1015,12 @@ class BABE_Calendar_functions {
              } else {
 
                  $tmpDateFrom = new DateTime( $before_date );
-                 $dayRate = BABE_Prices::selectRate( $output[$before_date]['rates'], $tmpDateFrom, $tmpDateFrom );
+                 $dayRate = BABE_Prices::selectRate(
+                     $booking_obj_id,
+                     $output[$before_date]['rates'],
+                     $tmpDateFrom,
+                     $tmpDateFrom
+                 );
 
                  $output[$before_date]['rate_id'] = $dayRate['rate_id'];
                  $output[$before_date]['rate_title'] = $dayRate['rate_title'];

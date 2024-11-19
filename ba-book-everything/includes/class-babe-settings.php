@@ -50,24 +50,29 @@ class BABE_Settings {
 
         ////// switch option name
         self::$option_name = 'babe_settings'.'_'.$current_lang;
-        
-        self::$settings = wp_parse_args( get_option(self::$option_name), self::get_default_settings() );
-        
-        self::$google_api_key = self::$settings['google_api'] ?: '';
 
-        if ( empty(self::$settings['google_map_marker']) ){
-            self::$settings['google_map_marker'] = 1;
-        }
-        
-        if (self::$settings['view_only_uploaded_images']){
-            add_action( 'pre_get_posts', array( __CLASS__, 'show_unattached_media_only') );
-            add_filter( 'ajax_query_attachments_args', array( __CLASS__, 'show_current_user_attachments'), 10, 1 );
-        }
+        add_action( 'init', array( __CLASS__, 'init_settings'), 0 );
 
         add_action( 'init', array( __CLASS__, 'init_rating_criteria') );
         
         add_action( 'init', array( __CLASS__, 'init_unitegallery_settings') );
 	}
+
+    public static function init_settings(): void
+    {
+        self::$settings = wp_parse_args( get_option(self::$option_name), self::get_default_settings() );
+
+        self::$google_api_key = self::$settings['google_api'] ?: '';
+
+        if ( empty(self::$settings['google_map_marker']) ){
+            self::$settings['google_map_marker'] = 1;
+        }
+
+        if (self::$settings['view_only_uploaded_images']){
+            add_action( 'pre_get_posts', array( __CLASS__, 'show_unattached_media_only') );
+            add_filter( 'ajax_query_attachments_args', array( __CLASS__, 'show_current_user_attachments'), 10, 1 );
+        }
+    }
 
     ////////////////////////////////////
     /**

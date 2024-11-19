@@ -307,25 +307,6 @@ class BABE_Booking_Rules_admin {
             'setting_section_1' // Section
         );
         
-        /*
-        add_settings_field(
-            'min_booking_period', // ID
-            __('Minimum booking period','ba-book-everything'), // Title
-            array( __CLASS__, 'callback_min_booking_period' ), // Callback
-            'babe-tmp-settings', // Page
-            'setting_section_1' // Section
-        );
-        
-        add_settings_field(
-            'max_booking_period', // ID
-            __('Maximum booking period','ba-book-everything'), // Title
-            array( __CLASS__, 'callback_max_booking_period' ), // Callback
-            'babe-tmp-settings', // Page
-            'setting_section_1' // Section
-        );
-        
-        */
-        
         add_settings_field(
             'hold', // ID
             __('Hold after each booking for service actions (applied to 1 day booking priod only)','ba-book-everything'), // Title
@@ -394,10 +375,6 @@ class BABE_Booking_Rules_admin {
         $rule['rule_title'] = isset($input['rule_title']) ? sanitize_text_field($input['rule_title']) : '';
 
         $rule['basic_booking_period'] = isset($input['basic_booking_period'], BABE_Booking_Rules::$booking_periods[$input['basic_booking_period']]) ? $input['basic_booking_period'] : 'night';
-       /*
-       $rule['min_booking_period'] = isset($input['min_booking_period']) ? intval($input['min_booking_period']) : 0;
-       $rule['max_booking_period'] = intval($input['max_booking_period']);
-       */
 
         $rule['hold'] = isset($input['hold']) && absint($input['hold']) < 24 ? absint($input['hold']) : 0;
 
@@ -447,20 +424,7 @@ class BABE_Booking_Rules_admin {
         //'
         //<p><input id="babe_tmp_settings[basic_booking_period]6" name="babe_tmp_settings[basic_booking_period]" type="radio" value="month"  class="booking_period_data" data-label="'.__('not used', 'ba-book-everything').'" /><label for="babe_tmp_settings[basic_booking_period]6">'.__('1 month (realty, properties, etc.)', 'ba-book-everything').'</label></p>';
     }
-/////////////////////////////////////
-    /**
-	 * Minimum booking period form input.
-	 */
-    public static function callback_min_booking_period(){
-        echo '<input type="text" id="min_booking_period" name="babe_tmp_settings[min_booking_period]" value="" /><span class="booking_period_label"></span>';        
-    }    
-//////////////////////////////////////
-    /**
-	 * Maximum booking period form input.
-	 */
-    public static function callback_max_booking_period(){
-        echo '<input type="text" id="max_booking_period" name="babe_tmp_settings[max_booking_period]" value="" /><span class="booking_period_label"></span>';        
-    }    
+
 //////////////////////////////////////
     /**
 	 * Hold after each booking form input.

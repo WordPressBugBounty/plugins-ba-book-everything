@@ -958,7 +958,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
     /**
 	 * Init class settings
      * 
-     * @return
+     * @return void
 	 */
     public static function init_class_settings() {
         
@@ -1034,20 +1034,20 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
         self::$demo_ages = array(
           'adult' => array(
               'slug' => 'adult',
-              'title' => __( 'Adult', 'ba-book-everything' ),
-              'description' => __( '18+ years', 'ba-book-everything' ),
+              'title' => 'Adult',
+              'description' => '18+ years',
               'menu_order' => 1,
           ),
           'youth' => array(
               'slug' => 'youth',
-              'title' => __( 'Youth', 'ba-book-everything' ),
-              'description' => __( '13-17 years', 'ba-book-everything' ),
+              'title' => 'Youth',
+              'description' => '13-17 years',
               'menu_order' => 2,
           ),
           'children' => array(
               'slug' => 'children',
-              'title' => __( 'Children', 'ba-book-everything' ),
-              'description' => __( '0-12 years', 'ba-book-everything' ),
+              'title' => 'Children',
+              'description' => '0-12 years',
               'menu_order' => 3,
           ),
         );
@@ -1100,9 +1100,6 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
         */
         
         self::$saved_demo_images = (array) get_option('_babe_demo_images');
-        
-        return;        
-        
     }  
   
 ///////////////////////////////////////    

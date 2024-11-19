@@ -184,6 +184,7 @@ class BABE_Prices {
      * @return array
      */
     public static function selectRate(
+        int $booking_obj_id,
         array $rates,
         DateTime $dateFrom,
         DateTime $dateTo,
@@ -193,31 +194,65 @@ class BABE_Prices {
             return [];
         }
 
+        $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($booking_obj_id);
+
         $d_interval = date_diff($dateFrom, $dateTo);
+
         $days_total = (int)$d_interval->format('%a'); // total days
         if (!$days_total){
             $days_total = 1;
         }
 
+        $hours_total = (int)$d_interval->format('%h');
+
         foreach ( $rates as $rate ){
 
             $returnRate = $rate;
 
-            $rateDTO = RateDTO::instanceFromArray($rate);
-            if ( !$rateDTO->minBookingPeriod && !$rateDTO->maxBookingPeriod ){
+            if (
+                $rules_cat['rules']['basic_booking_period'] === 'recurrent_custom'
+            ){
                 return $returnRate;
             }
 
-            if ($rateDTO->minBookingPeriod && $rateDTO->minBookingPeriod > $days_total){
+            $rateDTO = RateDTO::instanceFromArray($rate);
+            if (
+                !$rateDTO->minBookingPeriod
+                && !$rateDTO->maxBookingPeriod
+            ){
+                return $returnRate;
+            }
+
+            if (
+                $rateDTO->minBookingPeriod
+                && (
+                    (
+                        $rules_cat['rules']['basic_booking_period'] !== 'hour'
+                        && $rateDTO->minBookingPeriod > $days_total
+                    )
+                    || (
+                        $rules_cat['rules']['basic_booking_period'] === 'hour'
+                        && $rateDTO->minBookingPeriod > $hours_total
+                    )
+                )
+            ){
                 continue;
             }
 
-            if ($rateDTO->maxBookingPeriod && $rateDTO->maxBookingPeriod < $days_total){
+            if (
+                $rateDTO->maxBookingPeriod
+                && (
+                    (
+                        $rules_cat['rules']['basic_booking_period'] !== 'hour'
+                        && $rateDTO->maxBookingPeriod < $days_total
+                    )
+                    || (
+                        $rules_cat['rules']['basic_booking_period'] === 'hour'
+                        && $rateDTO->maxBookingPeriod < $hours_total
+                    )
+                )
+            ){
                 continue;
-            }
-
-            if ( $days_total < 7 ){
-
             }
 
             return $returnRate;
@@ -1295,6 +1330,7 @@ class BABE_Prices {
 
             if (
                 $rateDTO->minBookingPeriod
+                && $rules_cat['rules']['basic_booking_period'] !== 'recurrent_custom'
                 && (
                     (
                         $rules_cat['rules']['basic_booking_period'] !== 'hour'
@@ -1321,6 +1357,7 @@ class BABE_Prices {
 
                 if (
                     $rateDTO->maxBookingPeriod
+                    && $rules_cat['rules']['basic_booking_period'] !== 'recurrent_custom'
                     && (
                         (
                             $rules_cat['rules']['basic_booking_period'] !== 'hour'

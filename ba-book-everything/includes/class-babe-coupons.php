@@ -22,17 +22,22 @@ class BABE_Coupons {
 	 * Hook in tabs.
 	 */
     public static function init() {
-        
-        self::$coupon_statuses = array(
-          'active' => __( 'Active', 'ba-book-everything' ),
-          'pending' => __( 'Pending', 'ba-book-everything' ),
-          'used' => __( 'Used', 'ba-book-everything' ),
-          'expired' => __( 'Expired', 'ba-book-everything' ),
-        );
+
+        add_action( 'init', array( __CLASS__, 'init_settings'), 0 );
         
         add_filter('wp_insert_post_data', array( __CLASS__, 'change_coupon_title' ), 99, 2);
         add_action( 'delete_post', array( __CLASS__, 'delete_order_post'));
-	}    
+	}
+
+    public static function init_settings(): void
+    {
+        self::$coupon_statuses = array(
+            'active' => __( 'Active', 'ba-book-everything' ),
+            'pending' => __( 'Pending', 'ba-book-everything' ),
+            'used' => __( 'Used', 'ba-book-everything' ),
+            'expired' => __( 'Expired', 'ba-book-everything' ),
+        );
+    }
     
 ////////////////////////
      /**

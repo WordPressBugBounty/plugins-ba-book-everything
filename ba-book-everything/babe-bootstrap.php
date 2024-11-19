@@ -4,12 +4,12 @@
  * Plugin Name:       BA Book Everything
  * Plugin URI: https://wordpress.org/plugins/ba-book-everything/
  * Description: The really fast and powerful Booking engine for any booking or rental sites (tours, hostels, apartments, cars, events etc., or all together).
- * Version:           1.7.12
+ * Version:           1.7.13
  * Author:            Booking Algorithms
  * Author URI: https://ba-booking.com
  * Requires at least: 6.0
  * Requires PHP: 8.1
- * Tested up to: 6.6.2
+ * Tested up to: 6.7
  * Text Domain: ba-book-everything
  * Domain Path: /languages/
  * License: GPLv3 or later
@@ -19,7 +19,7 @@
 if ( ! defined( 'ABSPATH' ) )
 	exit;
 
-define( 'BABE_VERSION', '1.7.12' );
+define( 'BABE_VERSION', '1.7.13' );
 define( 'BABE_PLUGIN_SLUG', 'ba-book-everything' );
 define( 'BABE_PLUGIN', __FILE__ );
 define( 'BABE_PLUGIN_DIR', untrailingslashit( dirname( BABE_PLUGIN ) ) );

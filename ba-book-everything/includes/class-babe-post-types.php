@@ -80,8 +80,10 @@ class BABE_Post_types {
         global $wpdb;
         self::$table_category_deactivate_schedule = $wpdb->prefix.'babe_category_deactivate_schedule';
 
-		add_action( 'init', array( __CLASS__, 'register_post_types' ), 0 );
-        add_action( 'init', array( __CLASS__, 'register_taxonomies' ), 0 );
+        add_action( 'init', array( __CLASS__, 'init_settings'), 0 );
+
+		add_action( 'init', array( __CLASS__, 'register_post_types' ), 1 );
+        add_action( 'init', array( __CLASS__, 'register_taxonomies' ), 1 );
         add_filter('babe_sanitize_'.BABE_Settings::$option_name, array( __CLASS__, 'update_booking_obj_posts_slug'), 10);
         
         add_filter('babe_sanitize_'.BABE_Settings::$option_name, array( __CLASS__, 'update_mpoints'), 10);
@@ -89,66 +91,55 @@ class BABE_Post_types {
         add_action( 'before_delete_post', array( __CLASS__, 'delete_booking_obj_post'));
 
         add_action( 'pre_get_posts', array( __CLASS__, 'pre_get_posts_taxonomies'), 10, 1 );
-        
-        self::$service_type_names = self::get_service_type_names();
-        
-        self::$search_filter_sort_by_args = self::get_search_filter_sort_by_args();  
 	}
+
+    public static function init_settings(): void
+    {
+        self::$service_type_names = self::get_service_type_names();
+        self::$search_filter_sort_by_args = self::get_search_filter_sort_by_args();
+    }
     
 ////////////////////////
      /**
 	 * Action on delete post
      * 
      * @param int $booking_obj_id
-     * @return
+     * @return void
 	 */
      public static function delete_booking_obj_post($booking_obj_id){
         
         $post_type = get_post_type( $booking_obj_id );
-        if( $post_type == BABE_Post_types::$booking_obj_post_type ) {
-            
+        if( $post_type === self::$booking_obj_post_type ) {
             BABE_Prices::delete_rates_by_booking_obj_id($booking_obj_id);
             BABE_Prices::delete_discounts_by_booking_obj_id($booking_obj_id);
             BABE_Calendar_functions::delete_av_cal_by_booking_obj_id($booking_obj_id);
         }
-        
-        return;
-    }     
-    
-///////////////////////////////////////
-    /**
-	 * Get service type names.
-     * @return array
-	 */
-    public static function get_service_type_names(){ 
-    
-    return array(
+    }
+
+    public static function get_service_type_names(): array
+    {
+        return array(
             'booking' => __( 'per Booking', 'ba-book-everything' ),
             'person' => __( 'per Person', 'ba-book-everything' ),
             'day' => __( 'per Day', 'ba-book-everything' ),
             'night' => __( 'per Night', 'ba-book-everything' ),
             'person_day' => __( 'per Person/day', 'ba-book-everything' ),
             'person_night' => __( 'per Person/night', 'ba-book-everything' ),
-         );          
+        );
     }
-    
-///////////////////////////////////////
-    /**
-	 * Get sort by args for serach results filter.
-     * @return array
-	 */
-    public static function get_search_filter_sort_by_args(){
-    
-    return apply_filters('babe_search_filter_sort_by_args', array(
-              'title_asc' => __( 'Title A-Z', 'ba-book-everything' ),
-              'title_desc' => __( 'Title Z-A', 'ba-book-everything' ),
-              'price_asc' => __( 'Price from low', 'ba-book-everything' ),
-              'price_desc' => __( 'Price from high', 'ba-book-everything' ),
-              'rating_asc' => __( 'Rating from low', 'ba-book-everything' ),
-              'rating_desc' => __( 'Rating from high', 'ba-book-everything' ),
-              'avdatefrom_asc' => __( 'Availability date from nearest', 'ba-book-everything' ),
-              'avdatefrom_desc' => __( 'Availability date from farthest', 'ba-book-everything' ),
-            ));
+
+    public static function get_search_filter_sort_by_args(): array
+    {
+        return apply_filters('babe_search_filter_sort_by_args', array(
+            'title_asc' => __( 'Title A-Z', 'ba-book-everything' ),
+            'title_desc' => __( 'Title Z-A', 'ba-book-everything' ),
+            'price_asc' => __( 'Price from low', 'ba-book-everything' ),
+            'price_desc' => __( 'Price from high', 'ba-book-everything' ),
+            'rating_asc' => __( 'Rating from low', 'ba-book-everything' ),
+            'rating_desc' => __( 'Rating from high', 'ba-book-everything' ),
+            'avdatefrom_asc' => __( 'Availability date from nearest', 'ba-book-everything' ),
+            'avdatefrom_desc' => __( 'Availability date from farthest', 'ba-book-everything' ),
+        ));
     }
     
 ///////////////////////////////////////
@@ -1415,45 +1406,45 @@ class BABE_Post_types {
         }
 
         $av_cal_exclude_filter = "
-           AND NOT EXISTS (
+           AND ( 
+              ( 
+              rules.basic_booking_period = 'recurrent_custom' 
+              OR rules.basic_booking_period = 'single_custom' 
+              OR rules.basic_booking_period = 'night'
+              )
+              OR NOT EXISTS (
               SELECT booking_obj_id
               FROM ".BABE_Calendar_functions::$table_av_cal."               
               WHERE booking_obj_id = posts.ID 
               AND date_from > '".$date_from."' 
               AND date_from <= '".$date_to."'
-              AND rules.basic_booking_period != 'recurrent_custom' 
-              AND rules.basic_booking_period != 'single_custom' 
-              AND rules.basic_booking_period != 'night'
               AND (
                   in_schedule=0
                   OR av_guests < ".$guests."
               )
               LIMIT 1
+              )
            )           
-           AND NOT EXISTS (
+           AND (
+              rules.basic_booking_period != 'night'
+              OR NOT EXISTS (
               SELECT booking_obj_id
               FROM ".BABE_Calendar_functions::$table_av_cal."
               WHERE booking_obj_id = posts.ID 
               AND date_from >= '".$date_from."' 
               AND date_from < '".$date_to."'
-              AND rules.basic_booking_period = 'night'
               AND (
                   in_schedule=0
                   OR av_guests < ".$guests."
               )
               LIMIT 1
-           ) 
+           ) )
            AND (
               ( 
               rules.basic_booking_period != 'recurrent_custom' 
               AND rules.basic_booking_period != 'single_custom'
               )
-              OR (
-               (
-               rules.basic_booking_period = 'recurrent_custom' 
-               OR rules.basic_booking_period = 'single_custom'
-               )
-               AND EXISTS (
+              OR EXISTS (
                   SELECT booking_obj_id
                   FROM ".BABE_Calendar_functions::$table_av_cal."
                   WHERE booking_obj_id = posts.ID 
@@ -1462,8 +1453,7 @@ class BABE_Post_types {
                   AND date_from <= '".$datetime_to."'
                   AND av_guests > ".$guests." 
                   LIMIT 1
-                  ) 
-              )
+                  )
            )
            ";
 

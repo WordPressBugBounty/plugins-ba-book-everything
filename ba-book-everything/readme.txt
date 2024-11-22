@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.7
-Stable tag: 1.7.13
+Stable tag: 1.7.14
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -97,7 +97,7 @@ When using our products, russian audiences may encounter unexpected behavior.
 
 = Installation =
 
-1. Log in to your WordPress dashboard, navigate to the "Plugins" > "Add New" menu, search for "BA Book Everything" and  click "Install Now". You can also add the plugin manually as described in the [WordPress codex instructions](https://wordpress.org/support/article/managing-plugins/#manual-plugin-installation).
+1. Log in to your WordPress dashboard, navigate to the "Plugins" > "Add New" menu, search for "BA Book Everything" and  click "Install Now". You can also add the plugin manually as described in the [WordPress codex instructions](https://wordpress.org/documentation/article/manage-plugins/#manual-plugin-installation-1).
 1. Activate the "BA Book Everything" plugin through the 'Plugins' menu in WordPress
 1. Go to "BA Settings" menu to make main settings
 1. Go to "BA Settings" > "Demo content" menu to setup demo content in one click
@@ -113,6 +113,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.14 =
+* Added an option to switch the search logic by terms to "OR" (BA Settings admin menu)
 
 = 1.7.13 =
 * Fixed a price calculation issue when minimum booking is set in prices with recurrent custom rule (tours)

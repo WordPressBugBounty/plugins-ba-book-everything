@@ -748,6 +748,15 @@ function setup_demo_content(i){
         );
 
         add_settings_field(
+            'search_terms_by_logic_or', // ID
+            __('Use "OR" logic when searching among taxonomy terms','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_general', // Section
+            array('option' => 'search_terms_by_logic_or', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
             'results_view', // ID
             __('Search result view','ba-book-everything'), // Title
             array( __CLASS__, 'setting_results_view' ), // Callback
@@ -2067,6 +2076,7 @@ function setup_demo_content(i){
 
           $new_input['results_without_av_check'] = !$input['results_without_av_check'] ? 0 : 1;
           $new_input['results_without_av_cal'] = !$input['results_without_av_cal'] ? 0 : 1;
+          $new_input['search_terms_by_logic_or'] = !$input['search_terms_by_logic_or'] ? 0 : 1;
           $new_input['booking_obj_gutenberg'] = $input['booking_obj_gutenberg'] ? 1 : 0;
           $new_input['my_account_disable'] = $input['my_account_disable'] ? 1 : 0;
 

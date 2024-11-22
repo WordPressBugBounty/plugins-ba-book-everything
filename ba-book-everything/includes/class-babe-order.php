@@ -970,7 +970,10 @@ class BABE_Order {
         ?int $order_id
     ): array
     {
-        if ( $order_id === null || !BABE_Settings::$settings['only_payment_gateway_from_deposit'] ) {
+        if (
+            $order_id === null
+            || !BABE_Settings::$settings['only_payment_gateway_from_deposit']
+        ) {
             return $payment_methods_arr;
         }
 

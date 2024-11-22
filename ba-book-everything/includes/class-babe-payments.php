@@ -73,7 +73,7 @@ class BABE_Payments {
 
             BABE_Order::update_order_payment_method( $order_id, 'coupon' );
 
-            add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'switch_to_coupon_payment_method'), 100 );
+            add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'switch_to_coupon_payment_method'), 200 );
 
             add_filter('babe_checkout_form_element_amount_group', function($output, $total_amount, $prepaid_amount, $payment_model, $order_id){
                 return '
@@ -83,7 +83,7 @@ class BABE_Payments {
 
         } else {
 
-            add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'remove_coupon_payment_method'), 100 );
+            add_filter( 'babe_get_active_payment_methods', array( 'BABE_Payments', 'remove_coupon_payment_method'), 200 );
 
             $payment_method = get_post_meta($order_id, '_payment_method', true);
             if ( 'coupon' === $payment_method ){

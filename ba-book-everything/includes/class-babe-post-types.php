@@ -1313,6 +1313,7 @@ class BABE_Post_types {
             $args['terms'] = array_unique($args['terms']);
 
             $in_terms = [];
+            $in_children_terms = [];
 
             foreach($args['terms'] as $key => $term_id){
 
@@ -1322,23 +1323,54 @@ class BABE_Post_types {
                     continue;
                 }
 
-                $in_terms[] = $term_id;
-
                 $term_children = get_term_children( $term_id, $term->taxonomy );
                 if ( !empty($term_children) && !$term_children instanceof WP_Error ){
-                    $in_terms = array_merge( $in_terms, $term_children );
+                    $in_children_terms = array_merge( $in_children_terms, $term_children );
+                    $in_children_terms[] = $term_id;
+                } else {
+                    $in_terms[] = $term_id;
                 }
             }
 
-            if ( !empty($in_terms) ){
+            if ( empty(BABE_Settings::$settings['search_terms_by_logic_or']) ){
 
-                foreach( $in_terms as $in_term ){
-                    $terms_filter .= "
+                if ( !empty($in_terms) ){
+
+                    foreach( $in_terms as $in_term ){
+                        $terms_filter .= "
                 AND EXISTS (
                   SELECT object_id
                   FROM $wpdb->term_relationships
                   WHERE object_id = posts.ID 
                   AND term_taxonomy_id = ".$in_term."
+                  ) 
+                ";
+                    }
+                }
+
+                if ( !empty($in_children_terms) ){
+                    $terms_filter .= "
+                AND EXISTS (
+                  SELECT object_id
+                  FROM $wpdb->term_relationships
+                  WHERE object_id = posts.ID 
+                  AND term_taxonomy_id IN (".implode(", ", $in_children_terms).")
+                  ) 
+                ";
+                }
+
+            } else {
+
+                $in_terms = array_merge( $in_children_terms, $in_terms );
+
+                if ( !empty($in_terms) ){
+
+                    $terms_filter .= "
+                AND EXISTS (
+                  SELECT object_id
+                  FROM $wpdb->term_relationships
+                  WHERE object_id = posts.ID 
+                  AND term_taxonomy_id IN (".implode(", ", $in_terms).")
                   ) 
                 ";
                 }

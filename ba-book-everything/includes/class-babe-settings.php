@@ -99,6 +99,7 @@ class BABE_Settings {
             'results_per_page' => 10,
             'results_without_av_check' => 0,
             'results_without_av_cal' => 0,
+            'search_terms_by_logic_or' => 0,
             'posts_per_taxonomy_page' => 12,
             'results_view' => 'grid',
             'booking_obj_post_slug' => 'to_book',

@@ -119,6 +119,7 @@ class BABE_Settings {
             'unitegallery_remove' => 0,
             'av_calendar_remove' => 0,
             'av_calendar_remove_hover_prices' => 0,
+            'av_calendar_show_all_rates' => 0,
             'av_calendar_max_months' => 12,
             'google_map_remove' => 0,
             'services_to_booking_form' => 1,

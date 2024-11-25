@@ -4615,6 +4615,10 @@ class BABE_html {
                     </div>
                     ';
                              }
+
+                             if( empty(BABE_Settings::$settings['av_calendar_show_all_rates']) ){
+                                 break;
+                             }
                          }
 
                          if ( $prices_table ){

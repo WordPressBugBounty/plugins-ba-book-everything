@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.7
-Stable tag: 1.7.14
+Stable tag: 1.7.15
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,10 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.15 =
+* Fixed an issue with displaying prices in the booking calendar
+* Added an option to display all rates in the price details on hover on the availability calendar ("BA Settings" > "Booking object" admin menu)
 
 = 1.7.14 =
 * Added an option to switch the search logic by terms to "OR" (BA Settings admin menu)

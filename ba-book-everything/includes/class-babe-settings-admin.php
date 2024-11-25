@@ -886,6 +886,15 @@ function setup_demo_content(i){
         );
 
         add_settings_field(
+            'av_calendar_show_all_rates', // ID
+            __('Show all rates in the price details on hover on the availability calendar', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'av_calendar_show_all_rates', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
             'google_map_remove', // ID
             __('Remove google map from booking object pages', 'ba-book-everything'), // Title
             array( __CLASS__, 'is_active_callback' ), // Callback
@@ -2119,6 +2128,7 @@ function setup_demo_content(i){
           $new_input['unitegallery_remove'] = !$input['unitegallery_remove'] ? 0 : 1;
           $new_input['av_calendar_remove'] = !$input['av_calendar_remove'] ? 0 : 1;
           $new_input['av_calendar_remove_hover_prices'] = !$input['av_calendar_remove_hover_prices'] ? 0 : 1;
+          $new_input['av_calendar_show_all_rates'] = !$input['av_calendar_show_all_rates'] ? 0 : 1;
           $new_input['google_map_remove'] = !$input['google_map_remove'] ? 0 : 1;
 
           $new_input['services_to_booking_form'] = !$input['services_to_booking_form'] ? 0 : 1;

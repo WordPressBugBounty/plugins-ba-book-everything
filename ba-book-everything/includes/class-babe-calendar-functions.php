@@ -832,7 +832,8 @@ class BABE_Calendar_functions {
            $av_day_exp = "DATE_FORMAT(av.date_from, '%w')";
          }
 
-         $group_by = $rules_cat['rules']['basic_booking_period'] !== 'hour' ? 'GROUP BY av.date_from' : '';
+         $group_by = $rules_cat['rules']['basic_booking_period'] !== 'hour' ? 'GROUP BY av.date_from, t_rate.rate_order' : '';
+         //$group_by = '';
 
          //////////////
         

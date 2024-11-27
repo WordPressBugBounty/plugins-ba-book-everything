@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.7
-Stable tag: 1.7.15
+Stable tag: 1.7.16
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.16 =
+* Fixed an issue with price calculation when "radio" service selection type is used
 
 = 1.7.15 =
 * Fixed an issue with displaying prices in the booking calendar

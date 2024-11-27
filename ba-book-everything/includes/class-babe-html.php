@@ -4926,13 +4926,21 @@ class BABE_html {
 
             $is_other_prices = false;
 
+            $checked = isset($selected_services_arr[$service['ID']]) ? ' checked="checked"' : '';
+
+            if(
+                empty($selected_services_arr)
+                && $input_type === 'radio'
+                && empty($before_service_type)
+            ){
+                $checked = ' checked="checked"';
+            }
+
             if ($before_service_type !== $service['service_type']){
                 $before_service_type = $service['service_type'];
             }
 
             $is_percent = $before_service_type === 'booking' && $service['price_type'] === 'percent';
-
-            $checked = isset($selected_services_arr[$service['ID']]) ? ' checked="checked"' : '';
 
             $sr_block .= '<div class="list_service">
                     <div class="list_service_title">';

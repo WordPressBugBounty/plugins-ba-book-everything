@@ -926,6 +926,10 @@ $(document).ready(function(){
         booking_form_calculate();
     });
 
+    $('#booking_form').on('change', 'input:radio', function(el){
+        booking_form_calculate();
+    });
+
     $('#booking_form').on('change', '.select_service_quantity', function(el){
         booking_form_calculate();
     });

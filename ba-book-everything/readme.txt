@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.7
-Stable tag: 1.7.16
+Stable tag: 1.7.17
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,11 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.17 =
+* Fixed an issue with "date to" field displaying in orders on "My account" pages
+* Fixed the same day order creating issue for "1 day" booking rules
+* Fixed the issue "the plugin generated 3975 characters of unexpected output during activation"
 
 = 1.7.16 =
 * Fixed an issue with price calculation when "radio" service selection type is used

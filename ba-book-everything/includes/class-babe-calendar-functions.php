@@ -1086,7 +1086,14 @@ class BABE_Calendar_functions {
      * @return int
      * @throws Exception
      */
-     public static function get_av_guests($booking_obj_id, $date_from = '', $date_to = '', $order_item_args = [], $ignore_stop_booking = false){
+     public static function get_av_guests(
+         $booking_obj_id,
+         $date_from = '',
+         $date_to = '',
+         $order_item_args = [],
+         $ignore_stop_booking = false
+     ){
+         global $wpdb;
 
          $output = 0;
 
@@ -1105,7 +1112,45 @@ class BABE_Calendar_functions {
 
          $av_cal = self::get_av_cal($booking_obj_id, $date_from, $date_to, $order_item_args, $ignore_stop_booking);
 
-         if ( empty($av_cal) ){
+         $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($booking_obj_id);
+
+         if (
+             empty($av_cal)
+             && $rules_cat['rules']['basic_booking_period'] === 'day'
+             && substr($date_from, 0, 10) === substr($date_to, 0, 10)
+         ){
+
+             $date_from_obj = (new DateTime( $date_from ))->setTime(0,0,0,0);
+
+             $query = "SELECT av.date_from, av.guests
+        FROM ".self::$table_av_cal." av
+        
+        WHERE av.booking_obj_id = ".$booking_obj_id."
+           AND av.date_from < '".$date_from."'
+           AND av.date_from >= '".$date_from_obj->format('Y-m-d H:i:s')."'
+        ORDER BY av.date_from DESC
+        LIMIT 1";
+
+             $alter_dates = $wpdb->get_results($query, ARRAY_A);
+
+             if( !empty($alter_dates) ){
+                 $alter_date_from = new DateTime( $alter_dates[0]['date_from'] );
+
+                 if ( (int)$alter_dates[0]['guests'] > 0 ){
+                     $alter_date_from->modify('+1 hour');
+                 }
+
+                 $av_cal = self::get_av_cal(
+                     $booking_obj_id,
+                     $alter_date_from->format('Y-m-d H:i:s'),
+                     $date_to,
+                     $order_item_args,
+                     $ignore_stop_booking
+                 );
+             }
+         }
+
+         if ( empty($av_cal) ) {
              self::$av_guests[$args_hash] = $output;
              return $output;
          }

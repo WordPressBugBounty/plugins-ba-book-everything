@@ -222,6 +222,10 @@ class BABE_Post_types {
 	 */
     public static function register_post_types() {
         
+        if ( empty(BABE_Settings::$settings) ){
+            BABE_Settings::init_settings();
+        }
+        
     $labels = array(
 		'name'               => BABE_Settings::$settings['booking_obj_post_name_general'],
 		'singular_name'      => BABE_Settings::$settings['booking_obj_post_name'],

@@ -1468,7 +1468,7 @@ class BABE_Post_types {
               FROM ".BABE_Calendar_functions::$table_av_cal."
               WHERE booking_obj_id = posts.ID 
               AND date_from >= '".$date_from."' 
-              AND date_from < '".$date_to."'
+              AND date_from < '". $date_to_obj->format('Y-m-d 00:00:00') ."'
               AND (
                   in_schedule=0
                   OR av_guests < ".$guests."

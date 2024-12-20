@@ -262,7 +262,7 @@ class BABE_My_account {
         
         endif;
         
-        return $output;
+        return apply_filters('babe_get_register_form', $output);
     }        
     
 ////////////////////////////        

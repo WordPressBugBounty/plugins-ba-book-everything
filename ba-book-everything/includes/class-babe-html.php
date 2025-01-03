@@ -2450,7 +2450,7 @@ class BABE_html {
 
         $after_hidden_fields = apply_filters('babe_booking_form_after_hidden_fields', '', $babe_post, $av_times, $rules_cat);
 
-        if ( BABE_Settings::$settings['disable_guest_bookings'] ){
+        if ( BABE_Settings::$settings['disable_guest_bookings'] && !is_user_logged_in() ){
 
             $submit_button = '<div class="booking_form_login_required">'.apply_filters('babe_booking_form_login_required_text', __('Please login or register to continue your booking', 'ba-book-everything')).'</div>';
 
@@ -5206,21 +5206,21 @@ class BABE_html {
               $hidden_fields = '';
               
               $post_arr = $_GET;
-              
-              unset($post_arr['action']);
-              unset($post_arr['current_action']);
-              
-              //print_r($post_arr);
-              
+
+              unset($post_arr['action'], $post_arr['current_action']);
+
               foreach($post_arr as $key => $value){
                 if ($key != 'booking_guests'){
-                  $hidden_fields .= '
-                  <input type="hidden" name="'.$key.'" value="'.$value.'">
+
+                    if ( !is_array($value) ){
+                        $hidden_fields .= '
+                  <input type="hidden" name="'.esc_attr($key).'" value="'.esc_attr($value).'">
                   ';
+                    }
                 } else {
                     foreach($value as $guest_id => $guest_num){
                         $hidden_fields .= '
-                  <input type="hidden" name="booking_guests['.$guest_id.']" value="'.$guest_num.'">
+                  <input type="hidden" name="booking_guests['.(int)$guest_id.']" value="'.(int)$guest_num.'">
                   ';
                     }
                 }  

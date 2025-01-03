@@ -302,7 +302,7 @@ class BABE_Order_admin {
                 $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($item_meta['booking_obj_id']);
                 $date_to_obj = new DateTime($item_meta['meta']['date_to']);
                 if ( isset($rules_cat['rules']['basic_booking_period']) && $rules_cat['rules']['basic_booking_period'] === 'recurrent_custom'){
-                    $duration = (array)get_post_meta($item_meta['booking_obj_id'], 'duration', true);
+                    $duration = (array)get_post_meta($item_meta['booking_obj_id'], 'duration_'.$rules_cat['category_slug'], true);
                     $duration = wp_parse_args( $duration, array(
                         'd' => 0,
                         'h' => 0,

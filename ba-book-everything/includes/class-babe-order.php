@@ -2069,7 +2069,10 @@ class BABE_Order {
              !isset($_POST['booking_obj_id'], $_POST['action'])
              || $_POST['action'] !== 'to_checkout'
              || !BABE_Post_types::is_post_booking_obj($_POST['booking_obj_id'])
-             || BABE_Settings::$settings['disable_guest_bookings']
+             || (
+                 BABE_Settings::$settings['disable_guest_bookings']
+                 && !is_user_logged_in()
+             )
          ){
              return;
          }

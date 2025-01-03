@@ -1276,6 +1276,15 @@ class BABE_Post_types {
             case 'post_title':
                 $sort = 'posts.post_title';
                 break;
+            case 'post_modified':
+                $sort = 'posts.post_modified';
+                break;
+            case 'post_date':
+                $sort = 'posts.post_date';
+                break;
+            case 'menu_order':
+                $sort = 'posts.menu_order';
+                break;
             case 'rating':
                 $sort = 'pmr.meta_value';
                 break;

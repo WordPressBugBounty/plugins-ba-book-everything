@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.7
-Stable tag: 1.7.19
+Stable tag: 1.7.20
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,12 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.20 =
+* Added more post sort options into the BABE_Post_types::get_posts method
+* Fixed an issue with "date to" field displaying in orders on back-end
+* Fixed an issue with locked checkout when "Disable guest bookings" option is activated
+* Minor fixes
 
 = 1.7.19 =
 * Added a hook to allow override the registration form html

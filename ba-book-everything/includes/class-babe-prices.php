@@ -1071,6 +1071,10 @@ class BABE_Prices {
             'prices_conditional' => serialize($post_arr['_prices_conditional']),
         );
 
+        if ( isset($post_arr['rate_order']) ){
+            $ins_arr['rate_order'] = absint($post_arr['rate_order']);
+        }
+
         if ($post_arr['_rate_date_from']){
             $ins_arr['date_from'] = $post_arr['_rate_date_from'];
         }

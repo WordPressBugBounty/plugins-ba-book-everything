@@ -132,6 +132,7 @@ class BABE_Settings {
             'google_map_marker' => 1,
             'max_guests_select' => 10,
             'my_account_disable' => 0,
+            'my_account_remove_login_form' => 0,
             'search_result_page' => 0,
             'services_page' => 0,
             'checkout_page' => 0,

@@ -710,6 +710,15 @@ function setup_demo_content(i){
             'setting_section_general', // Section
             array('option' => 'my_account_disable', 'settings_name' => BABE_Settings::$option_name) // Args array
         );
+
+        add_settings_field(
+            'my_account_remove_login_form', // ID
+            __('Remove default login/register form from "My account" page (this allows to use a third party login form shortcode into the "My account" page content)','ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_general', // Section
+            array('option' => 'my_account_remove_login_form', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
         
         add_settings_field(
             'results_per_page', // ID
@@ -2088,6 +2097,7 @@ function setup_demo_content(i){
           $new_input['search_terms_by_logic_or'] = !$input['search_terms_by_logic_or'] ? 0 : 1;
           $new_input['booking_obj_gutenberg'] = $input['booking_obj_gutenberg'] ? 1 : 0;
           $new_input['my_account_disable'] = $input['my_account_disable'] ? 1 : 0;
+          $new_input['my_account_remove_login_form'] = $input['my_account_remove_login_form'] ? 1 : 0;
 
           $new_input['results_view'] = $input['results_view'] === 'full' ? 'full' : 'grid';
 

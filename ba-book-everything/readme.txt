@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.7
-Stable tag: 1.7.20
+Stable tag: 1.7.21
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.21 =
+* Added an option to remove default login/registration forms from "My account" page ("BA Settings" > "General" admin menu). This allows to use a third party login form shortcode into the "My account" page content
 
 = 1.7.20 =
 * Added more post sort options into the BABE_Post_types::get_posts method

@@ -728,6 +728,10 @@ class BABE_My_account {
        $check_role = self::validate_role($user_info); 
        
        if ($check_role){
+
+           if( !empty(BABE_Settings::$settings['my_account_remove_login_form']) ){
+               $output = '';
+           }
         
        $output .= '<div id="my_account_page_wrapper">';
        
@@ -758,6 +762,10 @@ class BABE_My_account {
        } //// end if ($check_role)
        
     } else {
+
+        if( !empty(BABE_Settings::$settings['my_account_remove_login_form']) ){
+            return $content;
+        }
         
         if (isset($_GET['action']) && $_GET['action'] == 'lostpassword'){
             

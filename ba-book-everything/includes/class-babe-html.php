@@ -1281,7 +1281,9 @@ class BABE_html {
         $excerpt_length = apply_filters('babe_search_result_excerpt_length', 25);
         $excerpt_grid_length = apply_filters('babe_search_result_grid_excerpt_length', 13);
 
-        $item_url = BABE_Functions::get_page_url_with_args($post['ID'], $_GET);
+        $item_url_args = !empty(BABE_Settings::$settings['search_result_item_links_without_query_args']) ? [] : $_GET;
+
+        $item_url = BABE_Functions::get_page_url_with_args($post['ID'], $item_url_args);
 
         $image_srcs = wp_get_attachment_image_src( get_post_thumbnail_id( $post['ID'] ), $thumbnail);
         $image = $image_srcs ? '<a href="'.$item_url.'"><img src="'.$image_srcs[0].'"></a>' : '';
@@ -5045,7 +5047,7 @@ class BABE_html {
 
         if ( !empty($service_fields['mandatory_fields']) ){
             $output .= '
-              <label class="booking_form_input_label">'.apply_filters('babe_booking_form_mandatory_services_label', __('Mandatory services', 'ba-book-everything')).'</label>
+              <label class="booking_form_input_label">'.apply_filters('babe_booking_form_mandatory_services_label', BABE_Settings::$settings['booking_form_mandatory_services_title']).'</label>
                <div class="booking_services_inner">
                '.implode('', $service_fields['mandatory_fields']).'
                </div>';
@@ -5053,7 +5055,7 @@ class BABE_html {
 
         if ( !empty($service_fields['optional_fields']) ){
             $output .= '
-              <label class="booking_form_input_label">'.apply_filters('babe_booking_form_optional_services_label', __('Add Extra', 'ba-book-everything')).'</label>
+              <label class="booking_form_input_label">'.apply_filters('babe_booking_form_optional_services_label', BABE_Settings::$settings['booking_form_optional_services_title']).'</label>
                <div class="booking_services_inner">
                  <div id="'.esc_attr($html_id).'">
                  '.implode('', $service_fields['optional_fields']).'

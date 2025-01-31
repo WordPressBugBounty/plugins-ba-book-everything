@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.7
-Stable tag: 1.7.22
+Stable tag: 1.7.23
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.23 =
+* Fixed issue with services with zero cost not being displayed in booking form
 
 = 1.7.22 =
 * Added an option to remove search query arguments from booking item links on the search result page ("BA Settings" > "General" admin menu)

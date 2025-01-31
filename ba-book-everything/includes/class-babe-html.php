@@ -4320,7 +4320,7 @@ class BABE_html {
         
         $output = apply_filters('babe_confirm_content_html', $output, $args);
         
-        return $output; 
+        return $output;
     }            
     
 ////////////////////////////
@@ -4921,10 +4921,6 @@ class BABE_html {
             }
 
             unset($other_prices[0]);
-
-            if (empty($other_prices) && !$general_price){
-                continue;
-            }
 
             $is_other_prices = false;
 

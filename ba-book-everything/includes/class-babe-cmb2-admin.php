@@ -3584,7 +3584,7 @@ class BABE_CMB2_admin {
      * 
 	 *
 	 * @param int    $post_id   The ID of the current object
-	 * @param string $updated     Array of field ids that were updated.
+	 * @param $updated     Array of field ids that were updated.
 	 *                            Will only include field ids that had values change.
 	 * @param object  $cmb         This CMB2 object
 	 */ 

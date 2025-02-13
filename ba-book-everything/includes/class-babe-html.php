@@ -4157,16 +4157,31 @@ class BABE_html {
                             $args,
                             $input_fields_name
                         ).'</span>';
+
+                    $payment_method_description_html = apply_filters(
+                        'babe_checkout_payment_description_'.$method,
+                        '',
+                        $args,
+                        $input_fields_name
+                    );
+
+                    /**
+                     * @deprecated 1.7.24 use filter 'babe_checkout_payment_description_' instead
+                     */
+                    $payment_method_description_html = apply_filters(
+                        'babe_checkout_payment_fields_'.$method,
+                        $payment_method_description_html,
+                        $args,
+                        $input_fields_name
+                    );
+
                     $payment_details .= '<div class="payment_method_fields payment_method_fields_'
                         .$method
                         .' tab_content'
                         .$tab_start_active.'" data-method="'.$method.'">'
-                        .apply_filters(
-                            'babe_checkout_payment_fields_'.$method,
-                            '',
-                            $args,
-                            $input_fields_name
-                        ).'</div>';
+                        .$payment_method_description_html
+                        .'</div>'
+                    ;
                 }
                 
                 $payment_fields .= '<h2>'.__('Payment Method', 'ba-book-everything').'</h2>

@@ -4,25 +4,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+BABE_Install::init();
+
 /**
  * BABE_Install Class.
  * 
  * @class 		BABE_Install
- * @version		1.3.20
+ * @version		1.7.24
  * @author 		Booking Algorithms
  */
-
 class BABE_Install {
+
+    public const PLUGIN_VERSION_TESTED_HEADER = 'BA Book Everything tested up to';
     
-    static $demo_rules = array();
-       
-    static $demo_ages = array();
+    private static $demo_rules = [];
+
+    private static $demo_ages = [];
+
+    private static $demo_categories = [];
+
+    private static $demo_images = [];
     
-    static $demo_categories = array();
-    
-    static $demo_images = array();
-    
-    static $saved_demo_images = array();
+    static $saved_demo_images = [];
+
+    public static ?array $related_plugins = null;
     
 //////////////////////////////
     /**
@@ -45,6 +50,15 @@ class BABE_Install {
         add_action( 'init', array( __CLASS__, 'check_version' ), 5);
         add_action( 'init', array( __CLASS__, 'load_textdomain' ));
         add_action( 'after_setup_theme', array( __CLASS__, 'setup_thumbnails' ), 10 );
+
+        add_filter( 'extra_plugin_headers', function ( array $headers ) {
+            $headers[] = self::PLUGIN_VERSION_TESTED_HEADER;
+            return $headers;
+        } );
+
+        add_action( 'in_plugin_update_message-' . plugin_basename( BABE_PLUGIN ), function ( array $args, $response ) {
+            self::in_plugin_update_message( $args, $response );
+        }, 10, 2);
 	}
 
     public static function check_version() {
@@ -1679,7 +1693,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
               }
           }
           
-          if ( $category_title == 'One time event'){
+          if ( $category_title === 'One time event'){
               $date_from_obj = new DateTime('+1 month');
               $date_to_obj = new DateTime('+1 month');
           }
@@ -1764,7 +1778,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
           }
           
           //// schedule
-          if ( $category_title == 'Tour' ){
+          if ( $category_title === 'Tour' ){
             
              $meta_input['duration_'.$category_term->slug] = array (
                   'd' => '0',
@@ -1798,22 +1812,22 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
           }
           
           //// guests
-          if ( $category_title == 'Hotel'){
+          if ( $category_title === 'Hotel'){
              $meta_input['guests'] = 4;
           }
           
-          if ( $category_title == 'Hostel'){
+          if ( $category_title === 'Hostel'){
              $meta_input['guests'] = 12;
           }
           
           //// start and end time
-          if ( $category_title == 'One time event'){
+          if ( $category_title === 'One time event'){
               $meta_input['start_time_'.$category_term->slug] = '11:00';
               $meta_input['end_time_'.$category_term->slug] = '19:00';
           }
           
           ///// address
-          if ( ($category_title == 'Tour' || $category_title == 'One time event') && $category_meta['categories_address'] ){
+          if ( ($category_title === 'Tour' || $category_title === 'One time event') && $category_meta['categories_address'] ){
        
               $meta_input['address_'.$category_term->slug] = array(
                 'address' => __('Bryce Canyon National Park, USA', 'ba-book-everything'),
@@ -1826,12 +1840,12 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
           }
           
           //// stop_booking_before_
-          if ( $category_title == 'Tour' ){
+          if ( $category_title === 'Tour' ){
              $meta_input['stop_booking_before_'.$category_term->slug] = 2;
           }
           
           /////// mpoints
-          if ($category_title == 'Tour' && BABE_Settings::$settings['mpoints_active']){
+          if ($category_title === 'Tour' && BABE_Settings::$settings['mpoints_active']){
             
              $args = array(
                'post_type'   => BABE_Post_types::$mpoints_post_type,
@@ -1902,7 +1916,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
           
           $price_arr = array( 0 => (float)49);
 
-	        if ( $category_title == 'Bike' ){
+	        if ( $category_title === 'Bike' ){
 		        $price_arr[0] = 10;
 	        }
           
@@ -1959,11 +1973,158 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
         }
         
         return $created_post_ids;
-        
-    }                                              
-    
-//////////////////////////////    
-    
-}
+    }
 
-BABE_Install::init();
+    public static function get_related_plugins(): array
+    {
+        if( self::$related_plugins !== null ){
+            return self::$related_plugins;
+        }
+
+        if ( ! function_exists( 'get_plugins' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        $babe_plugin_path = plugin_basename( BABE_PLUGIN );
+        $all_plugins = get_plugins();
+        $related_plugins = [];
+
+        foreach ( $all_plugins as $plugin_path => $plugin_data ) {
+
+            if(
+                !isset( $plugin_data['Author'], $plugin_data['Version'], $plugin_data['Name']  )
+                || $plugin_path === $babe_plugin_path
+            ){
+                continue;
+            }
+
+            if(
+                $plugin_data['Author'] === 'Booking Algorithms'
+                || !empty( $plugin_data[ self::PLUGIN_VERSION_TESTED_HEADER ] )
+            ){
+                $related_plugins[ $plugin_path ] = $plugin_data;
+            }
+        }
+
+        self::$related_plugins = $related_plugins;
+
+        return self::$related_plugins;
+    }
+
+    /**
+     * @param array  $plugin_data An array of plugin metadata. See get_plugin_data()
+     *                            and the {@see 'plugin_row_meta'} filter for the list
+     *                            of possible values.
+     * @param object $response {
+     *     An object of metadata about the available plugin update.
+     *
+     *     @type string   $id           Plugin ID, e.g. `w.org/plugins/[plugin-name]`.
+     *     @type string   $slug         Plugin slug.
+     *     @type string   $plugin       Plugin basename.
+     *     @type string   $new_version  New plugin version.
+     *     @type string   $url          Plugin URL.
+     *     @type string   $package      Plugin update package URL.
+     *     @type string[] $icons        An array of plugin icon URLs.
+     *     @type string[] $banners      An array of plugin banner URLs.
+     *     @type string[] $banners_rtl  An array of plugin RTL banner URLs.
+     *     @type string   $requires     The version of WordPress which the plugin requires.
+     *     @type string   $tested       The version of WordPress the plugin is tested against.
+     *     @type string   $requires_php The version of PHP which the plugin requires.
+     * }
+     */
+    public static function in_plugin_update_message( $plugin_data, $response ){
+
+        $parts_new_version = explode( '.', $plugin_data['new_version'] );
+        $new_version = $parts_new_version[0] . '.' . $parts_new_version[1];
+
+        $parts_current_version = explode( '.', $plugin_data['Version'] );
+        $current_version = $parts_current_version[0] . '.' . $parts_current_version[1];
+
+        $need_to_check_compatibility = version_compare(
+            $current_version,
+            $new_version,
+            '<'
+        );
+
+        if( $need_to_check_compatibility ){
+            return;
+        }
+
+        $related_plugins = self::get_related_plugins();
+        $plugins_to_check = [];
+
+        foreach ($related_plugins as $plugin_path => $related_plugin){
+            if(
+                empty( $related_plugin[ self::PLUGIN_VERSION_TESTED_HEADER ] )
+                || !(bool)preg_match(
+                    '/^(\d+\.)?(\d+\.)?(\*|\d+)(-.+)?$/',
+                    $related_plugin[ self::PLUGIN_VERSION_TESTED_HEADER ]
+                )
+            ){
+                $plugin_to_check = $related_plugin;
+                $plugin_to_check[ self::PLUGIN_VERSION_TESTED_HEADER ] = esc_html__( 'Unknown', 'ba-book-everything' );
+                $plugins_to_check[ $plugin_path ] = $plugin_to_check;
+                continue;
+            }
+
+            $parts_tested_version = explode( '.', $related_plugin[ self::PLUGIN_VERSION_TESTED_HEADER ] );
+            $tested_version = $parts_tested_version[0] . '.' . $parts_tested_version[1];
+
+            if( version_compare(
+                $tested_version,
+                $new_version,
+                '<'
+            ) ){
+                $plugins_to_check[ $plugin_path ] = $related_plugin;
+            }
+        }
+
+        if( empty( $plugins_to_check ) ){
+            return;
+        }
+
+        // echo compatibility warning
+?>
+<hr class="babe-update-warning__separator" />
+<div class="babe-update-warning">
+    <div class="babe-update-warning__icon">
+        <i class="fa fa-info-circle"></i>
+    </div>
+    <div>
+        <div class="babe-update-warning__message">
+            <strong>
+                <?php echo esc_html__( 'Compatibility Alert', 'ba-book-everything' ); ?>
+            </strong> -
+            <?php
+            echo sprintf(
+            /* translators: 1: Plugin name, 2: Plugin version. */
+                esc_html__( 'Some of the plugins you’re using have not been tested with the latest version of %1$s (%2$s). To avoid issues, make sure they are all up to date and compatible before updating %1$s.', 'ba-book-everything' ),
+                BABE_PLUGIN_NAME, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                $plugin_data['new_version'] // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            );
+            ?>
+        </div>
+        <br />
+        <table class="babe-compatibility-update-table">
+            <tr>
+                <th><?php echo esc_html__( 'Plugin', 'ba-book-everything' ); ?></th>
+                <th><?php
+                    /* translators: %s: BA Book Everything plugin name. */
+                    echo sprintf( esc_html__( 'Tested up to %s version', 'ba-book-everything' ), BABE_PLUGIN_NAME );
+                    ?></th>
+            </tr>
+            <?php foreach ( $plugins_to_check as $plugin_path => $plugin_to_check ) : ?>
+                <tr>
+                    <td><?php echo esc_html( $plugin_to_check['Name'] ); ?></td>
+                    <td><?php echo esc_html( $plugin_to_check[ self::PLUGIN_VERSION_TESTED_HEADER ] ); ?></td>
+                </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php
+
+    }
+    
+//////////////////////////////
+}

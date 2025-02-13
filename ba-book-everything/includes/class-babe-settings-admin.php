@@ -1553,7 +1553,7 @@ function setup_demo_content(i){
 
         add_settings_field(
             'google_api', // ID
-            __('Google API key (see ','ba-book-everything').'<a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">Google Maps API docs</a>'.__(' for details).','ba-book-everything'), // Title
+            sprintf(__('Google API key (see %1$sGoogle Maps API docs%2$s for details). You need to activate the following libraries in your Google map API: places, marker, routes','ba-book-everything'), '<a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">', '</a>'), // Title
             array( __CLASS__, 'text_field_callback' ), // Callback
             BABE_Settings::$option_menu_slug, // Page
             'setting_section_google',  // Section

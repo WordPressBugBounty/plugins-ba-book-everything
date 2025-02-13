@@ -460,3 +460,53 @@ Related items style
     width: 160px;
 }
 
+/*----------------------*/
+
+.babe-update-warning__separator {
+    margin: 15px -12px;
+}
+
+.notice-warning .babe-update-warning__separator {
+    border: 1px solid #ffb900;
+}
+
+.babe-update-warning {
+    display: flex;
+    margin-block-end: 5px;
+    max-width: 1000px;
+}
+
+.babe-update-warning__icon {
+    font-size: 17px;
+    margin-inline-end: 9px;
+    margin-inline-start: 2px;
+}
+
+.notice-warning .babe-update-warning__icon {
+    color: #f56e28;
+}
+
+.plugins table.babe-compatibility-update-table tr {
+    background: transparent;
+}
+
+.plugins table.babe-compatibility-update-table tr th {
+    font-weight: 600;
+}
+
+.plugins table.babe-compatibility-update-table tr td,
+.plugins table.babe-compatibility-update-table tr th {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-size: 13px;
+    min-width: 250px;
+    padding-block-end: 5px;
+    padding-block-start: 5px;
+    padding-inline-end: 15px;
+    padding-inline-start: 0;
+}
+
+.babe-update-warning+p {
+    display: none;
+}

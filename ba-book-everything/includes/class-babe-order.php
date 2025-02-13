@@ -2556,6 +2556,11 @@ class BABE_Order {
              do_action('babe_order_before_to_pay', $order_id, $args['payment']['payment_method'], $args);
 
              //// do payment actions
+             do_action('babe_order_start_paying_with_'.$args['payment']['payment_method'], $order_id, $args, $current_url, $success_url, $customer_id );
+
+             /**
+              * @deprecated 1.7.24 use action 'babe_order_start_to_pay_with_' instead
+              */
              do_action('babe_order_to_pay_by_'.$args['payment']['payment_method'], $order_id, $args, $current_url, $success_url);
 
              do_action('babe_order_after_to_pay', $order_id, $args['payment']['payment_method'], $args);

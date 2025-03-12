@@ -59,7 +59,76 @@ class BABE_Install {
         add_action( 'in_plugin_update_message-' . plugin_basename( BABE_PLUGIN ), function ( array $args, $response ) {
             self::in_plugin_update_message( $args, $response );
         }, 10, 2);
+
+        add_action( 'init', function(){
+            global $pagenow;
+            if ( $pagenow === 'plugins.php' ) {
+                add_action( 'admin_notices', function(){
+                    self::plugins_register_admin_notices();
+                } );
+            }
+        }, 20);
 	}
+
+    public static function plugins_register_admin_notices() {
+        $related_plugins = self::get_related_plugins();
+        foreach ($related_plugins as $plugin_path => $plugin_data){
+            if(
+                    $plugin_data['Author'] !== 'Booking Algorithms'
+                    || in_array($plugin_data['TextDomain'], [
+                            'ba-theme-core',
+                            'ba-theme-premium-pack',
+                            'ba-tours-posts',
+                            'ba-tours-light-posts',
+                    ])
+            ){
+                continue;
+            }
+
+            $plugin_name_snake_case = strtolower(str_replace(' ', '_', $plugin_data['Name']));
+
+            $option_license_key = $plugin_name_snake_case . '_license_key';
+            $option_license_status = $plugin_name_snake_case . '_license_status';
+
+            $license = get_option( $option_license_key );
+            $status  = get_option( $option_license_status );
+
+            if( empty($license) || empty($status) || $status !== 'valid'){
+                add_action( 'after_plugin_row_' . $plugin_path, function($plugin_path, $plugin_data){
+                    self::show_plugins_register_notice($plugin_path, $plugin_data);
+                }, 10, 2 );
+            }
+        }
+    }
+
+    public static function show_plugins_register_notice($plugin_path, $plugin_data){
+
+        /** @var WP_Plugins_List_Table $wp_list_table */
+        $wp_list_table = _get_list_table( 'WP_Plugins_List_Table' );
+
+        $is_active = is_plugin_active( $plugin_path );
+        $class = $is_active ? 'active' : 'inactive';
+
+        $plugin_license_page_slug = strtolower(str_replace(' ', '-', $plugin_data['Name'])) . '-license';
+
+        $message = sprintf(__( 'You are using an unregistered version of %1$s and are not receiving compatibility and security updates. %2$sRegister now%3$s', 'ba-book-everything' ), $plugin_data['Name'], '<a href="' . admin_url( 'admin.php?page='.$plugin_license_page_slug ) . '">', '</a>');
+
+        ?>
+        <tr class="plugin-update-tr <?php echo esc_attr( $class ); ?>">
+            <td colspan="<?php echo esc_attr( $wp_list_table->get_column_count() ); ?>" class="plugin-update colspanchange">
+                <div class="babe-plugin-update-warning update-message notice inline notice-warning">
+                    <div class="babe-update-warning__icon">
+                        <i class="fa fa-info-circle"></i>
+                    </div>
+                    <div>
+                        <?php echo wp_kses_post( $message ); ?>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <style>#the-list tr[data-plugin="<?php echo esc_attr( $plugin_path ); ?>"] th, #the-list tr[data-plugin="<?php echo esc_attr( $plugin_path ); ?>"] td{ box-shadow:none; }</style>
+        <?php
+    }
 
     public static function check_version() {
 

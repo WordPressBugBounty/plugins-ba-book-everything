@@ -2515,39 +2515,47 @@ class BABE_Post_types {
         $taxonomies_list = self::$taxonomies_list;
         
         $rules = BABE_Booking_Rules::get_rule_by_obj_id($post_id);
-        
-        if (!empty($rules) && isset($rules['category_meta']['categories_taxonomies'])){
+
+        if ( empty($rules['category_meta']['categories_taxonomies']) ){
+            return $output;
+        }
+
         foreach($rules['category_meta']['categories_taxonomies'] as $taxonomy_id){
-            $taxonomy = $taxonomies_list[$taxonomy_id]; 
+
+            if( empty($taxonomies_list[$taxonomy_id]['slug']) ){
+                continue;
+            }
+
+            $taxonomy = $taxonomies_list[$taxonomy_id];
+
+            if ( $taxonomy_slug && $taxonomy_slug !== $taxonomy['slug'] ){
+                continue;
+            }
+
             // slug, select_mode, frontend_style, frontend_class, gmap_active
-            if (!$taxonomy_slug || ($taxonomy_slug && $taxonomy_slug == $taxonomy['slug'])){
-            
             $terms = get_the_terms($post_id, $taxonomy['slug']);
             if (!empty($terms) && !is_wp_error($terms)){
-               $output[$taxonomy['slug']] = $taxonomy;
-               foreach($terms as $term){
-                   $output[$taxonomy['slug']]['terms'][$term->term_id] = array(
-                    'term_id' => $term->term_id,
-                    'term_taxonomy_id' => $term->term_taxonomy_id,
-                    'name' => apply_filters('translate_text', $term->name),
-                    'slug' => $term->slug,
-                    'description' => apply_filters('translate_text', $term->description),
-                    'parent' => $term->parent,
-                    'count' => $term->count,
-                   );
-                   $term_vals = get_term_meta($term->term_id);
-                   foreach($term_vals as $key=>$val){
-                    $output[$taxonomy['slug']]['terms'][$term->term_id][$key] = $val[0];
-                   }
-                   $output[$taxonomy['slug']]['terms'][$term->term_id]['image_id'] = get_term_meta($term->term_id, 'image_id', 1);
-               } 
+                $output[$taxonomy['slug']] = $taxonomy;
+                foreach($terms as $term){
+                    $output[$taxonomy['slug']]['terms'][$term->term_id] = array(
+                        'term_id' => $term->term_id,
+                        'term_taxonomy_id' => $term->term_taxonomy_id,
+                        'name' => apply_filters('translate_text', $term->name),
+                        'slug' => $term->slug,
+                        'description' => apply_filters('translate_text', $term->description),
+                        'parent' => $term->parent,
+                        'count' => $term->count,
+                    );
+                    $term_vals = get_term_meta($term->term_id);
+                    foreach($term_vals as $key=>$val){
+                        $output[$taxonomy['slug']]['terms'][$term->term_id][$key] = $val[0];
+                    }
+                    $output[$taxonomy['slug']]['terms'][$term->term_id]['image_id'] = get_term_meta($term->term_id, 'image_id', 1);
+                }
             } else {
                 $output[$taxonomy['slug']] = array();
             }
-            
-            } //// end if $taxonomy_slug
         }
-        }     
         
         return !empty($output) && $taxonomy_slug ? $output[$taxonomy_slug] : $output;
     }

@@ -4,11 +4,11 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.7
-Stable tag: 1.7.24
+Stable tag: 1.7.26
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-The really fast and powerful Booking engine with management system for theme/site developers to create any booking or rental sites (tours, cars, events, hotels, hostels, apartments etc.)
+The really fast and powerful Booking engine for theme/site developers to create any booking or rental sites (tours, cars, events, apartments etc.)
 
 == Description ==
 
@@ -113,6 +113,12 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.26 =
+* Fixed register warnings
+
+= 1.7.25 =
+* Minor fixes
 
 = 1.7.24 =
 * Added compatibility warning

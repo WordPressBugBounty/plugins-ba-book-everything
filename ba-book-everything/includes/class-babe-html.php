@@ -3908,7 +3908,7 @@ class BABE_html {
 
 		        }
 
-	        } else {
+	        } elseif ( !empty( self::checkout_field_label($field_name) ) ) {
 
 		        $output .= '
 	            <tr>

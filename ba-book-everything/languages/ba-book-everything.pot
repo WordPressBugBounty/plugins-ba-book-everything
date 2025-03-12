@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: BA Book Everything 1.3.27\n"
-"POT-Creation-Date: 2025-02-13 18:20+0200\n"
+"POT-Creation-Date: 2025-03-12 12:15+0200\n"
 "PO-Revision-Date: 2016-07-05 22:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -941,7 +941,7 @@ msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:2118
 #: includes/class-babe-cmb2-admin.php:2304
-#: includes/class-babe-install.php:1708
+#: includes/class-babe-install.php:1769
 msgid "Image description (optional)"
 msgstr ""
 
@@ -1120,7 +1120,7 @@ msgid " section"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:2690
-#: includes/class-babe-install.php:1371
+#: includes/class-babe-install.php:1432
 msgid "Description"
 msgstr ""
 
@@ -1145,7 +1145,7 @@ msgid "Services section"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:2793 includes/class-babe-html.php:678
-#: includes/class-babe-install.php:1373
+#: includes/class-babe-install.php:1434
 #: includes/class-babe-post-types.php:345
 msgid "Services"
 msgstr ""
@@ -2181,7 +2181,7 @@ msgid "Password:"
 msgstr ""
 
 #: includes/class-babe-emails.php:826 includes/class-babe-emails.php:865
-#: includes/class-babe-install.php:420
+#: includes/class-babe-install.php:481
 msgid "My Account"
 msgstr ""
 
@@ -2323,7 +2323,7 @@ msgstr ""
 msgid "Map"
 msgstr ""
 
-#: includes/class-babe-html.php:706 includes/class-babe-install.php:1375
+#: includes/class-babe-html.php:706 includes/class-babe-install.php:1436
 msgid "Questions & Answers"
 msgstr ""
 
@@ -2748,175 +2748,182 @@ msgstr ""
 msgid "Failed to import %s %s"
 msgstr ""
 
-#: includes/class-babe-install.php:316 includes/class-babe-install.php:335
+#: includes/class-babe-install.php:106
+#, php-format
+msgid ""
+"You are using an unregistered version of %1$s and are not receiving "
+"compatibility and security updates. %2$sRegister now%3$s"
+msgstr ""
+
+#: includes/class-babe-install.php:377 includes/class-babe-install.php:396
 msgid "Customer confirmation"
 msgstr ""
 
-#: includes/class-babe-install.php:415
+#: includes/class-babe-install.php:476
 msgid "Search result"
 msgstr ""
 
-#: includes/class-babe-install.php:416
+#: includes/class-babe-install.php:477
 msgid "Checkout"
 msgstr ""
 
-#: includes/class-babe-install.php:417
+#: includes/class-babe-install.php:478
 msgid "Add Services"
 msgstr ""
 
-#: includes/class-babe-install.php:418
+#: includes/class-babe-install.php:479
 #: includes/class-babe-settings-admin.php:1213
 msgid "Confirmation"
 msgstr ""
 
-#: includes/class-babe-install.php:419
+#: includes/class-babe-install.php:480
 msgid "Terms & Conditions"
 msgstr ""
 
-#: includes/class-babe-install.php:419
+#: includes/class-babe-install.php:480
 msgid ""
 "You have to edit \"Terms & Conditions\" page to replace this start "
 "content with your own."
 msgstr ""
 
-#: includes/class-babe-install.php:421
+#: includes/class-babe-install.php:482
 msgid "Admin confirmation"
 msgstr ""
 
-#: includes/class-babe-install.php:534
+#: includes/class-babe-install.php:595
 msgid "Customer"
 msgstr ""
 
-#: includes/class-babe-install.php:539
+#: includes/class-babe-install.php:600
 msgid "Manager"
 msgstr ""
 
-#: includes/class-babe-install.php:1219
-#: includes/class-babe-install.php:1239
+#: includes/class-babe-install.php:1280
+#: includes/class-babe-install.php:1300
 msgid "Features"
 msgstr ""
 
-#: includes/class-babe-install.php:1244
+#: includes/class-babe-install.php:1305
 #: includes/class-babe-post-types.php:754
 #, php-format
 msgid "Search %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1245
+#: includes/class-babe-install.php:1306
 #: includes/class-babe-post-types.php:755
 #, php-format
 msgid "All %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1246
+#: includes/class-babe-install.php:1307
 #: includes/class-babe-post-types.php:756
 #, php-format
 msgid "Parent %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1247
+#: includes/class-babe-install.php:1308
 #: includes/class-babe-post-types.php:757
 #, php-format
 msgid "Parent %s:"
 msgstr ""
 
-#: includes/class-babe-install.php:1248
+#: includes/class-babe-install.php:1309
 #: includes/class-babe-post-types.php:758
 #, php-format
 msgid "Edit %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1249
+#: includes/class-babe-install.php:1310
 #: includes/class-babe-post-types.php:759
 #, php-format
 msgid "Update %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1250
+#: includes/class-babe-install.php:1311
 #: includes/class-babe-post-types.php:760
 #, php-format
 msgid "Add New %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1251
+#: includes/class-babe-install.php:1312
 #: includes/class-babe-post-types.php:761
 #, php-format
 msgid "New %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1252
+#: includes/class-babe-install.php:1313
 #: includes/class-babe-post-types.php:762
 #, php-format
 msgid "%s"
 msgstr ""
 
-#: includes/class-babe-install.php:1269
+#: includes/class-babe-install.php:1330
 msgid "Feature 1"
 msgstr ""
 
-#: includes/class-babe-install.php:1273
+#: includes/class-babe-install.php:1334
 msgid "Feature 2"
 msgstr ""
 
-#: includes/class-babe-install.php:1277
+#: includes/class-babe-install.php:1338
 msgid "Feature 3"
 msgstr ""
 
-#: includes/class-babe-install.php:1396
+#: includes/class-babe-install.php:1457
 #: includes/vendors/elementor/widgets/allitems.php:31
 msgid "All items"
 msgstr ""
 
-#: includes/class-babe-install.php:1420
+#: includes/class-babe-install.php:1481
 msgid "Do you speak spanish?"
 msgstr ""
 
-#: includes/class-babe-install.php:1430
+#: includes/class-babe-install.php:1491
 msgid "Question 2?"
 msgstr ""
 
-#: includes/class-babe-install.php:1480
+#: includes/class-babe-install.php:1541
 msgid "Service per booking"
 msgstr ""
 
-#: includes/class-babe-install.php:1499
+#: includes/class-babe-install.php:1560
 msgid "Service per person"
 msgstr ""
 
-#: includes/class-babe-install.php:1543
+#: includes/class-babe-install.php:1604
 msgid "Santorini, Greece"
 msgstr ""
 
-#: includes/class-babe-install.php:1550
+#: includes/class-babe-install.php:1611
 msgid "Place 1"
 msgstr ""
 
-#: includes/class-babe-install.php:1567
+#: includes/class-babe-install.php:1628
 msgid "Place 2"
 msgstr ""
 
-#: includes/class-babe-install.php:1833
+#: includes/class-babe-install.php:1894
 msgid "Bryce Canyon National Park, USA"
 msgstr ""
 
-#: includes/class-babe-install.php:1880
+#: includes/class-babe-install.php:1941
 msgid "example"
 msgstr ""
 
-#: includes/class-babe-install.php:1953
+#: includes/class-babe-install.php:2014
 #: includes/class-babe-settings-admin.php:575
 msgid "General"
 msgstr ""
 
-#: includes/class-babe-install.php:2065
+#: includes/class-babe-install.php:2126
 msgid "Unknown"
 msgstr ""
 
-#: includes/class-babe-install.php:2096
+#: includes/class-babe-install.php:2157
 msgid "Compatibility Alert"
 msgstr ""
 
-#: includes/class-babe-install.php:2101
+#: includes/class-babe-install.php:2162
 #, php-format
 msgid ""
 "Some of the plugins you’re using have not been tested with the latest "
@@ -2924,11 +2931,11 @@ msgid ""
 "date and compatible before updating %1$s."
 msgstr ""
 
-#: includes/class-babe-install.php:2110
+#: includes/class-babe-install.php:2171
 msgid "Plugin"
 msgstr ""
 
-#: includes/class-babe-install.php:2113
+#: includes/class-babe-install.php:2174
 #, php-format
 msgid "Tested up to %s version"
 msgstr ""

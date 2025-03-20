@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: BA Book Everything 1.3.27\n"
-"POT-Creation-Date: 2025-03-12 12:15+0200\n"
+"POT-Creation-Date: 2025-03-20 13:10+0200\n"
 "PO-Revision-Date: 2016-07-05 22:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -123,7 +123,7 @@ msgstr ""
 #: includes/class-babe-cmb2-admin.php:2137
 #: includes/class-babe-cmb2-admin.php:2680
 #: includes/class-babe-cmb2-admin.php:2847
-#: includes/class-babe-html.php:2629 includes/class-babe-html.php:2630
+#: includes/class-babe-html.php:2633 includes/class-babe-html.php:2634
 msgid "Title"
 msgstr ""
 
@@ -318,7 +318,7 @@ msgstr ""
 #: includes/class-babe-cmb2-admin.php:3177
 #: includes/class-babe-cmb2-admin.php:3379
 #: includes/class-babe-cmb2-admin.php:3468
-#: includes/class-babe-settings-admin.php:2433
+#: includes/class-babe-settings-admin.php:2398
 msgid "No"
 msgstr ""
 
@@ -337,7 +337,7 @@ msgstr ""
 #: includes/class-babe-cmb2-admin.php:3178
 #: includes/class-babe-cmb2-admin.php:3380
 #: includes/class-babe-cmb2-admin.php:3469
-#: includes/class-babe-settings-admin.php:2432
+#: includes/class-babe-settings-admin.php:2397
 msgid "Yes"
 msgstr ""
 
@@ -661,7 +661,7 @@ msgstr ""
 #: includes/class-babe-cmb2-admin.php:1079
 #: includes/class-babe-cmb2-admin.php:2022
 #: includes/class-babe-cmb2-admin.php:2565 includes/class-babe-html.php:405
-#: includes/class-babe-html.php:4001
+#: includes/class-babe-html.php:4005
 msgid "Address"
 msgstr ""
 
@@ -812,7 +812,7 @@ msgid "Extra guest contacts"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:1746
-#: includes/class-babe-html.php:3986
+#: includes/class-babe-html.php:3990
 msgid "Extra guest"
 msgstr ""
 
@@ -891,10 +891,10 @@ msgid "Percentage"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:1982
-#: includes/class-babe-html.php:2631 includes/class-babe-html.php:2632
-#: includes/class-babe-html.php:4609 includes/class-babe-html.php:4876
-#: includes/class-babe-html.php:5132 includes/class-babe-html.php:5284
-#: includes/class-babe-order.php:1908 includes/class-babe-prices.php:567
+#: includes/class-babe-html.php:2635 includes/class-babe-html.php:2636
+#: includes/class-babe-html.php:4613 includes/class-babe-html.php:4880
+#: includes/class-babe-html.php:5136 includes/class-babe-html.php:5288
+#: includes/class-babe-order.php:1921 includes/class-babe-prices.php:567
 #: includes/class-babe-prices.php:763
 #: includes/class-babe-search-form.php:376
 #: includes/class-babe-search-form.php:726
@@ -941,7 +941,7 @@ msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:2118
 #: includes/class-babe-cmb2-admin.php:2304
-#: includes/class-babe-install.php:1769
+#: includes/class-babe-install.php:1778
 msgid "Image description (optional)"
 msgstr ""
 
@@ -1120,7 +1120,7 @@ msgid " section"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:2690
-#: includes/class-babe-install.php:1432
+#: includes/class-babe-install.php:1441
 msgid "Description"
 msgstr ""
 
@@ -1145,7 +1145,7 @@ msgid "Services section"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:2793 includes/class-babe-html.php:678
-#: includes/class-babe-install.php:1434
+#: includes/class-babe-install.php:1443
 #: includes/class-babe-post-types.php:345
 msgid "Services"
 msgstr ""
@@ -1180,7 +1180,7 @@ msgid "Recalculate Rating"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:2896
-#: includes/class-babe-html.php:2633 includes/class-babe-html.php:2634
+#: includes/class-babe-html.php:2637 includes/class-babe-html.php:2638
 #: includes/class-babe-rating.php:840
 #: includes/vendors/elementor/widgets/allitems.php:174
 msgid "Rating"
@@ -1314,7 +1314,7 @@ msgid "Exclude new dates:"
 msgstr ""
 
 #: includes/class-babe-cmb2-admin.php:3251
-#: includes/class-babe-html.php:1305 includes/class-babe-html.php:1508
+#: includes/class-babe-html.php:1309 includes/class-babe-html.php:1512
 #: includes/class-babe-shortcodes.php:849
 msgid "from"
 msgstr ""
@@ -2112,7 +2112,7 @@ msgstr ""
 #: includes/class-babe-emails.php:601 includes/class-babe-emails.php:660
 #: includes/class-babe-emails.php:723 includes/class-babe-emails.php:780
 #: includes/class-babe-emails.php:908 includes/class-babe-emails.php:962
-#: includes/class-babe-html.php:3196
+#: includes/class-babe-html.php:3200
 #: includes/class-babe-my-account.php:1497
 msgid "Order #"
 msgstr ""
@@ -2163,8 +2163,8 @@ msgstr ""
 msgid "Your contacts"
 msgstr ""
 
-#: includes/class-babe-emails.php:721 includes/class-babe-html.php:3156
-#: includes/class-babe-html.php:4305
+#: includes/class-babe-emails.php:721 includes/class-babe-html.php:3160
+#: includes/class-babe-html.php:4309
 msgid "Pay Now!"
 msgstr ""
 
@@ -2181,7 +2181,7 @@ msgid "Password:"
 msgstr ""
 
 #: includes/class-babe-emails.php:826 includes/class-babe-emails.php:865
-#: includes/class-babe-install.php:481
+#: includes/class-babe-install.php:489
 msgid "My Account"
 msgstr ""
 
@@ -2193,32 +2193,32 @@ msgstr ""
 msgid "Next &raquo;"
 msgstr ""
 
-#: includes/class-babe-html.php:267 includes/class-babe-html.php:5433
-#: includes/class-babe-html.php:5519
+#: includes/class-babe-html.php:267 includes/class-babe-html.php:5437
+#: includes/class-babe-html.php:5523
 msgid "Mode of Travel: "
 msgstr ""
 
-#: includes/class-babe-html.php:269 includes/class-babe-html.php:5435
-#: includes/class-babe-html.php:5521
+#: includes/class-babe-html.php:269 includes/class-babe-html.php:5439
+#: includes/class-babe-html.php:5525
 msgid "Walking"
 msgstr ""
 
-#: includes/class-babe-html.php:270 includes/class-babe-html.php:5436
-#: includes/class-babe-html.php:5522
+#: includes/class-babe-html.php:270 includes/class-babe-html.php:5440
+#: includes/class-babe-html.php:5526
 msgid "Driving"
 msgstr ""
 
-#: includes/class-babe-html.php:271 includes/class-babe-html.php:5437
-#: includes/class-babe-html.php:5523
+#: includes/class-babe-html.php:271 includes/class-babe-html.php:5441
+#: includes/class-babe-html.php:5527
 msgid "Bicycling"
 msgstr ""
 
-#: includes/class-babe-html.php:275 includes/class-babe-html.php:5430
-#: includes/class-babe-html.php:5516
+#: includes/class-babe-html.php:275 includes/class-babe-html.php:5434
+#: includes/class-babe-html.php:5520
 msgid "Enter your address"
 msgstr ""
 
-#: includes/class-babe-html.php:309 includes/class-babe-html.php:2478
+#: includes/class-babe-html.php:309 includes/class-babe-html.php:2482
 msgid "Please fill in all the data."
 msgstr ""
 
@@ -2266,15 +2266,15 @@ msgstr ""
 msgid "Billing address"
 msgstr ""
 
-#: includes/class-babe-html.php:381 includes/class-babe-html.php:3992
+#: includes/class-babe-html.php:381 includes/class-babe-html.php:3996
 msgid "Country"
 msgstr ""
 
-#: includes/class-babe-html.php:390 includes/class-babe-html.php:3995
+#: includes/class-babe-html.php:390 includes/class-babe-html.php:3999
 msgid "State"
 msgstr ""
 
-#: includes/class-babe-html.php:398 includes/class-babe-html.php:3998
+#: includes/class-babe-html.php:398 includes/class-babe-html.php:4002
 msgid "City"
 msgstr ""
 
@@ -2283,11 +2283,11 @@ msgstr ""
 msgid "Extra guest %s"
 msgstr ""
 
-#: includes/class-babe-html.php:464 includes/class-babe-html.php:3968
+#: includes/class-babe-html.php:464 includes/class-babe-html.php:3972
 msgid "First name"
 msgstr ""
 
-#: includes/class-babe-html.php:471 includes/class-babe-html.php:3971
+#: includes/class-babe-html.php:471 includes/class-babe-html.php:3975
 msgid "Last name"
 msgstr ""
 
@@ -2323,12 +2323,12 @@ msgstr ""
 msgid "Map"
 msgstr ""
 
-#: includes/class-babe-html.php:706 includes/class-babe-install.php:1436
+#: includes/class-babe-html.php:706 includes/class-babe-install.php:1445
 msgid "Questions & Answers"
 msgstr ""
 
 #: includes/class-babe-html.php:730
-#: includes/class-babe-settings-admin.php:932
+#: includes/class-babe-settings-admin.php:897
 msgid "Reviews"
 msgstr ""
 
@@ -2344,287 +2344,287 @@ msgstr ""
 msgid "Offer Ends: "
 msgstr ""
 
-#: includes/class-babe-html.php:973 includes/class-babe-html.php:1010
+#: includes/class-babe-html.php:977 includes/class-babe-html.php:1014
 msgid "Value purchase"
 msgstr ""
 
-#: includes/class-babe-html.php:1000
+#: includes/class-babe-html.php:1004
 msgid "Tourist"
 msgstr ""
 
-#: includes/class-babe-html.php:1264
+#: includes/class-babe-html.php:1268
 msgid "No results were found for your request"
 msgstr ""
 
-#: includes/class-babe-html.php:1572
+#: includes/class-babe-html.php:1576
 msgid "Select address"
 msgstr ""
 
-#: includes/class-babe-html.php:1582 includes/class-babe-html.php:2389
+#: includes/class-babe-html.php:1586 includes/class-babe-html.php:2393
 msgid "Select meeting point"
 msgstr ""
 
-#: includes/class-babe-html.php:1582
+#: includes/class-babe-html.php:1586
 msgid "Go to Booking form"
 msgstr ""
 
-#: includes/class-babe-html.php:2227 includes/class-babe-html.php:2246
-#: includes/class-babe-html.php:2532 includes/class-babe-html.php:3279
+#: includes/class-babe-html.php:2231 includes/class-babe-html.php:2250
+#: includes/class-babe-html.php:2536 includes/class-babe-html.php:3283
 msgid "From:"
 msgstr ""
 
-#: includes/class-babe-html.php:2234
+#: includes/class-babe-html.php:2238
 msgid "Time from:"
 msgstr ""
 
-#: includes/class-babe-html.php:2265 includes/class-babe-html.php:2543
-#: includes/class-babe-html.php:3279
+#: includes/class-babe-html.php:2269 includes/class-babe-html.php:2547
+#: includes/class-babe-html.php:3283
 msgid "To:"
 msgstr ""
 
-#: includes/class-babe-html.php:2284
+#: includes/class-babe-html.php:2288
 msgid "Time to:"
 msgstr ""
 
-#: includes/class-babe-html.php:2305 includes/class-babe-html.php:3282
+#: includes/class-babe-html.php:2309 includes/class-babe-html.php:3286
 msgid "Time:"
 msgstr ""
 
-#: includes/class-babe-html.php:2350
+#: includes/class-babe-html.php:2354
 msgid "please, select date first"
 msgstr ""
 
-#: includes/class-babe-html.php:2354 includes/class-babe-html.php:3337
+#: includes/class-babe-html.php:2358 includes/class-babe-html.php:3341
 msgid "Tickets:"
 msgstr ""
 
-#: includes/class-babe-html.php:2354 includes/class-babe-html.php:3337
+#: includes/class-babe-html.php:2358 includes/class-babe-html.php:3341
 msgid "Guests:"
 msgstr ""
 
-#: includes/class-babe-html.php:2386
+#: includes/class-babe-html.php:2390
 msgid "find closest location"
 msgstr ""
 
-#: includes/class-babe-html.php:2402 includes/class-babe-html.php:5514
+#: includes/class-babe-html.php:2406 includes/class-babe-html.php:5518
 msgid "Find a route from your location"
 msgstr ""
 
-#: includes/class-babe-html.php:2408
+#: includes/class-babe-html.php:2412
 msgid "Ok"
 msgstr ""
 
-#: includes/class-babe-html.php:2457
+#: includes/class-babe-html.php:2461
 msgid "Please login or register to continue your booking"
 msgstr ""
 
-#: includes/class-babe-html.php:2460
+#: includes/class-babe-html.php:2464
 msgid "Book Now"
 msgstr ""
 
-#: includes/class-babe-html.php:2472 includes/class-babe-html.php:3586
+#: includes/class-babe-html.php:2476 includes/class-babe-html.php:3590
 msgid "Total:"
 msgstr ""
 
-#: includes/class-babe-html.php:2565
+#: includes/class-babe-html.php:2569
 msgid "Your name"
 msgstr ""
 
-#: includes/class-babe-html.php:2570 includes/class-babe-my-account.php:394
+#: includes/class-babe-html.php:2574 includes/class-babe-my-account.php:394
 msgid "Your email"
 msgstr ""
 
-#: includes/class-babe-html.php:2575
+#: includes/class-babe-html.php:2579
 msgid "Message"
 msgstr ""
 
-#: includes/class-babe-html.php:2584
+#: includes/class-babe-html.php:2588
 msgid "Request a reservation"
 msgstr ""
 
-#: includes/class-babe-html.php:2635 includes/class-babe-html.php:2636
+#: includes/class-babe-html.php:2639 includes/class-babe-html.php:2640
 msgid "Availability date"
 msgstr ""
 
-#: includes/class-babe-html.php:3050 includes/class-babe-html.php:3138
+#: includes/class-babe-html.php:3054 includes/class-babe-html.php:3142
 #, php-format
 msgid "Order #%s is confirmed."
 msgstr ""
 
-#: includes/class-babe-html.php:3053
+#: includes/class-babe-html.php:3057
 #, php-format
 msgid ""
 "Asked the customer to confirm or decline the changes to the order #%s"
 msgstr ""
 
-#: includes/class-babe-html.php:3057
+#: includes/class-babe-html.php:3061
 #, php-format
 msgid "Order #%s is rejected."
 msgstr ""
 
-#: includes/class-babe-html.php:3076
+#: includes/class-babe-html.php:3080
 msgid "Please click the button below to confirm the order:"
 msgstr ""
 
-#: includes/class-babe-html.php:3077
+#: includes/class-babe-html.php:3081
 msgid "Confirm Order"
 msgstr ""
 
-#: includes/class-babe-html.php:3080
+#: includes/class-babe-html.php:3084
 msgid "Ask customer to confirm or reject changes to the booking"
 msgstr ""
 
-#: includes/class-babe-html.php:3081
+#: includes/class-babe-html.php:3085
 msgid ""
 "Please describe below any changes to the booking that the client will "
 "need to confirm:"
 msgstr ""
 
-#: includes/class-babe-html.php:3086
+#: includes/class-babe-html.php:3090
 msgid "Please click the button below to reject the order:"
 msgstr ""
 
-#: includes/class-babe-html.php:3087
+#: includes/class-babe-html.php:3091
 msgid "Reject Order"
 msgstr ""
 
-#: includes/class-babe-html.php:3099 includes/class-babe-html.php:4100
-#: includes/class-babe-html.php:4325
+#: includes/class-babe-html.php:3103 includes/class-babe-html.php:4104
+#: includes/class-babe-html.php:4329
 #, php-format
 msgid "Order #%s"
 msgstr ""
 
-#: includes/class-babe-html.php:3142
+#: includes/class-babe-html.php:3146
 #, php-format
 msgid "Order #%s is canceled."
 msgstr ""
 
-#: includes/class-babe-html.php:3153
+#: includes/class-babe-html.php:3157
 msgctxt "customer_confirmation"
 msgid ""
 "Your order is confirmed, but not completed. To complete your order, "
 "please click the button below to make a payment"
 msgstr ""
 
-#: includes/class-babe-html.php:3170
+#: includes/class-babe-html.php:3174
 msgid "Please click the button below to confirm changes to the order:"
 msgstr ""
 
-#: includes/class-babe-html.php:3176
+#: includes/class-babe-html.php:3180
 msgid "Confirm changes to the Order"
 msgstr ""
 
-#: includes/class-babe-html.php:3180
+#: includes/class-babe-html.php:3184
 msgid "Please click the button below to cancel the order:"
 msgstr ""
 
-#: includes/class-babe-html.php:3181
+#: includes/class-babe-html.php:3185
 msgid "Cancel Order"
 msgstr ""
 
-#: includes/class-babe-html.php:3282
+#: includes/class-babe-html.php:3286
 msgid "Date:"
 msgstr ""
 
-#: includes/class-babe-html.php:3295
+#: includes/class-babe-html.php:3299
 msgid "Duration:"
 msgstr ""
 
-#: includes/class-babe-html.php:3311
+#: includes/class-babe-html.php:3315
 msgid "Departure from:"
 msgstr ""
 
-#: includes/class-babe-html.php:3321
+#: includes/class-babe-html.php:3325
 msgid "Departure time:"
 msgstr ""
 
-#: includes/class-babe-html.php:3353
+#: includes/class-babe-html.php:3357
 msgid "persons"
 msgstr ""
 
-#: includes/class-babe-html.php:3353 includes/class-babe-prices.php:324
+#: includes/class-babe-html.php:3357 includes/class-babe-prices.php:324
 msgid "person"
 msgstr ""
 
-#: includes/class-babe-html.php:3412
+#: includes/class-babe-html.php:3416
 #, php-format
 msgid "Price Cut %d%% off applied"
 msgstr ""
 
-#: includes/class-babe-html.php:3508
+#: includes/class-babe-html.php:3512
 msgid "Taxes"
 msgstr ""
 
-#: includes/class-babe-html.php:3557
+#: includes/class-babe-html.php:3561
 msgid "Subtotal:"
 msgstr ""
 
-#: includes/class-babe-html.php:3577
+#: includes/class-babe-html.php:3581
 msgid "Discount coupon"
 msgstr ""
 
-#: includes/class-babe-html.php:3596
+#: includes/class-babe-html.php:3600
 msgid "Amount Paid:"
 msgstr ""
 
-#: includes/class-babe-html.php:3606
+#: includes/class-babe-html.php:3610
 msgid "Amount Due:"
 msgstr ""
 
-#: includes/class-babe-html.php:3775
+#: includes/class-babe-html.php:3779
 msgid "Remove Coupon"
 msgstr ""
 
-#: includes/class-babe-html.php:3781
+#: includes/class-babe-html.php:3785
 #, php-format
 msgid "Coupon Code %s with amount %s was applied"
 msgstr ""
 
-#: includes/class-babe-html.php:3814
+#: includes/class-babe-html.php:3818
 msgid "Enter Coupon Code and get a discount!"
 msgstr ""
 
-#: includes/class-babe-html.php:3819
+#: includes/class-babe-html.php:3823
 msgid "Apply Coupon"
 msgstr ""
 
-#: includes/class-babe-html.php:3974 includes/class-babe-rating.php:198
+#: includes/class-babe-html.php:3978 includes/class-babe-rating.php:198
 msgid "Email"
 msgstr ""
 
-#: includes/class-babe-html.php:3977
+#: includes/class-babe-html.php:3981
 msgid "Re-type Email"
 msgstr ""
 
-#: includes/class-babe-html.php:3980
+#: includes/class-babe-html.php:3984
 msgid "Contact Phone"
 msgstr ""
 
-#: includes/class-babe-html.php:3983
+#: includes/class-babe-html.php:3987
 msgid "Guest"
 msgstr ""
 
-#: includes/class-babe-html.php:3989
+#: includes/class-babe-html.php:3993
 msgid "Extra guests"
 msgstr ""
 
-#: includes/class-babe-html.php:4025
+#: includes/class-babe-html.php:4029
 msgid "Amount to Pay:"
 msgstr ""
 
-#: includes/class-babe-html.php:4033
+#: includes/class-babe-html.php:4037
 msgid "(deposit)"
 msgstr ""
 
-#: includes/class-babe-html.php:4046
+#: includes/class-babe-html.php:4050
 msgid "(full)"
 msgstr ""
 
-#: includes/class-babe-html.php:4187
+#: includes/class-babe-html.php:4191
 msgid "Payment Method"
 msgstr ""
 
-#: includes/class-babe-html.php:4201
+#: includes/class-babe-html.php:4205
 #, php-format
 msgid ""
 "You could pay after the items availability confirmation! <br> "
@@ -2632,105 +2632,105 @@ msgid ""
 "be %s."
 msgstr ""
 
-#: includes/class-babe-html.php:4204
+#: includes/class-babe-html.php:4208
 msgid "Payment details"
 msgstr ""
 
-#: includes/class-babe-html.php:4212
+#: includes/class-babe-html.php:4216
 msgid "Contact information"
 msgstr ""
 
-#: includes/class-babe-html.php:4236
+#: includes/class-babe-html.php:4240
 msgid "I read and agree to the terms & conditions"
 msgstr ""
 
-#: includes/class-babe-html.php:4246
+#: includes/class-babe-html.php:4250
 msgid "Complete My Order"
 msgstr ""
 
-#: includes/class-babe-html.php:4306
+#: includes/class-babe-html.php:4310
 msgid "Complete the booking"
 msgstr ""
 
-#: includes/class-babe-html.php:4319
+#: includes/class-babe-html.php:4323
 msgid ""
 "If you have made a payment, please refresh the page to check the current "
 "order status"
 msgstr ""
 
-#: includes/class-babe-html.php:4320
+#: includes/class-babe-html.php:4324
 msgid "Refresh the page"
 msgstr ""
 
-#: includes/class-babe-html.php:4550 includes/class-babe-prices.php:435
+#: includes/class-babe-html.php:4554 includes/class-babe-prices.php:435
 #: includes/class-babe-prices.php:704
 msgid "Minimum booking:"
 msgstr ""
 
-#: includes/class-babe-html.php:4555 includes/class-babe-prices.php:439
+#: includes/class-babe-html.php:4559 includes/class-babe-prices.php:439
 #: includes/class-babe-prices.php:709
 msgid "Maximum booking:"
 msgstr ""
 
-#: includes/class-babe-html.php:4564
+#: includes/class-babe-html.php:4568
 msgid "General price:"
 msgstr ""
 
-#: includes/class-babe-html.php:4590
+#: includes/class-babe-html.php:4594
 msgid "Options"
 msgstr ""
 
-#: includes/class-babe-html.php:4600 includes/class-babe-prices.php:548
+#: includes/class-babe-html.php:4604 includes/class-babe-prices.php:548
 #: includes/class-babe-prices.php:754
 msgid "guests"
 msgstr ""
 
-#: includes/class-babe-html.php:4604 includes/class-babe-prices.php:553
+#: includes/class-babe-html.php:4608 includes/class-babe-prices.php:553
 #: includes/class-babe-prices.php:758
 msgid "AND"
 msgstr ""
 
-#: includes/class-babe-html.php:4750 includes/class-babe-html.php:4965
-#: includes/class-babe-html.php:5156 includes/class-babe-post-types.php:234
+#: includes/class-babe-html.php:4754 includes/class-babe-html.php:4969
+#: includes/class-babe-html.php:5160 includes/class-babe-post-types.php:234
 msgid "Add "
 msgstr ""
 
-#: includes/class-babe-html.php:4761
+#: includes/class-babe-html.php:4765
 msgid "%"
 msgstr ""
 
-#: includes/class-babe-html.php:4792
+#: includes/class-babe-html.php:4796
 msgid "Mandatory fees"
 msgstr ""
 
-#: includes/class-babe-html.php:4801
+#: includes/class-babe-html.php:4805
 msgid "Optional fees"
 msgstr ""
 
-#: includes/class-babe-html.php:5009 includes/class-babe-html.php:5013
-#: includes/class-babe-html.php:5030 includes/class-babe-html.php:5182
-#: includes/class-babe-html.php:5194 includes/class-babe-html.php:5345
-#: includes/class-babe-html.php:5361
+#: includes/class-babe-html.php:5013 includes/class-babe-html.php:5017
+#: includes/class-babe-html.php:5034 includes/class-babe-html.php:5186
+#: includes/class-babe-html.php:5198 includes/class-babe-html.php:5349
+#: includes/class-babe-html.php:5365
 msgid "%/booking "
 msgstr ""
 
-#: includes/class-babe-html.php:5096
+#: includes/class-babe-html.php:5100
 msgid "qty."
 msgstr ""
 
-#: includes/class-babe-html.php:5143 includes/class-babe-html.php:5296
+#: includes/class-babe-html.php:5147 includes/class-babe-html.php:5300
 msgid "Prices "
 msgstr ""
 
-#: includes/class-babe-html.php:5253
+#: includes/class-babe-html.php:5257
 msgid "Continue"
 msgstr ""
 
-#: includes/class-babe-html.php:5427
+#: includes/class-babe-html.php:5431
 msgid "Find closest meeting point"
 msgstr ""
 
-#: includes/class-babe-html.php:5431
+#: includes/class-babe-html.php:5435
 #: includes/class-babe-search-form.php:192
 msgid "Search"
 msgstr ""
@@ -2748,182 +2748,183 @@ msgstr ""
 msgid "Failed to import %s %s"
 msgstr ""
 
-#: includes/class-babe-install.php:106
+#: includes/class-babe-install.php:114
 #, php-format
 msgid ""
 "You are using an unregistered version of %1$s and are not receiving "
 "compatibility and security updates. %2$sRegister now%3$s"
 msgstr ""
 
-#: includes/class-babe-install.php:377 includes/class-babe-install.php:396
+#: includes/class-babe-install.php:385 includes/class-babe-install.php:404
+#: includes/class-babe-install.php:491
 msgid "Customer confirmation"
 msgstr ""
 
-#: includes/class-babe-install.php:476
+#: includes/class-babe-install.php:484
 msgid "Search result"
 msgstr ""
 
-#: includes/class-babe-install.php:477
+#: includes/class-babe-install.php:485
 msgid "Checkout"
 msgstr ""
 
-#: includes/class-babe-install.php:478
+#: includes/class-babe-install.php:486
 msgid "Add Services"
 msgstr ""
 
-#: includes/class-babe-install.php:479
-#: includes/class-babe-settings-admin.php:1213
+#: includes/class-babe-install.php:487
+#: includes/class-babe-settings-admin.php:1178
 msgid "Confirmation"
 msgstr ""
 
-#: includes/class-babe-install.php:480
+#: includes/class-babe-install.php:488
 msgid "Terms & Conditions"
 msgstr ""
 
-#: includes/class-babe-install.php:480
+#: includes/class-babe-install.php:488
 msgid ""
 "You have to edit \"Terms & Conditions\" page to replace this start "
 "content with your own."
 msgstr ""
 
-#: includes/class-babe-install.php:482
+#: includes/class-babe-install.php:490
 msgid "Admin confirmation"
 msgstr ""
 
-#: includes/class-babe-install.php:595
+#: includes/class-babe-install.php:604
 msgid "Customer"
 msgstr ""
 
-#: includes/class-babe-install.php:600
+#: includes/class-babe-install.php:609
 msgid "Manager"
 msgstr ""
 
-#: includes/class-babe-install.php:1280
-#: includes/class-babe-install.php:1300
+#: includes/class-babe-install.php:1289
+#: includes/class-babe-install.php:1309
 msgid "Features"
 msgstr ""
 
-#: includes/class-babe-install.php:1305
+#: includes/class-babe-install.php:1314
 #: includes/class-babe-post-types.php:754
 #, php-format
 msgid "Search %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1306
+#: includes/class-babe-install.php:1315
 #: includes/class-babe-post-types.php:755
 #, php-format
 msgid "All %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1307
+#: includes/class-babe-install.php:1316
 #: includes/class-babe-post-types.php:756
 #, php-format
 msgid "Parent %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1308
+#: includes/class-babe-install.php:1317
 #: includes/class-babe-post-types.php:757
 #, php-format
 msgid "Parent %s:"
 msgstr ""
 
-#: includes/class-babe-install.php:1309
+#: includes/class-babe-install.php:1318
 #: includes/class-babe-post-types.php:758
 #, php-format
 msgid "Edit %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1310
+#: includes/class-babe-install.php:1319
 #: includes/class-babe-post-types.php:759
 #, php-format
 msgid "Update %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1311
+#: includes/class-babe-install.php:1320
 #: includes/class-babe-post-types.php:760
 #, php-format
 msgid "Add New %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1312
+#: includes/class-babe-install.php:1321
 #: includes/class-babe-post-types.php:761
 #, php-format
 msgid "New %s"
 msgstr ""
 
-#: includes/class-babe-install.php:1313
+#: includes/class-babe-install.php:1322
 #: includes/class-babe-post-types.php:762
 #, php-format
 msgid "%s"
 msgstr ""
 
-#: includes/class-babe-install.php:1330
+#: includes/class-babe-install.php:1339
 msgid "Feature 1"
 msgstr ""
 
-#: includes/class-babe-install.php:1334
+#: includes/class-babe-install.php:1343
 msgid "Feature 2"
 msgstr ""
 
-#: includes/class-babe-install.php:1338
+#: includes/class-babe-install.php:1347
 msgid "Feature 3"
 msgstr ""
 
-#: includes/class-babe-install.php:1457
+#: includes/class-babe-install.php:1466
 #: includes/vendors/elementor/widgets/allitems.php:31
 msgid "All items"
 msgstr ""
 
-#: includes/class-babe-install.php:1481
+#: includes/class-babe-install.php:1490
 msgid "Do you speak spanish?"
 msgstr ""
 
-#: includes/class-babe-install.php:1491
+#: includes/class-babe-install.php:1500
 msgid "Question 2?"
 msgstr ""
 
-#: includes/class-babe-install.php:1541
+#: includes/class-babe-install.php:1550
 msgid "Service per booking"
 msgstr ""
 
-#: includes/class-babe-install.php:1560
+#: includes/class-babe-install.php:1569
 msgid "Service per person"
 msgstr ""
 
-#: includes/class-babe-install.php:1604
+#: includes/class-babe-install.php:1613
 msgid "Santorini, Greece"
 msgstr ""
 
-#: includes/class-babe-install.php:1611
+#: includes/class-babe-install.php:1620
 msgid "Place 1"
 msgstr ""
 
-#: includes/class-babe-install.php:1628
+#: includes/class-babe-install.php:1637
 msgid "Place 2"
 msgstr ""
 
-#: includes/class-babe-install.php:1894
+#: includes/class-babe-install.php:1903
 msgid "Bryce Canyon National Park, USA"
 msgstr ""
 
-#: includes/class-babe-install.php:1941
+#: includes/class-babe-install.php:1950
 msgid "example"
 msgstr ""
 
-#: includes/class-babe-install.php:2014
-#: includes/class-babe-settings-admin.php:575
+#: includes/class-babe-install.php:2023
+#: includes/class-babe-settings-admin.php:540
 msgid "General"
 msgstr ""
 
-#: includes/class-babe-install.php:2126
+#: includes/class-babe-install.php:2135
 msgid "Unknown"
 msgstr ""
 
-#: includes/class-babe-install.php:2157
+#: includes/class-babe-install.php:2166
 msgid "Compatibility Alert"
 msgstr ""
 
-#: includes/class-babe-install.php:2162
+#: includes/class-babe-install.php:2171
 #, php-format
 msgid ""
 "Some of the plugins you’re using have not been tested with the latest "
@@ -2931,11 +2932,11 @@ msgid ""
 "date and compatible before updating %1$s."
 msgstr ""
 
-#: includes/class-babe-install.php:2171
+#: includes/class-babe-install.php:2180
 msgid "Plugin"
 msgstr ""
 
-#: includes/class-babe-install.php:2174
+#: includes/class-babe-install.php:2183
 #, php-format
 msgid "Tested up to %s version"
 msgstr ""
@@ -10762,79 +10763,79 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
-#: includes/class-babe-order.php:93
+#: includes/class-babe-order.php:89
 msgid "draft"
 msgstr ""
 
-#: includes/class-babe-order.php:94
+#: includes/class-babe-order.php:90
 msgid "availability confirmation"
 msgstr ""
 
-#: includes/class-babe-order.php:95
+#: includes/class-babe-order.php:91
 msgid "customer confirmation"
 msgstr ""
 
-#: includes/class-babe-order.php:96
+#: includes/class-babe-order.php:92
 msgid "not available"
 msgstr ""
 
-#: includes/class-babe-order.php:97
+#: includes/class-babe-order.php:93
 msgid "payment deferred"
 msgstr ""
 
-#: includes/class-babe-order.php:98
+#: includes/class-babe-order.php:94
 msgid "payment expected"
 msgstr ""
 
-#: includes/class-babe-order.php:99
+#: includes/class-babe-order.php:95
 msgid "payment processing"
 msgstr ""
 
-#: includes/class-babe-order.php:100
+#: includes/class-babe-order.php:96
 msgid "payment authorized"
 msgstr ""
 
-#: includes/class-babe-order.php:101
+#: includes/class-babe-order.php:97
 msgid "payment received"
 msgstr ""
 
-#: includes/class-babe-order.php:102
+#: includes/class-babe-order.php:98
 msgid "canceled"
 msgstr ""
 
-#: includes/class-babe-order.php:103
+#: includes/class-babe-order.php:99
 msgid "completed"
 msgstr ""
 
-#: includes/class-babe-order.php:112 includes/class-babe-settings.php:181
+#: includes/class-babe-order.php:108 includes/class-babe-settings.php:181
 msgid "New order"
 msgstr ""
 
-#: includes/class-babe-order.php:115
+#: includes/class-babe-order.php:111
 msgid "New order for confirmation"
 msgstr ""
 
-#: includes/class-babe-order.php:118
+#: includes/class-babe-order.php:114
 msgid "Ask customer to confirm or reject changes in the booking"
 msgstr ""
 
-#: includes/class-babe-order.php:121
+#: includes/class-babe-order.php:117
 msgid "New order to pay"
 msgstr ""
 
-#: includes/class-babe-order.php:124 includes/class-babe-settings.php:178
+#: includes/class-babe-order.php:120 includes/class-babe-settings.php:178
 msgid "Order updated"
 msgstr ""
 
-#: includes/class-babe-order.php:127
+#: includes/class-babe-order.php:123
 msgid "Order rejected"
 msgstr ""
 
-#: includes/class-babe-order.php:130
+#: includes/class-babe-order.php:126
 msgid "Order canceled"
 msgstr ""
 
-#: includes/class-babe-order.php:2942
+#: includes/class-babe-order.php:2955
 msgid "Your message has been sent! Thank you!"
 msgstr ""
 
@@ -10844,7 +10845,7 @@ msgstr ""
 
 #: includes/class-babe-pay-cash.php:58 includes/class-babe-pay-cash.php:116
 #: includes/class-babe-payments.php:115
-#: includes/class-babe-settings-admin.php:1136
+#: includes/class-babe-settings-admin.php:1101
 msgid "Pay later"
 msgstr ""
 
@@ -11149,7 +11150,7 @@ msgid "Update Order"
 msgstr ""
 
 #: includes/class-babe-post-types.php:393
-#: includes/class-babe-settings-admin.php:1165
+#: includes/class-babe-settings-admin.php:1130
 #: includes/vendors/elementor/widgets/allitems.php:184
 msgid "Order"
 msgstr ""
@@ -11771,7 +11772,7 @@ msgid "Apply"
 msgstr ""
 
 #: includes/class-babe-settings-admin.php:83
-#: includes/class-babe-settings-admin.php:396
+#: includes/class-babe-settings-admin.php:361
 msgid "BA Book Everything Settings"
 msgstr ""
 
@@ -11781,7 +11782,7 @@ msgstr ""
 
 #: includes/class-babe-settings-admin.php:94
 #: includes/class-babe-settings-admin.php:95
-msgid "Addons and Themes"
+msgid "Addons"
 msgstr ""
 
 #: includes/class-babe-settings-admin.php:103
@@ -11839,526 +11840,540 @@ msgid ""
 msgstr ""
 
 #: includes/class-babe-settings-admin.php:269
-msgid "Addons and Themes for BA Book Everything plugin"
+msgid "Addons for BA Book Everything plugin"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:289
-#: includes/class-babe-settings-admin.php:507
+#: includes/class-babe-settings-admin.php:280
+#: includes/class-babe-settings-admin.php:472
 msgid "BABE Payment pack"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:292
-#: includes/class-babe-settings-admin.php:510
+#: includes/class-babe-settings-admin.php:281
+#: includes/class-babe-settings-admin.php:475
 msgid ""
 "Integrates PayPal and Credit Cards (Stripe) payments. Stripe integration "
 "supports 3D Secure card payments, Apple Pay, Google Pay, Microsoft Pay "
 "and the Payment Request API."
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:296
-#: includes/class-babe-settings-admin.php:321
-#: includes/class-babe-settings-admin.php:347
-#: includes/class-babe-settings-admin.php:373
-#: includes/class-babe-settings-admin.php:514
-#: includes/class-babe-settings-admin.php:545
-msgid "Learn more"
-msgstr ""
-
-#: includes/class-babe-settings-admin.php:314
-#: includes/class-babe-settings-admin.php:538
+#: includes/class-babe-settings-admin.php:287
+#: includes/class-babe-settings-admin.php:503
 msgid "BABE Backoffice"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:317
-#: includes/class-babe-settings-admin.php:541
+#: includes/class-babe-settings-admin.php:288
+msgid ""
+"Management tools: PDF invoices, backend bookings, editing/cancellation "
+"orders, extra charge, full and partial refund, iCal synchronization, "
+"export orders to xlsx, emails and order status router customizer."
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:294
+msgid "BABE Currency switcher"
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:295
+msgid ""
+"Currency switcher widget. Options: force booking and checkout in the "
+"base currency, turn on payment gateways on the checkout depending on "
+"currency."
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:301
+msgid "BABE Marketplace"
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:302
+msgid ""
+"Multi Vendor Marketplace extension for BA Book Everything plugin "
+"transforms your booking site into a marketplace."
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:308
+msgid "BABE Payment Bank transfer"
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:309
+msgid ""
+"Added a Bank transfer payment option: show bank transfer details on "
+"checkout, order confirmation and in the customer email."
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:315
+msgid "20+ Payment Gateways"
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:316
+msgid "Check our ready-made integrations with over 20 payment gateways."
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:347
+#: includes/class-babe-settings-admin.php:479
+#: includes/class-babe-settings-admin.php:510
+msgid "Learn more"
+msgstr ""
+
+#: includes/class-babe-settings-admin.php:506
 msgid ""
 "Management tools: PDF invoices, backend bookings, editing/cancelation "
 "orders, extra charge, full and partial refund, iCal synchronization."
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:339
-msgid "BA Tours theme"
-msgstr ""
-
-#: includes/class-babe-settings-admin.php:342
-msgid ""
-"BA Tours booking theme developed for travel agencies and tour operators "
-"of any size. It's bundled with BABE Payment pack - <b>you can save up to "
-"$49</b>!"
-msgstr ""
-
-#: includes/class-babe-settings-admin.php:346
-#: includes/class-babe-settings-admin.php:372
-msgid "View Demo"
-msgstr ""
-
-#: includes/class-babe-settings-admin.php:365
-msgid "BA Hotel theme"
-msgstr ""
-
-#: includes/class-babe-settings-admin.php:368
-msgid ""
-"Hotel booking theme developed for mini hotels and hostels. It's created "
-"with SEO in mind and gives you a high pagespeed score even without "
-"caching plugins. BABE Payment pack is included - <b>you can save up to "
-"$49</b>!"
-msgstr ""
-
-#: includes/class-babe-settings-admin.php:582
+#: includes/class-babe-settings-admin.php:547
 msgid "Date format"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:590
+#: includes/class-babe-settings-admin.php:555
 msgid "Booking object post slug"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:599
+#: includes/class-babe-settings-admin.php:564
 msgid "Booking object singular name"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:608
+#: includes/class-babe-settings-admin.php:573
 msgid "Booking object general (plural) name"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:617
+#: includes/class-babe-settings-admin.php:582
 msgid "Booking object menu name"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:626
+#: includes/class-babe-settings-admin.php:591
 msgid ""
 "Prefix for custom taxonomies (*before changing this option it is "
 "required to remove all custom taxonomies)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:635
+#: includes/class-babe-settings-admin.php:600
 msgid "Select search result page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:644
+#: includes/class-babe-settings-admin.php:609
 msgid "Services page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:653
+#: includes/class-babe-settings-admin.php:618
 msgid "Checkout page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:662
+#: includes/class-babe-settings-admin.php:627
 msgid "Confirmation page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:671
+#: includes/class-babe-settings-admin.php:636
 msgid "Terms & Conditions page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:680
+#: includes/class-babe-settings-admin.php:645
 msgid ""
 "Admin page for order confirmation (for manually availability "
 "confirmation)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:689
+#: includes/class-babe-settings-admin.php:654
 msgid ""
 "Customer page for order confirmation (for manually availability "
 "confirmation)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:698
+#: includes/class-babe-settings-admin.php:663
 msgid "My Account page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:707
+#: includes/class-babe-settings-admin.php:672
 msgid "Disable My Account page and new user mail?"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:716
+#: includes/class-babe-settings-admin.php:681
 msgid ""
 "Remove default login/register form from \"My account\" page (this allows "
 "to use a third party login form shortcode into the \"My account\" page "
 "content)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:725
+#: includes/class-babe-settings-admin.php:690
 msgid "Search result: items per page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:734
+#: includes/class-babe-settings-admin.php:699
 msgid "Taxonomy archive page: items per page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:743
+#: includes/class-babe-settings-admin.php:708
 msgid ""
 "Return search results without checking availability if no dates are "
 "specified"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:752
+#: includes/class-babe-settings-admin.php:717
 msgid "Do not include availability calendar data in search results"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:761
+#: includes/class-babe-settings-admin.php:726
 msgid "Use \"OR\" logic when searching among taxonomy terms"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:770
+#: includes/class-babe-settings-admin.php:735
 msgid ""
 "Remove search query arguments from booking item links on the search "
 "result page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:779
+#: includes/class-babe-settings-admin.php:744
 msgid "Search result view"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:787
+#: includes/class-babe-settings-admin.php:752
 msgid "Use minimized version of the main CSS file"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:796
+#: includes/class-babe-settings-admin.php:761
 msgid "Use minimized version of the main JS file"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:805
+#: includes/class-babe-settings-admin.php:770
 msgid "Reset settings"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:820
+#: includes/class-babe-settings-admin.php:785
 msgid "Booking object"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:827
+#: includes/class-babe-settings-admin.php:792
 msgid "Use Gutenberg for booking object posts"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:836
+#: includes/class-babe-settings-admin.php:801
 msgid "When service price is 0 display"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:845
+#: includes/class-babe-settings-admin.php:810
 msgid "Maximum number of months in availability calendar"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:854
+#: includes/class-babe-settings-admin.php:819
 msgid "Show booking object post content in tabs?"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:863
+#: includes/class-babe-settings-admin.php:828
 msgid "Add meeting points functionality?"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:872
+#: includes/class-babe-settings-admin.php:837
 msgid ""
 "Media library filter: show only current user attachments and unattached "
 "madia in the Media library"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:881
+#: includes/class-babe-settings-admin.php:846
 msgid "Remove unitegallery from booking object pages"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:890
+#: includes/class-babe-settings-admin.php:855
 msgid "Remove availability calendar from booking object pages"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:899
+#: includes/class-babe-settings-admin.php:864
 msgid "Remove price details on hover from availability calendar"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:908
+#: includes/class-babe-settings-admin.php:873
 msgid ""
 "Show all rates in the price details on hover on the availability calendar"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:917
+#: includes/class-babe-settings-admin.php:882
 msgid "Remove google map from booking object pages"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:939
+#: includes/class-babe-settings-admin.php:904
 msgid "Add schema.org Product markup to the booking object page"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:948
+#: includes/class-babe-settings-admin.php:913
 msgid ""
 "Generate 5 star review in schema.org Product markup if no comments found"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:957
+#: includes/class-babe-settings-admin.php:922
 msgid ""
 "Allow only customers who have a successful booking to post a review (one "
 "review per booking)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:966
+#: includes/class-babe-settings-admin.php:931
 msgid "Show reviews in tab on booking object page?"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:975
+#: includes/class-babe-settings-admin.php:940
 msgid ""
 "Reviews comment template (leave empty to use the default \"/comments.php"
 "\")"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:990
+#: includes/class-babe-settings-admin.php:955
 #: includes/vendors/elementor/widgets/booking_form.php:25
 msgid "Booking form"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:997
+#: includes/class-babe-settings-admin.php:962
 msgid "Booking form: maximum number of guests available to choose"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1006
+#: includes/class-babe-settings-admin.php:971
 msgid "Add services to booking form"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1015
+#: includes/class-babe-settings-admin.php:980
 msgid ""
 "Prepopulates the date field on the booking form, starting with the "
 "nearest available date"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1024
+#: includes/class-babe-settings-admin.php:989
 msgid "Title for optional services section"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1033
+#: includes/class-babe-settings-admin.php:998
 msgid "Title for mandatory services section"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1048
+#: includes/class-babe-settings-admin.php:1013
 msgid "Currency"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1055
+#: includes/class-babe-settings-admin.php:1020
 msgid "Select base currency"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1063
+#: includes/class-babe-settings-admin.php:1028
 msgid "Place of currency symbol in displayed prices"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1071
+#: includes/class-babe-settings-admin.php:1036
 msgid "Thousand Separator of displayed prices"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1080
+#: includes/class-babe-settings-admin.php:1045
 msgid "Decimal Separator of displayed prices"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1089
+#: includes/class-babe-settings-admin.php:1054
 msgid "Number of decimal points shown in displayed prices"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1098
+#: includes/class-babe-settings-admin.php:1063
 #, php-format
 msgid ""
 "Label before \"price from\" amount on the booking item page. Use \"%s\" "
 "to add currency three-letter code ISO 4217"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1113
+#: includes/class-babe-settings-admin.php:1078
 msgid "Payments"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1120
+#: includes/class-babe-settings-admin.php:1085
 msgid ""
 "For all subsequent payments only allow the payment gateway that was used "
 "for the deposit"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1129
+#: includes/class-babe-settings-admin.php:1094
 msgid "Activate payment methods"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1147
+#: includes/class-babe-settings-admin.php:1112
 msgid "Gateway: "
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1172
+#: includes/class-babe-settings-admin.php:1137
 msgid "Add billing address fields to the checkout form"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1181
+#: includes/class-babe-settings-admin.php:1146
 msgid "Confirm item availability"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1189
+#: includes/class-babe-settings-admin.php:1154
 msgid "Disable guest bookings?"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1198
+#: includes/class-babe-settings-admin.php:1163
 msgid ""
 "Waiting before delete orders with \"payment processing\" status, minutes"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1220
+#: includes/class-babe-settings-admin.php:1185
 msgid ""
 "Show \"Pay now\" button on the confirmation page if the order has "
 "\"payment expected\" or \"draft\" status"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1229
+#: includes/class-babe-settings-admin.php:1194
 msgid ""
 "Show a reload page button on the confirmation page if the order has "
 "\"payment processing\" or \"payment expected\" status"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1238
+#: includes/class-babe-settings-admin.php:1203
 msgid "Message for status \"availability confirmation\""
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1247
+#: includes/class-babe-settings-admin.php:1212
 msgid "Message for status \"not available\""
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1256
+#: includes/class-babe-settings-admin.php:1221
 msgid "Message for status \"payment deferred\""
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1265
+#: includes/class-babe-settings-admin.php:1230
 msgid "Message for status \"payment expected\""
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1274
+#: includes/class-babe-settings-admin.php:1239
 msgid "Message for status \"payment processing\""
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1283
+#: includes/class-babe-settings-admin.php:1248
 msgid "Message for status \"payment received\""
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1292
+#: includes/class-babe-settings-admin.php:1257
 msgid "Message for status \"draft\""
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1307
+#: includes/class-babe-settings-admin.php:1272
 msgid "Emails"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1317
+#: includes/class-babe-settings-admin.php:1282
 msgid "Shop admin email (site admin email by default)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1326
+#: includes/class-babe-settings-admin.php:1291
 msgid "Emails template settings"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1335
+#: includes/class-babe-settings-admin.php:1300
 msgid "Logo image"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1344
+#: includes/class-babe-settings-admin.php:1309
 msgid "Header image"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1353
+#: includes/class-babe-settings-admin.php:1318
 msgid "Footer text (contacts, etc.)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1362
+#: includes/class-babe-settings-admin.php:1327
 msgid "Credits text (copyright, etc.)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1377
+#: includes/class-babe-settings-admin.php:1342
 msgid "Customer account created email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1386
-#: includes/class-babe-settings-admin.php:1424
-#: includes/class-babe-settings-admin.php:1622
-#: includes/class-babe-settings-admin.php:1660
-#: includes/class-babe-settings-admin.php:1698
-#: includes/class-babe-settings-admin.php:1736
-#: includes/class-babe-settings-admin.php:1774
-#: includes/class-babe-settings-admin.php:1812
-#: includes/class-babe-settings-admin.php:1850
-#: includes/class-babe-settings-admin.php:1888
-#: includes/class-babe-settings-admin.php:1926
-#: includes/class-babe-settings-admin.php:1964
-#: includes/class-babe-settings-admin.php:2002
+#: includes/class-babe-settings-admin.php:1351
+#: includes/class-babe-settings-admin.php:1389
+#: includes/class-babe-settings-admin.php:1587
+#: includes/class-babe-settings-admin.php:1625
+#: includes/class-babe-settings-admin.php:1663
+#: includes/class-babe-settings-admin.php:1701
+#: includes/class-babe-settings-admin.php:1739
+#: includes/class-babe-settings-admin.php:1777
+#: includes/class-babe-settings-admin.php:1815
+#: includes/class-babe-settings-admin.php:1853
+#: includes/class-babe-settings-admin.php:1891
+#: includes/class-babe-settings-admin.php:1929
+#: includes/class-babe-settings-admin.php:1967
 msgid "Subject"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1395
-#: includes/class-babe-settings-admin.php:1433
-#: includes/class-babe-settings-admin.php:1631
-#: includes/class-babe-settings-admin.php:1669
-#: includes/class-babe-settings-admin.php:1707
-#: includes/class-babe-settings-admin.php:1745
-#: includes/class-babe-settings-admin.php:1783
-#: includes/class-babe-settings-admin.php:1821
-#: includes/class-babe-settings-admin.php:1859
-#: includes/class-babe-settings-admin.php:1897
-#: includes/class-babe-settings-admin.php:1935
-#: includes/class-babe-settings-admin.php:1973
-#: includes/class-babe-settings-admin.php:2011
+#: includes/class-babe-settings-admin.php:1360
+#: includes/class-babe-settings-admin.php:1398
+#: includes/class-babe-settings-admin.php:1596
+#: includes/class-babe-settings-admin.php:1634
+#: includes/class-babe-settings-admin.php:1672
+#: includes/class-babe-settings-admin.php:1710
+#: includes/class-babe-settings-admin.php:1748
+#: includes/class-babe-settings-admin.php:1786
+#: includes/class-babe-settings-admin.php:1824
+#: includes/class-babe-settings-admin.php:1862
+#: includes/class-babe-settings-admin.php:1900
+#: includes/class-babe-settings-admin.php:1938
+#: includes/class-babe-settings-admin.php:1976
 msgid "Body title"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1404
-#: includes/class-babe-settings-admin.php:1442
-#: includes/class-babe-settings-admin.php:1640
-#: includes/class-babe-settings-admin.php:1678
-#: includes/class-babe-settings-admin.php:1716
-#: includes/class-babe-settings-admin.php:1754
-#: includes/class-babe-settings-admin.php:1792
-#: includes/class-babe-settings-admin.php:1830
-#: includes/class-babe-settings-admin.php:1868
-#: includes/class-babe-settings-admin.php:1906
-#: includes/class-babe-settings-admin.php:1944
-#: includes/class-babe-settings-admin.php:1982
-#: includes/class-babe-settings-admin.php:2020
+#: includes/class-babe-settings-admin.php:1369
+#: includes/class-babe-settings-admin.php:1407
+#: includes/class-babe-settings-admin.php:1605
+#: includes/class-babe-settings-admin.php:1643
+#: includes/class-babe-settings-admin.php:1681
+#: includes/class-babe-settings-admin.php:1719
+#: includes/class-babe-settings-admin.php:1757
+#: includes/class-babe-settings-admin.php:1795
+#: includes/class-babe-settings-admin.php:1833
+#: includes/class-babe-settings-admin.php:1871
+#: includes/class-babe-settings-admin.php:1909
+#: includes/class-babe-settings-admin.php:1947
+#: includes/class-babe-settings-admin.php:1985
 msgid "Body message"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1415
+#: includes/class-babe-settings-admin.php:1380
 msgid "Customer password reseted email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1453
+#: includes/class-babe-settings-admin.php:1418
 msgid "Emails color scheme"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1462
+#: includes/class-babe-settings-admin.php:1427
 msgid "Font color"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1471
+#: includes/class-babe-settings-admin.php:1436
 msgid "Background color"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1480
+#: includes/class-babe-settings-admin.php:1445
 msgid "Titles color"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1489
+#: includes/class-babe-settings-admin.php:1454
 msgid "Links color"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1498
+#: includes/class-babe-settings-admin.php:1463
 msgid "Button default color"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1507
+#: includes/class-babe-settings-admin.php:1472
 msgid "Confirm button color"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1516
+#: includes/class-babe-settings-admin.php:1481
 msgid "Cancel button color"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1525
+#: includes/class-babe-settings-admin.php:1490
 msgid "Change button color"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1540
+#: includes/class-babe-settings-admin.php:1505
 msgid "Google map"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1547
+#: includes/class-babe-settings-admin.php:1512
 msgid "Add google map functionality?"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1556
+#: includes/class-babe-settings-admin.php:1521
 #, php-format
 msgid ""
 "Google API key (see %1$sGoogle Maps API docs%2$s for details). You need "
@@ -12366,121 +12381,121 @@ msgid ""
 "marker, routes"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1565
+#: includes/class-babe-settings-admin.php:1530
 msgid "Map zoom"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1574
+#: includes/class-babe-settings-admin.php:1539
 msgid "Map start latitude"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1583
+#: includes/class-babe-settings-admin.php:1548
 msgid "Map start Longitude"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1592
+#: includes/class-babe-settings-admin.php:1557
 msgid "Select map marker"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1613
+#: includes/class-babe-settings-admin.php:1578
 msgid "Customer New order email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1651
+#: includes/class-babe-settings-admin.php:1616
 msgid "Customer order updated email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1689
+#: includes/class-babe-settings-admin.php:1654
 msgid "Customer is waiting for availability confirmation on admin side"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1727
+#: includes/class-babe-settings-admin.php:1692
 msgid "Customer needs to confirm or reject changes to the booking"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1765
+#: includes/class-babe-settings-admin.php:1730
 msgid "Customer order to pay email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1803
+#: includes/class-babe-settings-admin.php:1768
 msgid "Customer order rejected email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1841
+#: includes/class-babe-settings-admin.php:1806
 msgid "Customer canceled the order email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1879
+#: includes/class-babe-settings-admin.php:1844
 msgid "Admin New order email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1917
+#: includes/class-babe-settings-admin.php:1882
 msgid "Admin order updated email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1955
+#: includes/class-babe-settings-admin.php:1920
 msgid "Admin availability confirmation email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:1993
+#: includes/class-babe-settings-admin.php:1958
 msgid "Admin order canceled email"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2271
+#: includes/class-babe-settings-admin.php:2236
 msgid "Upload"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2279
+#: includes/class-babe-settings-admin.php:2244
 msgid "Custom Image"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2281
+#: includes/class-babe-settings-admin.php:2246
 msgid "Upload Image"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2353
+#: includes/class-babe-settings-admin.php:2318
 msgid "Left"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2354
+#: includes/class-babe-settings-admin.php:2319
 msgid "Right"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2355
+#: includes/class-babe-settings-admin.php:2320
 msgid "Left with space"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2356
+#: includes/class-babe-settings-admin.php:2321
 msgid "Right with space"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2416
+#: includes/class-babe-settings-admin.php:2381
 msgid ""
 "Check this box and click \"Save Changes\" button to reset all settings "
 "to their defaults. <strong>All custom settings will be lost!</strong>"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2443
+#: includes/class-babe-settings-admin.php:2408
 msgid "Full"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2444
+#: includes/class-babe-settings-admin.php:2409
 msgid "Grid"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2457
+#: includes/class-babe-settings-admin.php:2422
 msgid "Automatically"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2458
+#: includes/class-babe-settings-admin.php:2423
 msgid "Manually (by dashboard or e-mail)"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2471
+#: includes/class-babe-settings-admin.php:2436
 msgid "d/m/Y"
 msgstr ""
 
-#: includes/class-babe-settings-admin.php:2472
+#: includes/class-babe-settings-admin.php:2437
 msgid "m/d/Y"
 msgstr ""
 

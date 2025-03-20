@@ -695,7 +695,7 @@ class BABE_html {
                     '. do_shortcode( $custom_section['content'] ) .'
                      </div>';
                     $tab_slugs[] = 'custom_section_'.$ind;
-                    $tab_fa_classes[] = $custom_section['fa_class'];
+                    $tab_fa_classes[] = $custom_section['fa_class'] ?? '';
                 }
             }
         }
@@ -858,6 +858,10 @@ class BABE_html {
      */
     public static function get_post_schema( array $post ): string
     {
+        if (empty($post) ){
+            return '';
+        }
+
         $lang = BABE_Functions::get_current_language();
         $productID = BABE_Post_types::get_post_category($post['ID'])->slug.'_'.$lang.'_'.$post['ID'];
 

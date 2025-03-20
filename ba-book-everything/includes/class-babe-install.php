@@ -488,6 +488,7 @@ ADD KEY is_default (is_default)" );
        self::create_page('terms-conditions', 'terms_page', __('Terms & Conditions', 'ba-book-everything'), __('You have to edit "Terms & Conditions" page to replace this start content with your own.', 'ba-book-everything'));
        self::create_page('my-account', 'my_account_page', __('My Account', 'ba-book-everything'));
        self::create_page('admin-confirmation', 'admin_confirmation_page', __('Admin confirmation', 'ba-book-everything'));
+       self::create_page('customer-confirmation', 'customer_confirmation_page', __('Customer confirmation', 'ba-book-everything'));
        self::create_page_all_items();
 
         BABE_API::add_endpoint();

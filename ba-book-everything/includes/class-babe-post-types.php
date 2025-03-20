@@ -1169,7 +1169,7 @@ class BABE_Post_types {
             'terms' => [], //// term_taxonomy_ids from custom taxonomies in $taxonomies_list
             'posts_per_page' => BABE_Settings::$settings['results_per_page'],
             'guests' => 1,
-            'sort' => 'price_from', /// price_from, rating, post_title, av_date_from
+            'sort' => 'price_from', /// price_from, rating, post_title, av_date_from, post_date, post_modified, menu_order
             'sort_by' => 'ASC',
             'min_price' => '',
             'max_price' => '',
@@ -2295,11 +2295,7 @@ class BABE_Post_types {
 
         $query = "SELECT * 
         FROM ".$wpdb->posts." posts
-        WHERE (
-          (posts.ID = ".$post_id."
-          AND
-           posts.post_status = 'publish')
-        )";
+        WHERE  posts.ID = ".$post_id."";
 
         $post = $wpdb->get_results($query, ARRAY_A);
 

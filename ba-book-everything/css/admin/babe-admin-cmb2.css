@@ -486,6 +486,23 @@ Related items style
     color: #f56e28;
 }
 
+.babe-plugin-update-warning a {
+    display: inline-block;
+    color: #f15d30;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.babe-plugin-update-warning{
+    display: flex;
+    margin-block-end: 5px;
+    box-shadow: none;
+    border-color: #f15d30;
+    background-color: #fff8e5;
+    margin: 5px 20px 15px 40px;
+    padding: 10px;
+}
+
 .plugins table.babe-compatibility-update-table tr {
     background: transparent;
 }

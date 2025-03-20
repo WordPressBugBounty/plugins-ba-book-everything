@@ -693,7 +693,7 @@ class BABE_shortcodes {
 				'pagination' => 0,
 				'view' => 'grid',
 				'fa_icon'    => '',
-				'sort'       => 'price_from', /// price_from, rating, post_title, av_date_from
+				'sort'       => 'price_from', /// price_from, rating, post_title, av_date_from, post_date, post_modified, menu_order
 				'sortby'     => 'ASC',
 				'classes'    => '',
 				'bg_img_url' => '',

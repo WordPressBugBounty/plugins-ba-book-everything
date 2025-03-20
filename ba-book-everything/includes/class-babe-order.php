@@ -4,12 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * BABE_Order Class
- * @class 		BABE_Order
- * @version		1.7.9
- * @author 		Booking Algorithms
- */
+BABE_Order::init();
+
 class BABE_Order {
     
     static $order_statuses = [];
@@ -251,6 +247,23 @@ class BABE_Order {
                     'action' => 'order_updated',
                 ],
                 'payment_deferred' => [
+                    'action' => 'order_updated',
+                ],
+                'completed' => [
+                    'action' => 'order_updated',
+                ],
+            ],
+            'payment_authorized' => [
+                'canceled' => [
+                    'action' => 'order_canceled',
+                ],
+                'payment_expected' => [
+                    'action' => 'new_order_to_pay',
+                ],
+                'payment_deferred' => [
+                    'action' => 'order_updated',
+                ],
+                'payment_received' => [
                     'action' => 'order_updated',
                 ],
                 'completed' => [
@@ -2963,5 +2976,3 @@ class BABE_Order {
        
 ///////////////////////////////////////
 }
-
-BABE_Order::init(); 

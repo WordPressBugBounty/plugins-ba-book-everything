@@ -107,7 +107,7 @@ class BABE_Settings {
             'booking_obj_post_name' => __( 'Booking Object', 'ba-book-everything' ),
             'booking_obj_post_name_general' => __( 'Booking Objects', 'ba-book-everything' ),
             'booking_obj_menu_name' => __( 'BA Book Everything', 'ba-book-everything' ),
-            'attr_tax_prefix'=> 'ba_',
+            'attr_tax_prefix'=> '',
             'booking_obj_gutenberg'=> 0,
             'content_in_tabs'=> 0,
             'reviews_in_tabs'=> 0,

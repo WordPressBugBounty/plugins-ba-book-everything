@@ -91,8 +91,8 @@ class BABE_Settings_admin {
         
         add_submenu_page( 
           BABE_Settings::$option_menu_slug,
-          __('Addons and Themes', 'ba-book-everything'),
-          __('Addons and Themes', 'ba-book-everything'),
+          __('Addons', 'ba-book-everything'),
+          __('Addons', 'ba-book-everything'),
           'manage_options',
           'babe-addons',
           array( __CLASS__, 'create_addons_page' )
@@ -266,124 +266,89 @@ function setup_demo_content(i){
     {
         ?>
         <div class="wrap">
-            <h2><?php echo __('Addons and Themes for BA Book Everything plugin', 'ba-book-everything'); ?></h2>
-            
+            <h2><?php echo __('Addons for BA Book Everything plugin', 'ba-book-everything'); ?></h2>
             <hr class="wp-header-end">
-            
             <div class="babe-addons-browser">
             
             <div class="wp-clearfix babe-addons-inner">
-            
-            <!-- //////////////////////// -->
-            
-          <div class="babe-addon">
-	
-		    <div class="babe-addon-screenshot">
-             <a href="https://ba-booking.com/shop/downloads/ba-book-everything-payment_pack/">
-			   <img src="<?php echo plugins_url( "css/img/ba_payments_banners.png", BABE_PLUGIN ); ?>" alt="">
-             </a>  
-		    </div>
-            
-            <div class="babe-addon-container">
-              <a href="https://ba-booking.com/shop/downloads/ba-book-everything-payment_pack/">
-			   <h2 class="babe-addon-name"><?php echo __('BABE Payment pack', 'ba-book-everything'); ?></h2>
-              </a> 
-               <div class="babe-addon-description">
-				   <?php echo __('Integrates PayPal and Credit Cards (Stripe) payments. Stripe integration supports 3D Secure card payments, Apple Pay, Google Pay, Microsoft Pay and the Payment Request API.', 'ba-book-everything'); ?>
-               </div>
-            
-               <div class="babe-addon-actions">
-				   <a class="button button-primary" href="https://ba-booking.com/shop/downloads/ba-book-everything-payment_pack/"><?php echo __('Learn more', 'ba-book-everything'); ?></a>
-               </div>
-            </div>
-            
-          </div>
-            
-            <!--  //////////////////////      -->
-            
-            <div class="babe-addon">
-	
-		    <div class="babe-addon-screenshot">
-             <a href="https://ba-booking.com/shop/downloads/babe-backoffice/">
-			   <img src="<?php echo plugins_url( "css/img/ba_backoffice_banner.png", BABE_PLUGIN ); ?>" alt="">
-             </a>  
-		    </div>
-            
-            <div class="babe-addon-container">
-              <a href="https://ba-booking.com/shop/downloads/babe-backoffice/">
-			   <h2 class="babe-addon-name"><?php echo __('BABE Backoffice', 'ba-book-everything'); ?></h2>
-              </a> 
-               <div class="babe-addon-description">
-				   <?php echo __('Management tools: PDF invoices, backend bookings, editing/cancelation orders, extra charge, full and partial refund, iCal synchronization.', 'ba-book-everything'); ?>
-               </div>
-            
-               <div class="babe-addon-actions">
-				   <a class="button button-primary" href="https://ba-booking.com/shop/downloads/babe-backoffice/"><?php echo __('Learn more', 'ba-book-everything'); ?></a>
-               </div>
-            </div>
-            
-          </div>
-          
-          <!--  //////////////////////      -->
-          
-          <div class="babe-addon">
-	
-		    <div class="babe-addon-screenshot">
-             <a href="https://ba-booking.com/ba-tours/">
-			   <img src="<?php echo plugins_url( "css/img/ba_tours_banner.png", BABE_PLUGIN ); ?>" alt="">
-             </a>  
-		    </div>
-            
-            <div class="babe-addon-container">
-              <a href="https://ba-booking.com/ba-tours/">
-			   <h2 class="babe-addon-name"><?php echo __('BA Tours theme', 'ba-book-everything'); ?></h2>
-              </a> 
-               <div class="babe-addon-description">
-				   <?php echo __('BA Tours booking theme developed for travel agencies and tour operators of any size. It\'s bundled with BABE Payment pack - <b>you can save up to $49</b>!', 'ba-book-everything'); ?>
-               </div>
-            
-               <div class="babe-addon-actions">
-				   <a class="button button-primary" href="https://ba-booking.com/ba-tours-demo/"><?php echo __('View Demo', 'ba-book-everything'); ?></a>
-                   <a class="button button-primary" href="https://ba-booking.com/ba-tours/"><?php echo __('Learn more', 'ba-book-everything'); ?></a>
-               </div>
-            </div>
-            
-          </div>
-          
-          <!--  //////////////////////      -->
-          
-          <div class="babe-addon">
-	
-		    <div class="babe-addon-screenshot">
-             <a href="https://ba-booking.com/ba-hotel/">
-			   <img src="<?php echo plugins_url( "css/img/ba_hotel_banner.png", BABE_PLUGIN ); ?>" alt="">
-             </a>  
-		    </div>
-            
-            <div class="babe-addon-container">
-              <a href="https://ba-booking.com/ba-hotel/">
-			   <h2 class="babe-addon-name"><?php echo __('BA Hotel theme', 'ba-book-everything'); ?></h2>
-              </a> 
-               <div class="babe-addon-description">
-				   <?php echo __('Hotel booking theme developed for mini hotels and hostels. It\'s created with SEO in mind and gives you a high pagespeed score even without caching plugins. BABE Payment pack is included - <b>you can save up to $49</b>!', 'ba-book-everything'); ?>
-               </div>
-            
-               <div class="babe-addon-actions">
-				   <a class="button button-primary" href="https://ba-booking.com/ba-hotel-demo/"><?php echo __('View Demo', 'ba-book-everything'); ?></a>
-                   <a class="button button-primary" href="https://ba-booking.com/ba-hotel/"><?php echo __('Learn more', 'ba-book-everything'); ?></a>
-               </div>
-            </div>
-            
-          </div>
-          
-          <!--  //////////////////////      -->
-            
+
+                <?php
+
+                echo self::get_addon_html(
+                    'https://ba-booking.com/shop/downloads/ba-book-everything-payment_pack/',
+                    'ba_payments_banners.png',
+                    __('BABE Payment pack', 'ba-book-everything'),
+                    __('Integrates PayPal and Credit Cards (Stripe) payments. Stripe integration supports 3D Secure card payments, Apple Pay, Google Pay, Microsoft Pay and the Payment Request API.', 'ba-book-everything')
+                );
+
+                echo self::get_addon_html(
+                    'https://ba-booking.com/shop/downloads/babe-backoffice/',
+                    'ba_backoffice_banner.png',
+                    __('BABE Backoffice', 'ba-book-everything'),
+                    __('Management tools: PDF invoices, backend bookings, editing/cancellation orders, extra charge, full and partial refund, iCal synchronization, export orders to xlsx, emails and order status router customizer.', 'ba-book-everything')
+                );
+
+                echo self::get_addon_html(
+                    'https://ba-booking.com/shop/downloads/babe-currency-switcher/',
+                    'ba_currency_switcher_banner.png',
+                    __('BABE Currency switcher', 'ba-book-everything'),
+                    __('Currency switcher widget. Options: force booking and checkout in the base currency, turn on payment gateways on the checkout depending on currency.', 'ba-book-everything')
+                );
+
+                echo self::get_addon_html(
+                        'https://ba-booking.com/shop/downloads/babe-marketplace/',
+                        'babe_marketplace_banner.png',
+                        __('BABE Marketplace', 'ba-book-everything'),
+                        __('Multi Vendor Marketplace extension for BA Book Everything plugin transforms your booking site into a marketplace.', 'ba-book-everything')
+                );
+
+                echo self::get_addon_html(
+                        'https://ba-booking.com/shop/downloads/babe-payment-bank-transfer/',
+                        'ba_payment_bank_transfer_banner.png',
+                        __('BABE Payment Bank transfer', 'ba-book-everything'),
+                        __('Added a Bank transfer payment option: show bank transfer details on checkout, order confirmation and in the customer email.', 'ba-book-everything')
+                );
+
+                echo self::get_addon_html(
+                    'https://ba-booking.com/shop/',
+                    'babe_all_payment_gateways_banner.png',
+                    __('20+ Payment Gateways', 'ba-book-everything'),
+                    __('Check our ready-made integrations with over 20 payment gateways.', 'ba-book-everything') . '<br/><br/>'
+                );
+                ?>
             </div>
           </div>  
         </div>
-
         <?php
-    }    
+    }
+
+    public static function get_addon_html(
+            string $url,
+            string $banner_img_name,
+            string $title,
+            string $description
+    ): string
+    {
+        return '<div class="babe-addon">
+	
+		    <div class="babe-addon-screenshot">
+             <a target="_blank" href="'.esc_url($url).'">
+			   <img src="'.plugins_url( "css/img/". $banner_img_name, BABE_PLUGIN ).'" alt="">
+             </a>  
+		    </div>
+            <div class="babe-addon-container">
+              <a target="_blank" href="'.esc_url($url).'">
+			   <h2 class="babe-addon-name">'.$title.'</h2>
+              </a> 
+               <div class="babe-addon-description">
+               '.$description.'
+               </div>
+               <div class="babe-addon-actions">
+				   <a target="_blank" class="button button-primary" href="'.esc_url($url).'">'.__('Learn more', 'ba-book-everything').'</a>
+               </div>
+            </div>
+          </div>';
+    }
     
 ///////////////////////////////////////    
     /**

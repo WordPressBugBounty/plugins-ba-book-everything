@@ -147,9 +147,6 @@ class BABE_Currency {
         $formatted_price = ( $negative ? '-' : '' ) . sprintf( self::get_price_format( self::get_currency_place($currency) ), '<span class="currency_symbol">' . self::get_currency_symbol( $currency ) . '</span>', $price );
         $return = '<span class="currency_amount" data-amount="'.$data_amount.'">' . $formatted_price . '</span>';
 
-        // deprecated
-        $return = apply_filters( 'babe_price', $return, $price, $args );
-
         return apply_filters( 'babe_currency_price', $return, $price, $currency, $args );
     }
 

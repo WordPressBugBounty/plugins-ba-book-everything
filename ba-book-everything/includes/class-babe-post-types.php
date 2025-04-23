@@ -1202,6 +1202,7 @@ class BABE_Post_types {
         ////// sanitize args
 
         $guests = max(1, (int)$args['guests']);
+        $max_guests = $guests;
         
         if ( !$args['date_from'] ){
             $guests = 0;
@@ -1606,7 +1607,7 @@ class BABE_Post_types {
         SELECT CAST(meta_value AS DECIMAL) AS guests, post_id AS pm_post_id 
         FROM ".$wpdb->postmeta."
         WHERE meta_key = 'guests'
-        ) pm ON ( posts.ID = pm.pm_post_id AND pm.guests >= ".$guests." )
+        ) pm ON ( posts.ID = pm.pm_post_id AND pm.guests >= ".$max_guests." )
         
         #add categories_booking_rule meta
         LEFT JOIN ".$wpdb->termmeta." tm ON tr.term_taxonomy_id = tm.term_id AND tm.meta_key = 'categories_booking_rule'

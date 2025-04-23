@@ -3544,3 +3544,7 @@ div.input-group .search-keyword-block .search-keyword {
 .request_booking_input{
     margin-bottom: 10px;
 }
+
+.widget_babe_widget_search_filter_reset_button{
+    text-align: center;
+}

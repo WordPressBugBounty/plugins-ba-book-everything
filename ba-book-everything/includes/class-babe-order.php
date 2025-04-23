@@ -2073,6 +2073,36 @@ class BABE_Order {
         
      }
 
+    /**
+     * @return string 'auto'|'manually'
+     */
+     public static function get_order_availability_confirmation_mode(
+         int $order_id,
+         ?int $booking_obj_id = null
+     )
+     {
+         $output = BABE_Settings::$settings['order_availability_confirm'];
+
+         if( !empty($order_id) ){
+
+             if( empty($booking_obj_id) ){
+                 $order_items_arr = BABE_Order::get_order_items($order_id);
+                 $item = reset($order_items_arr);
+                 $booking_obj_id = (int)$item['booking_obj_id'];
+             }
+
+             $booking_obj_order_availability_confirm = get_post_meta($booking_obj_id, '_order_availability_confirm', true);
+             if( in_array( $booking_obj_order_availability_confirm, [
+                 'auto',
+                 'manually',
+             ] ) ){
+                 $output = $booking_obj_order_availability_confirm;
+             }
+         }
+
+         return $output;
+     }
+
      /**
 	 * Redirect to checkout page
 	 */
@@ -2134,7 +2164,7 @@ class BABE_Order {
          reset($payment_methods_arr);
          $payment_method = key($payment_methods_arr);
 
-         if ( BABE_Settings::$settings['order_availability_confirm'] === 'auto' ){
+         if ( self::get_order_availability_confirmation_mode($order_id, $post_arr['booking_obj_id']) === 'auto' ){
              do_action('babe_checkout_payment_gateway_selected', $order_id, $payment_method);
          }
 
@@ -2268,7 +2298,7 @@ class BABE_Order {
              $order_status === 'payment_expected'
              || (
                  $order_status === 'draft'
-                 && BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+                 && self::get_order_availability_confirmation_mode($order_id) === 'auto'
              )
          ){
              $args['action'] = 'to_pay';
@@ -2494,7 +2524,7 @@ class BABE_Order {
                  $args['action'] !== 'to_pay'
                  && (
                      $args['action'] !== 'to_av_confirm'
-                     || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+                     || self::get_order_availability_confirmation_mode($order_id) === 'auto'
                  )
              )
              || !self::is_order_valid($order_id, $args['order_num'], $args['order_hash'])
@@ -2571,11 +2601,6 @@ class BABE_Order {
              //// do payment actions
              do_action('babe_order_start_paying_with_'.$args['payment']['payment_method'], $order_id, $args, $current_url, $success_url, $customer_id );
 
-             /**
-              * @deprecated 1.7.24 use action 'babe_order_start_to_pay_with_' instead
-              */
-             do_action('babe_order_to_pay_by_'.$args['payment']['payment_method'], $order_id, $args, $current_url, $success_url);
-
              do_action('babe_order_after_to_pay', $order_id, $args['payment']['payment_method'], $args);
 
          } elseif ($args['action'] === 'to_av_confirm' && $order_status === 'draft'){
@@ -2634,7 +2659,7 @@ class BABE_Order {
 
         if (
             $args['current_action'] !== 'to_admin_confirm'
-            || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+            || self::get_order_availability_confirmation_mode($order_id) === 'auto'
             || !self::is_order_admin_valid($order_id, $args['order_num'], $args['order_admin_hash'])
         ){
             return $output;
@@ -2660,7 +2685,7 @@ class BABE_Order {
                  $_GET['order_admin_hash'],
                  $_GET['action_update']
              )
-             || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+             || self::get_order_availability_confirmation_mode( (int)$_GET['order_id'] ) === 'auto'
              || (int)$_POST['check_update'] !== 1
              || !in_array($_GET['action_update'], [
                  'confirm',
@@ -2750,7 +2775,7 @@ class BABE_Order {
 
         if (
             $args['current_action'] !== 'to_customer_confirm'
-            || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+            || self::get_order_availability_confirmation_mode($order_id) === 'auto'
             || !self::is_order_valid($order_id, $args['order_num'], $args['order_hash'])
         ){
             return $output;
@@ -2776,7 +2801,7 @@ class BABE_Order {
                 $_GET['order_hash'],
                 $_GET['action_update']
             )
-            || BABE_Settings::$settings['order_availability_confirm'] === 'auto'
+            || self::get_order_availability_confirmation_mode( (int)$_GET['order_id'] ) === 'auto'
             || (int)$_POST['check_update'] !== 1
             || !in_array($_GET['action_update'], [
                 'confirm',

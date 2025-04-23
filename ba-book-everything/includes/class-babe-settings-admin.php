@@ -2416,8 +2416,8 @@ function setup_demo_content(i){
 
         $check = isset(BABE_Settings::$settings['order_availability_confirm']) ?  BABE_Settings::$settings['order_availability_confirm'] : 'auto';
 
-        $checked1 = $check == 'auto' ? 'checked' : '';
-        $checked2 = $check == 'manually' ? 'checked' : '';
+        $checked1 = $check === 'auto' ? 'checked' : '';
+        $checked2 = $check === 'manually' ? 'checked' : '';
 
         echo '<p><input id="'.BABE_Settings::$option_name.'[order_availability_confirm]1" name="'.BABE_Settings::$option_name.'[order_availability_confirm]" type="radio" value="auto" '.$checked1.'/><label id="'.BABE_Settings::$option_name.'_order_availability_confirm1" for="'.BABE_Settings::$option_name.'[order_availability_confirm]1">'.__('Automatically', 'ba-book-everything').'</label></p>';
         echo '<p><input id="'.BABE_Settings::$option_name.'[order_availability_confirm]2" name="'.BABE_Settings::$option_name.'[order_availability_confirm]" type="radio" value="manually" '.$checked2.'/><label id="'.BABE_Settings::$option_name.'_order_availability_confirm2" for="'.BABE_Settings::$option_name.'[order_availability_confirm]2">'.__('Manually (by dashboard or e-mail)', 'ba-book-everything').'</label></p>';

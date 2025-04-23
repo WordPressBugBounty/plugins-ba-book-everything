@@ -33,6 +33,15 @@ $(document).ready(function(){
             babe_search_form_submit();
         });
 
+        $('.btn-search-filter-reset').on('click', function(ev){
+            $('.widget-babe-search-filter-terms input:checkbox:checked').each(function(ind, elm){
+                let term_taxonomy_id = $(elm).val();
+                let fieldName = $(elm).attr('name').replace('filter_', '').replace(/\[.+?]/g, '');
+                $('#search_form input[name="terms['+term_taxonomy_id+']"]').remove();
+                $('#search_form .add_input_field[data-tax] .input_select_input_value[name="add_ids_'+fieldName+'"]').val(0);
+            });
+            babe_search_form_submit();
+        });
     }
 
     $('.babe-price-range-slider').each(function(ind, elm){

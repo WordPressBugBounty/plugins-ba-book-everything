@@ -1361,6 +1361,11 @@ class BABE_html {
         return BABE_Search_From::render_form($title);
     }
 
+    public static function get_search_filter_reset_button( string $title = '' ): string
+    {
+        return '<button class="btn button btn-search-filter-reset">'.$title.'</button>';
+    }
+
     /**
 	 * Add steps to booking_obj page
 	 */
@@ -4165,16 +4170,6 @@ class BABE_html {
                     $payment_method_description_html = apply_filters(
                         'babe_checkout_payment_description_'.$method,
                         '',
-                        $args,
-                        $input_fields_name
-                    );
-
-                    /**
-                     * @deprecated 1.7.24 use filter 'babe_checkout_payment_description_' instead
-                     */
-                    $payment_method_description_html = apply_filters(
-                        'babe_checkout_payment_fields_'.$method,
-                        $payment_method_description_html,
                         $args,
                         $input_fields_name
                     );

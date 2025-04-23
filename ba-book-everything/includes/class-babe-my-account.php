@@ -444,7 +444,7 @@ class BABE_My_account {
          
          if ($check_role === 'manager' && $order_id){
             
-            if ($args['admin_action'] === 'av_confirmation' && BABE_Settings::$settings['order_availability_confirm'] !== 'auto' && BABE_Order::is_order_admin_valid($order_id, $args['order_num'], $args['order_admin_hash'])){
+            if ($args['admin_action'] === 'av_confirmation' && BABE_Order::get_order_availability_confirmation_mode($order_id) !== 'auto' && BABE_Order::is_order_admin_valid($order_id, $args['order_num'], $args['order_admin_hash'])){
             
             $order_status = BABE_Order::get_order_status($order_id);
             

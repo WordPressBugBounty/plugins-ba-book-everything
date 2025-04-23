@@ -2446,6 +2446,18 @@ class BABE_CMB2_admin {
                 'class' => 'cmb2-text-small',
             ),
         ) );
+
+        $cmb->add_field( array(
+            'name'       => __( 'Confirm item availability', 'ba-book-everything' ),
+            'id'         => '_order_availability_confirm',
+            'type'       => 'radio_inline',
+            'options'          => array(
+                'global' => __( 'Use global settings', 'ba-book-everything' ),
+                'auto' => __( 'Automatically', 'ba-book-everything' ),
+                'manually' => __( 'Manually (by dashboard or e-mail)', 'ba-book-everything' ),
+            ),
+            'default' => 'global',
+        ) );
         
         $cmb->add_field( array(
                   'name'           => __( 'Select category to setup other post fields', 'ba-book-everything' ),

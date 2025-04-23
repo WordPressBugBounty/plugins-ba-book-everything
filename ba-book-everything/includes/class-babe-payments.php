@@ -116,13 +116,7 @@ class BABE_Payments {
         
         do_action( 'babe_init_payment_methods', self::$payment_methods);
 
-         /**
-          * @deprecated 1.7.24 use action 'babe_init_payment_methods' instead
-          */
-        do_action( 'babe_payment_methods_init', self::$payment_methods);
-
         return self::$payment_methods;
-        
      }
      
 ////////////////////////

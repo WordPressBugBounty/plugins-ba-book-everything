@@ -1234,7 +1234,9 @@ class BABE_html {
         }
 
         ///// categories
-        if ( !empty(BABE_Search_From::$search_form_tabs) && is_array(BABE_Search_From::$search_form_tabs) && isset($_GET['search_tab']) && isset(BABE_Search_From::$search_form_tabs[$_GET['search_tab']]) ){
+        if (
+            isset($_GET['search_tab'], BABE_Search_From::$search_form_tabs[$_GET['search_tab']])
+        ){
             $args['categories'] = BABE_Search_From::$search_form_tabs[$_GET['search_tab']]['categories'];
         }
         
@@ -1247,11 +1249,11 @@ class BABE_html {
 
         foreach($posts as $post){
             $output .= self::get_post_preview_html($post, $view);
-        } /// end foreach $posts
+        }
 
         if ($output){
 
-            $sort_by_filter = self::input_select_field_with_order('sr_sort_by', '', BABE_Post_types::get_search_filter_sort_by_args(), $args['search_results_sort_by']);
+            $sort_by_filter = self::get_search_filter_html($args['search_results_sort_by']);
 
             $inner_class = apply_filters('babe_search_result_inner_class', 'babe_search_results_inner babe_search_results_inner_'.$view);
 
@@ -2604,6 +2606,7 @@ class BABE_html {
 
 	/**
 	 * Adds select time field to the search form.
+     * @depecated
 	 *
 	 * @param string $field_name
 	 * @param string $field_title
@@ -2623,29 +2626,23 @@ class BABE_html {
         $attr = ''
     ) {
 
+        _deprecated_function( 'BABE_html::input_select_field_with_order', '1.8.1', '' );
+
 		$output = '';
 
 		if ( empty($values_arr) ){
 			return $output;
 		}
-		if ( !empty($_GET["search_results_sort_by"]) ){
-			$sort = in_array('asc', explode('_', $_GET["search_results_sort_by"])) ? 'asc' : 'desc';
+
+		if ( !empty($selected_key) ){
+			$sort = in_array('asc', explode('_', $selected_key)) ? 'asc' : 'desc';
 		} else {
 			$sort = 'asc';
 		}
 
-		$titles = array(
-            'title_asc' => __( 'Title', 'ba-book-everything' ),
-            'title_desc' => __( 'Title', 'ba-book-everything' ),
-            'price_asc' => __( 'Price', 'ba-book-everything' ),
-            'price_desc' => __( 'Price', 'ba-book-everything' ),
-            'rating_asc' => __( 'Rating', 'ba-book-everything' ),
-            'rating_desc' => __( 'Rating', 'ba-book-everything' ),
-            'avdatefrom_asc' => __( 'Availability date', 'ba-book-everything' ),
-            'avdatefrom_desc' => __( 'Availability date', 'ba-book-everything' ),
-        );
+		$titles = BABE_Post_types::get_search_filter_sort_by_args();
 
-		if (!isset($values_arr[$selected_key])){
+		if (!isset($titles[$selected_key])){
 			reset($values_arr);
 			$selected_key = (string)key($values_arr);
 			$order_field_parameter = 'title_' . (($sort === 'asc') ? '_desc': '_asc');
@@ -2724,6 +2721,80 @@ class BABE_html {
 
 		return $output;
 	}
+
+    public static function get_search_filter_html(
+        $selected_key
+    ): string
+    {
+        $field_name = 'sr_sort_by';
+
+        $output = '';
+
+        $values_arr = BABE_Post_types::get_search_filter_sort_by_args();
+
+        if( empty($selected_key) || !isset($values_arr[$selected_key]) ){
+            reset($values_arr);
+            $selected_key = (string)key($values_arr);
+        }
+
+        $sort = in_array('asc', explode('_', $selected_key)) ? 'asc' : 'desc';
+
+        $order_field_parameter = explode('_', $selected_key)[0] . (($sort === 'asc') ?  '_desc' : '_asc');
+
+        foreach ($values_arr as $key => $value){
+            if ( !str_contains($key, $sort) ){
+                continue;
+            }
+            $add_class = $key === $selected_key ? ' term_item_selected' : '';
+            $output .= '<li class="term_item'.$add_class.'" data-id="'.$key.'" data-value="'.esc_attr($value).'">'.$value.'</li>';
+        }
+
+        $output = '<ul class="input_select_list">
+                '.$output.'
+            </ul>';
+
+        $field_name_label = $field_name.'_label';
+        $field_name_class = $field_name;
+
+        switch (explode('_', $selected_key)[0]){
+            case 'title':
+                $icon_name =  ($sort === 'asc') ? '<i class="fa fa-sort-alpha-down"></i>' :
+                    '<i class="fa fa-sort-alpha-up"></i>' ;
+                break;
+            case 'price':
+            case 'avdatefrom':
+                $icon_name =  ($sort === 'asc') ? '<i class="fa fa-sort-numeric-down"></i>' :
+                    '<i class="fa fa-sort-numeric-up"></i>';
+                break;
+            default:
+                $icon_name =  ($sort === 'asc') ? '<i class="fa fa-sort-amount-down"></i>' :
+                    '<i class="fa fa-sort-amount-up"></i>';
+                break;
+        }
+
+        $sort ='<div class="input_select_field input_select_field_'.esc_attr($field_name_class).'" data-name="'.$field_name.'" tabindex="0">
+							<div class="input_select_sort">'.$icon_name.'
+
+                              <input type="hidden" class="input_select_input_value" name="'.$field_name.'" value="'.$order_field_parameter.'">
+                             </div>	
+						</div>
+					';
+
+        $output = $sort . '
+						<div class="input_select_field input_select_field_'.esc_attr($field_name_class).'" data-name="'.$field_name.'" tabindex="0">
+							<div class="input_select_title">
+                                <div class="input_select_wrapper">
+                                  <input type="text" class="input_select_input" name="'.$field_name_label.'" value="'.($values_arr[$selected_key] ?? '').'">
+                                  <input type="hidden" class="input_select_input_value" name="'.$field_name.'" value="'.$selected_key.'">
+                                  ' . $output . '
+                                  <i class="fas fa-chevron-down"></i>
+                                </div>
+                             </div>	
+						</div>
+					';
+
+        return apply_filters('babe_get_search_filter_html', $output, $selected_key);
+    }
 
 	//////////////////////////////////////
 

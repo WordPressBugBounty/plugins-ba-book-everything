@@ -224,15 +224,19 @@ class BABE_Search_From {
       
       $min_price = $min_price_value ? '<input type="hidden" name="min_price" value="'.esc_attr($min_price_value).'">' : '';
       $max_price = $max_price_value ? '<input type="hidden" name="max_price" value="'.esc_attr($max_price_value).'">' : '';
+
+       $search_filter_sort_by_args = BABE_Post_types::get_search_filter_sort_by_args();
       
-      $search_filter_sort_by = isset($_GET['search_results_sort_by']) && isset(BABE_Post_types::$search_filter_sort_by_args[$_GET['search_results_sort_by']]) ? '
+      $search_filter_sort_by = isset($_GET['search_results_sort_by'], $search_filter_sort_by_args[$_GET['search_results_sort_by']]) ? '
           <input type="hidden" name="search_results_sort_by" value="'.esc_attr($_GET['search_results_sort_by']).'">
-        ' : '<input type="hidden" name="search_results_sort_by" value="title_asc">';
+        ' : '<input type="hidden" name="search_results_sort_by" value="'.esc_attr(
+              array_key_first($search_filter_sort_by_args)
+          ).'">';
         
       $hidden_fields = '<input type="hidden" name="request_search_results" value="1">
                 '.$same_page.$min_price.$max_price.$search_filter_sort_by;  
         
-       $taxonomy_selected_arr = array();      
+       $taxonomy_selected_arr = array();
                 
        //// place search form code here
        /////// Tab section //////////////

@@ -118,28 +118,34 @@ class BABE_Post_types {
 
     public static function get_service_type_names(): array
     {
-        return array(
-            'booking' => __( 'per Booking', 'ba-book-everything' ),
-            'person' => __( 'per Person', 'ba-book-everything' ),
-            'day' => __( 'per Day', 'ba-book-everything' ),
-            'night' => __( 'per Night', 'ba-book-everything' ),
-            'person_day' => __( 'per Person/day', 'ba-book-everything' ),
-            'person_night' => __( 'per Person/night', 'ba-book-everything' ),
+        return apply_filters(
+            'babe_service_type_names',
+            [
+                'booking' => __( 'per Booking', 'ba-book-everything' ),
+                'person' => __( 'per Person', 'ba-book-everything' ),
+                'day' => __( 'per Day', 'ba-book-everything' ),
+                'night' => __( 'per Night', 'ba-book-everything' ),
+                'person_day' => __( 'per Person/day', 'ba-book-everything' ),
+                'person_night' => __( 'per Person/night', 'ba-book-everything' ),
+            ]
         );
     }
 
     public static function get_search_filter_sort_by_args(): array
     {
-        return apply_filters('babe_search_filter_sort_by_args', array(
-            'title_asc' => __( 'Title A-Z', 'ba-book-everything' ),
-            'title_desc' => __( 'Title Z-A', 'ba-book-everything' ),
-            'price_asc' => __( 'Price from low', 'ba-book-everything' ),
-            'price_desc' => __( 'Price from high', 'ba-book-everything' ),
-            'rating_asc' => __( 'Rating from low', 'ba-book-everything' ),
-            'rating_desc' => __( 'Rating from high', 'ba-book-everything' ),
-            'avdatefrom_asc' => __( 'Availability date from nearest', 'ba-book-everything' ),
-            'avdatefrom_desc' => __( 'Availability date from farthest', 'ba-book-everything' ),
-        ));
+        return apply_filters(
+            'babe_search_filter_sort_by_args',
+            [
+                'title_asc' => __( 'Title', 'ba-book-everything' ),
+                'title_desc' => __( 'Title', 'ba-book-everything' ),
+                'price_asc' => __( 'Price', 'ba-book-everything' ),
+                'price_desc' => __( 'Price', 'ba-book-everything' ),
+                'rating_asc' => __( 'Rating', 'ba-book-everything' ),
+                'rating_desc' => __( 'Rating', 'ba-book-everything' ),
+                'avdatefrom_asc' => __( 'Availability date', 'ba-book-everything' ),
+                'avdatefrom_desc' => __( 'Availability date', 'ba-book-everything' ),
+            ]
+        );
     }
     
 ///////////////////////////////////////

@@ -26,11 +26,11 @@ class BABE_Pay_coupon {
         
         add_filter('babe_checkout_payment_title_'.self::$payment_method, array( __CLASS__, 'payment_method_title'), 10, 3);
         
-        add_filter('babe_checkout_payment_fields_'.self::$payment_method, array( __CLASS__, 'payment_method_fields_html'), 10, 3);
+        add_filter( 'babe_checkout_payment_description_'.self::$payment_method, array( __CLASS__, 'payment_method_description_html'), 10, 3);
+
+        add_action( 'babe_init_payment_methods', array( __CLASS__, 'init_payment_method'));
         
-        add_action( 'babe_payment_methods_init', array( __CLASS__, 'init_payment_method'));
-        
-        add_action( 'babe_order_to_pay_by_'.self::$payment_method, array( __CLASS__, 'order_to_pay'), 10, 4);
+        add_action( 'babe_order_start_paying_with_'.self::$payment_method, array( __CLASS__, 'order_to_pay'), 10, 4);
 	}
 
 ////////////////////////
@@ -67,7 +67,7 @@ class BABE_Pay_coupon {
      * @param string $input_fields_name
      * @return string
 	 */
-     public static function payment_method_fields_html($fields, $args, $input_fields_name){
+     public static function payment_method_description_html($fields, $args, $input_fields_name){
         
         $fields .= __( 'This order is paid by coupon! You can complete the order', 'ba-book-everything' );
         

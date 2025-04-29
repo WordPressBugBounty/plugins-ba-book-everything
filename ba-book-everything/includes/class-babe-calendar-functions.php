@@ -753,11 +753,11 @@ class BABE_Calendar_functions {
             $date_from = $date_now_obj->format("Y-m-d");
         }
 
-        $date_from_obj = new DateTime($date_from);
-        $date_to_obj = new DateTime($date_to);
+        $date_from_obj = BABE_Functions::datetime_local($date_from);
+        $date_to_obj = BABE_Functions::datetime_local($date_to);
         
         if( $date_from_obj == $date_to_obj ){
-           $date_to_obj = new DateTime($date_from_obj->format('Y-m-d 23:59:59')); 
+           $date_to_obj = BABE_Functions::datetime_local($date_from_obj->format('Y-m-d 23:59:59'));
         }
 
          if ( $rules_cat['rules']['basic_booking_period'] === 'hour' ){
@@ -803,19 +803,19 @@ class BABE_Calendar_functions {
             
             if ($rules_cat['rules']['basic_booking_period'] === 'night'){
 
-                $date_tmp_from = new DateTime($order_item_args['date_from']);
-                $date_tmp_to = new DateTime($order_item_args['date_to']);
+                $date_tmp_from = BABE_Functions::datetime_local($order_item_args['date_from']);
+                $date_tmp_to = BABE_Functions::datetime_local($order_item_args['date_to']);
 
-                $date_test_from_obj = new DateTime($date_tmp_from->format('Y-m-d'));
-                $date_test_to_obj = new DateTime($date_tmp_to->format('Y-m-d'));
+                $date_test_from_obj = BABE_Functions::datetime_local($date_tmp_from->format('Y-m-d'));
+                $date_test_to_obj = BABE_Functions::datetime_local($date_tmp_to->format('Y-m-d'));
              
             } else {
-                $date_test_from_obj = new DateTime($order_item_args['date_from']);
-                $date_test_to_obj = new DateTime($order_item_args['date_to']);
+                $date_test_from_obj = BABE_Functions::datetime_local($order_item_args['date_from']);
+                $date_test_to_obj = BABE_Functions::datetime_local($order_item_args['date_to']);
             }
             
             if ($date_from_obj >= $date_test_from_obj){
-                $date_from_obj = new DateTime($date_test_from_obj->format('Y-m-d H:i'));
+                $date_from_obj = BABE_Functions::datetime_local($date_test_from_obj->format('Y-m-d H:i:s'));
             }
          }        
 
@@ -928,7 +928,7 @@ class BABE_Calendar_functions {
                          unset($output[$before_date]);
                      } else {
 
-                         $tmpDateFrom = new DateTime( $before_date );
+                         $tmpDateFrom = BABE_Functions::datetime_local( $before_date );
                          $dayRate = BABE_Prices::selectRate(
                              $booking_obj_id,
                              $output[$before_date]['rates'],
@@ -981,7 +981,11 @@ class BABE_Calendar_functions {
                  && $current_date_obj >= $date_test_from_obj
                  && $current_date_obj <= $date_test_to_obj
              ){
-                 $cal_row_av_guests += $max_guests_add;
+                 if( $rules_cat['rules']['booking_mode'] === 'object' ){
+                     $cal_row_av_guests = $max_guests_add;
+                 } else {
+                     $cal_row_av_guests += $max_guests_add;
+                 }
              }
 
              if ( !$ignore_stop_booking && $today_obj > $current_date_obj ) {
@@ -1015,7 +1019,7 @@ class BABE_Calendar_functions {
                  unset($output[$before_date]);
              } else {
 
-                 $tmpDateFrom = new DateTime( $before_date );
+                 $tmpDateFrom = BABE_Functions::datetime_local( $before_date );
                  $dayRate = BABE_Prices::selectRate(
                      $booking_obj_id,
                      $output[$before_date]['rates'],
@@ -1251,7 +1255,7 @@ class BABE_Calendar_functions {
         $datetime_to = $rules_cat['rules']['basic_booking_period'] !== 'night' ? $date_to_obj->format('Y-m-d H:i:s') : $date_to_obj->format('Y-m-d 00:00:00');
         
         if (
-            $new_guests
+            $new_guests > 0
             && $rules_cat['rules']['basic_booking_period'] === 'day'
             && (
                 $date_from_obj->format('H:i:s') !== '00:00:00'
@@ -1296,21 +1300,20 @@ class BABE_Calendar_functions {
                 $wpdb->query( $wpdb->prepare( 'DELETE FROM '.self::$table_av_cal.' WHERE booking_obj_id = %d '.$where_clauses, $booking_obj_id ) );                
             }
             ///// reset holded 00:00:00
-            if (
-                $date_to_extra_obj->format('Y-m-d') !== $date_to_obj->format('Y-m-d')
-                && $date_to_extra_obj->format('H:i:s') !== '00:00:00'
-            ){
-                
-                $query = "UPDATE ".self::$table_av_cal." SET guests = 0
+            if ( $date_to_extra_obj->format('H:i:s') !== '00:00:00' ){
+
+                if ( $date_to_extra_obj->format('Y-m-d') !== $date_to_obj->format('Y-m-d') ){
+                    $query = "UPDATE ".self::$table_av_cal." SET guests = 0
                 WHERE (
                   booking_obj_id = ".$booking_obj_id."
                 AND date_from = '".$date_to_extra_obj->format('Y-m-d 00:00:00')."'
                 )";
-                /// update guests
-                $new_result = $wpdb->query($query, ARRAY_A);
-                
+                    /// update guests
+                    $new_result = $wpdb->query($query, ARRAY_A);
+                }
+
                 $av_cal_extra = $wpdb->get_results("SELECT * FROM ".self::$table_av_cal." WHERE booking_obj_id = '".$booking_obj_id."' AND date_from = '".$date_to_extra_obj->format('Y-m-d H:i:s')."' ORDER BY date_from ASC", ARRAY_A);
-                if (!empty($av_cal_extra) && !$av_cal_extra[0]['date_from']){
+                if ( !empty($av_cal_extra[0]) && (int)$av_cal_extra[0]['guests'] === 0 ){
                     $wpdb->query( $wpdb->prepare( 'DELETE FROM '.self::$table_av_cal.' WHERE id = %d', $av_cal_extra[0]['id'] ) );       
                 }
                 
@@ -1332,7 +1335,7 @@ class BABE_Calendar_functions {
         
         //// hold 00:00:00 and add extra availability hours for day booking period
         if (
-            $new_guests
+            $new_guests > 0
             && $rules_cat['rules']['basic_booking_period'] === 'day'
             && $date_to_extra_obj->format('H:i:s') !== '00:00:00'
         ){

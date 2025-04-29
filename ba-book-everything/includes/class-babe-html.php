@@ -3035,7 +3035,22 @@ class BABE_html {
         $times_count = 0;
         $time_before = '';
 
-        if ( $is_from ){
+        if ( $is_from && in_array(0, $times) ){
+
+            $rest_times = $times;
+
+            foreach ($times as $time => $av_guests){
+                unset($rest_times[$time]);
+                if ( !in_array(0, $rest_times) ){
+                    break;
+                }
+            }
+
+            if( !empty($rest_times) ){
+                reset($rest_times);
+                $last_time = key($rest_times);
+            }
+
             $start_time_obj = new DateTime( $date_from_obj->format('Y-m-d') . ' ' . $last_time );
         }
 

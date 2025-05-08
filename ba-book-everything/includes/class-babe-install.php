@@ -6,13 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 BABE_Install::init();
 
-/**
- * BABE_Install Class.
- * 
- * @class 		BABE_Install
- * @version		1.7.24
- * @author 		Booking Algorithms
- */
 class BABE_Install {
 
     public const PLUGIN_VERSION_TESTED_HEADER = 'BA Book Everything tested up to';
@@ -1091,9 +1084,20 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
               'recurrent_payments' => 0,
               'booking_mode' => 'object',
           ),
-    /*      'Bike' => array(
+         /*   'Bike' => array(
 	          'rule_id' => 0,
 	          'rule_title' => 'Bike',
+	          'basic_booking_period' => 'hour',
+	          'stop_booking_before' => 0,
+	          'deposit' => 0,
+	          'ages' => 0,
+	          'payment_model' => 'full',
+	          'recurrent_payments' => 0,
+	          'booking_mode' => 'object',
+          ),
+         'Yacht' => array(
+	          'rule_id' => 0,
+	          'rule_title' => 'Yacht',
 	          'basic_booking_period' => 'hour',
 	          'stop_booking_before' => 0,
 	          'deposit' => 0,
@@ -1144,7 +1148,8 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
            'One time event' => 'StockSnap_J45DTZD2VJ.jpg',
            'Place' => 'StockSnap_HGVQPNFUDV.jpg',
            'Service' => 'StockSnap_BRRVW36UIY.jpg',
-	  //     'Bike' =>'StockSnap_WPGJ8XT8MB.jpg'
+	  //     'Bike' =>'StockSnap_EAYRJAXV9F.jpg'
+	  //     'Yacht' =>'StockSnap_VBZO6FHEB2.jpg'
         );
         /**
         Copyrights:
@@ -1181,6 +1186,10 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
         License: CC0 1.0 Universal (CC0 1.0)
         Source: https://stocksnap.io/photo/EAYRJAXV9F
 
+        Boats marina, Copyright World Travel Adventures
+        License: CC0 1.0 Universal (CC0 1.0)
+        Source: https://stocksnap.io/photo/boats-marina-VBZO6FHEB2
+
         */
         
         self::$saved_demo_images = (array) get_option('_babe_demo_images');
@@ -1212,9 +1221,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
              $rule_id = BABE_Booking_Rules::add_rule($demo_rule);
              self::$demo_rules[$demo_rule['rule_title']]['rule_id'] = $rule_id;
           }
-       }   
-        
-       return; 
+       }
     }
     
 ///////////////////////////////////////    
@@ -1393,6 +1400,11 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
 	    $demo_rules['Bike']['categories_remove_guests'] = 1;
 	    $demo_rules['Bike']['categories_address'] = 0;
 	    $demo_rules['Bike']['categories_gmap_active'] = 0;
+
+        $demo_rules['Yacht']['categories_slug'] = 'yacht';
+	    $demo_rules['Yacht']['categories_remove_guests'] = 1;
+	    $demo_rules['Yacht']['categories_address'] = 0;
+	    $demo_rules['Yacht']['categories_gmap_active'] = 0;
        */
        
        if (!empty($demo_rules)){
@@ -1450,9 +1462,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
             endif;
             
           }
-       }   
-        
-       return; 
+       }
     }
     
 ///////////////////////////////////////    
@@ -1464,14 +1474,10 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
     public static function create_page_all_items(){
         
         return self::create_page('all-items', 'all_items_page', __('All items', 'ba-book-everything'), '[all-items]');
-        
     }
-    
-///////////////////////////////////////    
+
     /**
 	 * Create FAQ posts
-     * 
-     * @return
 	 */
     public static function setup_posts_faq(){
         
@@ -1482,10 +1488,12 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
         );
              
         $posts = get_posts( $args );
-        
-        if ( empty($posts) ){
-            
-          $post_id = wp_insert_post(array (
+
+        if ( !empty($posts) ){
+            return;
+        }
+
+        $post_id = wp_insert_post(array (
             'post_type' => BABE_Post_types::$faq_post_type,
             'post_title' => __('Do you speak spanish?', 'ba-book-everything'),
             'post_content' => 'Lorem ipsum dolor sit amet, utinam munere antiopam vel ad. Qui eros iusto te. Nec ad feugiat honestatis. Quo illum detraxit an. Ius eius quodsi molestiae at, nostrum definitiones his cu. Discere referrentur mea id, an pri novum possim deterruisset. Eum oratio reprehendunt cu. Nec te quem assum postea.',
@@ -1493,9 +1501,9 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
             'comment_status' => 'closed',
             'post_author'   => 1,
             'menu_order' => 1,
-          ) );
-          
-          $post_id = wp_insert_post(array (
+        ) );
+
+        $post_id = wp_insert_post(array (
             'post_type' => BABE_Post_types::$faq_post_type,
             'post_title' => __('Question 2?', 'ba-book-everything'),
             'post_content' => 'Lorem ipsum dolor sit amet, utinam munere antiopam vel ad. Qui eros iusto te. Nec ad feugiat honestatis. Quo illum detraxit an. Ius eius quodsi molestiae at, nostrum definitiones his cu. Discere referrentur mea id, an pri novum possim deterruisset. Eum oratio reprehendunt cu. Nec te quem assum postea.',
@@ -1503,19 +1511,12 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
             'comment_status' => 'closed',
             'post_author'   => 1,
             'menu_order' => 2,
-          ) );
-            
-        }
-        
-        return;
-        
+        ) );
     }
     
 ///////////////////////////////////////    
     /**
 	 * Create Service posts
-     * 
-     * @return
 	 */
     public static function setup_posts_services(){
         
@@ -1526,26 +1527,28 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
         );
              
         $posts = get_posts( $args );
-        
-        if ( empty($posts) ){
-            
-          $prices_per_booking = array(
+
+        if ( !empty($posts) ){
+            return;
+        }
+
+        $prices_per_booking = array(
             0 => (float)30,
-          );
-          
-          $prices_per_person = array(
+        );
+
+        $prices_per_person = array(
             0 => (float)20,
-          );
-            
-          $ages = BABE_Post_types::get_ages_arr();
-          $i = 1;
-          foreach ($ages as $age_arr){
-              $prices_per_booking[$age_arr['age_id']] = '';
-              $prices_per_person[$age_arr['age_id']] = $i <= 2 ? floatval($prices_per_person[0] - $i*3) : '' ; 
-              $i++;
-          }
-            
-          $post_id = wp_insert_post(array (
+        );
+
+        $ages = BABE_Post_types::get_ages_arr();
+        $i = 1;
+        foreach ($ages as $age_arr){
+            $prices_per_booking[$age_arr['age_id']] = '';
+            $prices_per_person[$age_arr['age_id']] = $i <= 2 ? floatval($prices_per_person[0] - $i*3) : '' ;
+            $i++;
+        }
+
+        $post_id = wp_insert_post(array (
             'post_type' => BABE_Post_types::$service_post_type,
             'post_title' => __('Service per booking', 'ba-book-everything'),
             'post_content' => 'Lorem ipsum dolor sit amet, utinam munere antiopam vel ad. Qui eros iusto te. Nec ad feugiat honestatis. Quo illum detraxit an. Ius eius quodsi molestiae at, nostrum definitiones his cu. Discere referrentur mea id, an pri novum possim deterruisset. Eum oratio reprehendunt cu. Nec te quem assum postea.',
@@ -1554,17 +1557,17 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
             'post_author'   => 1,
             'menu_order' => 1,
             'meta_input' => array(
-              'price_type' => 'amount',
-              'service_type' => 'booking',
-              'prices' => $prices_per_booking,
+                'price_type' => 'amount',
+                'service_type' => 'booking',
+                'prices' => $prices_per_booking,
             ),
-          ) );
-          
-          if ( isset(self::$saved_demo_images['Service']) ){
-              set_post_thumbnail( $post_id, self::$saved_demo_images['Service'] );
-          }
-          
-          $post_id = wp_insert_post(array (
+        ) );
+
+        if ( isset(self::$saved_demo_images['Service']) ){
+            set_post_thumbnail( $post_id, self::$saved_demo_images['Service'] );
+        }
+
+        $post_id = wp_insert_post(array (
             'post_type' => BABE_Post_types::$service_post_type,
             'post_title' => __('Service per person', 'ba-book-everything'),
             'post_content' => 'Lorem ipsum dolor sit amet, utinam munere antiopam vel ad. Qui eros iusto te. Nec ad feugiat honestatis. Quo illum detraxit an. Ius eius quodsi molestiae at, nostrum definitiones his cu. Discere referrentur mea id, an pri novum possim deterruisset. Eum oratio reprehendunt cu. Nec te quem assum postea.',
@@ -1573,49 +1576,45 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
             'post_author'   => 1,
             'menu_order' => 2,
             'meta_input' => array(
-              'price_type' => 'amount',
-              'service_type' => 'person',
-              'prices' => $prices_per_person,
+                'price_type' => 'amount',
+                'service_type' => 'person',
+                'prices' => $prices_per_person,
             ),
-          ) );
-          
-          if ( isset(self::$saved_demo_images['Service']) ){
-              set_post_thumbnail( $post_id, self::$saved_demo_images['Service'] );
-          }
-            
+        ) );
+
+        if ( isset(self::$saved_demo_images['Service']) ){
+            set_post_thumbnail( $post_id, self::$saved_demo_images['Service'] );
         }
-        
-        return;
-        
     }
-    
-///////////////////////////////////////    
+
     /**
 	 * Create Place posts
-     * 
-     * @return
 	 */
     public static function setup_posts_places(){
-        
-      if (BABE_Settings::$settings['mpoints_active']){  
-        
+
+        if (!BABE_Settings::$settings['mpoints_active']){
+            return;
+        }
+
         $args = array(
-           'post_type'   => BABE_Post_types::$mpoints_post_type,
-           'numberposts' => -1,
-           'post_status' => 'publish',
+            'post_type'   => BABE_Post_types::$mpoints_post_type,
+            'numberposts' => -1,
+            'post_status' => 'publish',
         );
-             
+
         $posts = get_posts( $args );
-        
-        if ( empty($posts) ){
-            
-          $address = array(
+
+        if ( !empty($posts) ){
+            return;
+        }
+
+        $address = array(
             'address' => __('Santorini, Greece', 'ba-book-everything'),
             'latitude' => '36.3931562',
             'longitude' => '25.461509200000023',
-          );
-          
-          $post_id = wp_insert_post(array (
+        );
+
+        $post_id = wp_insert_post(array (
             'post_type' => BABE_Post_types::$mpoints_post_type,
             'post_title' => __('Place 1', 'ba-book-everything'),
             'post_content' => 'Lorem ipsum dolor sit amet, utinam munere antiopam vel ad. Qui eros iusto te. Nec ad feugiat honestatis. Quo illum detraxit an. Ius eius quodsi molestiae at, nostrum definitiones his cu. Discere referrentur mea id, an pri novum possim deterruisset. Eum oratio reprehendunt cu. Nec te quem assum postea.',
@@ -1624,15 +1623,15 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
             'post_author'   => 1,
             'menu_order' => 1,
             'meta_input' => array(
-              'address' => $address,
+                'address' => $address,
             ),
-          ) );
-          
-          if ( isset(self::$saved_demo_images['Place']) ){
-              set_post_thumbnail( $post_id, self::$saved_demo_images['Place'] );
-          }
-          
-          $post_id = wp_insert_post(array (
+        ) );
+
+        if ( isset(self::$saved_demo_images['Place']) ){
+            set_post_thumbnail( $post_id, self::$saved_demo_images['Place'] );
+        }
+
+        $post_id = wp_insert_post(array (
             'post_type' => BABE_Post_types::$mpoints_post_type,
             'post_title' => __('Place 2', 'ba-book-everything'),
             'post_content' => 'Lorem ipsum dolor sit amet, utinam munere antiopam vel ad. Qui eros iusto te. Nec ad feugiat honestatis. Quo illum detraxit an. Ius eius quodsi molestiae at, nostrum definitiones his cu. Discere referrentur mea id, an pri novum possim deterruisset. Eum oratio reprehendunt cu. Nec te quem assum postea.',
@@ -1641,27 +1640,17 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
             'post_author'   => 1,
             'menu_order' => 2,
             'meta_input' => array(
-              'address' => $address,
+                'address' => $address,
             ),
-          ) );
-          
-          if ( isset(self::$saved_demo_images['Place']) ){
-              set_post_thumbnail( $post_id, self::$saved_demo_images['Place'] );
-          }
-            
+        ) );
+
+        if ( isset(self::$saved_demo_images['Place']) ){
+            set_post_thumbnail( $post_id, self::$saved_demo_images['Place'] );
         }
-        
-       } 
-        
-       return;
-        
-    }    
-    
-///////////////////////////////////////    
+    }
+
     /**
 	 * Setup demo images.
-     * 
-     * @return
 	 */
     public static function setup_images(){
         
@@ -1687,9 +1676,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
           
           //// update option
           update_option('_babe_demo_images', self::$saved_demo_images);
-       }   
-        
-       return; 
+       }
     }
 
 ///////////////////////////////////////
@@ -1886,7 +1873,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
              $meta_input['guests'] = 4;
           }
           
-          if ( $category_title === 'Hostel'){
+          if ( $category_title === 'Hostel' || $category_title === 'Yacht'){
              $meta_input['guests'] = 12;
           }
           
@@ -1984,7 +1971,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
                     
           update_post_meta($post_id, 'code_'.$category_term->slug, $generated_code);
           
-          $price_arr = array( 0 => (float)49);
+          $price_arr = array( 0 => 49.0);
 
 	        if ( $category_title === 'Bike' ){
 		        $price_arr[0] = 10;
@@ -1995,7 +1982,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
             $ages = BABE_Post_types::get_ages_arr();
             $i = 1;
             foreach ($ages as $age_arr){
-              $price_arr[$age_arr['age_id']] = $i <= 2 ? (float)($price_arr[0] - $i * 10) : (float)0;
+              $price_arr[$age_arr['age_id']] = $i <= 2 ? (float)($price_arr[0] - $i * 10) : 0.0;
               $i++;
             }
             

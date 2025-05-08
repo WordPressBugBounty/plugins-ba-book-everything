@@ -1357,6 +1357,166 @@ class BABE_Calendar_functions {
             
         }
 
+         if (  $rules_cat['rules']['basic_booking_period'] === 'night' ){
+
+             $nights_blocked_for_housekeeping = BABE_Post_types::get_post_number_nights_blocked_for_housekeeping($booking_obj_id);
+
+             if( $nights_blocked_for_housekeeping > 0 ){
+
+                 $nearest_to_bookings = [];
+                 $nearest_from_bookings = [];
+
+                 if ( $new_guests < 0 ){
+
+                     $nearest_booking_date_from = clone($date_to_obj);
+                     $nearest_booking_date_from->modify('+1 day');
+                     $nearest_booking_date_to = clone($date_to_obj);
+                     if( $nights_blocked_for_housekeeping > 1 ){
+                         $nearest_booking_date_to->modify(
+                             '+'.($nights_blocked_for_housekeeping*2-1).' days'
+                         );
+                     }
+
+                     $query = "SELECT av.date_from, av.guests
+        FROM ".self::$table_av_cal." av
+        WHERE av.booking_obj_id = ".$booking_obj_id."
+           AND av.date_from > '".$nearest_booking_date_from->format('Y-m-d H:i:s')."'
+           AND av.date_from <= '".$nearest_booking_date_to->format('Y-m-d H:i:s')."'
+        ORDER BY av.date_from ASC";
+
+                     $result = $wpdb->get_results($query, ARRAY_A);
+
+                     foreach ( $result as $row ){
+                         $nearest_to_bookings[ $row['date_from'] ] = $row['guests'];
+                     }
+
+                     $nearest_booking_date_to = clone($date_from_obj);
+                     $nearest_booking_date_to->modify('-1 day' );
+
+                     $nearest_booking_date_from = clone($nearest_booking_date_to);
+                     $nearest_booking_date_from->modify(
+                         '-'.($nights_blocked_for_housekeeping*2-1).' days'
+                     );
+
+                     $query = "SELECT av.date_from, av.guests
+        FROM ".self::$table_av_cal." av
+        WHERE av.booking_obj_id = ".$booking_obj_id."
+           AND av.date_from >= '".$nearest_booking_date_from->format('Y-m-d H:i:s')."'
+           AND av.date_from < '".$nearest_booking_date_to->format('Y-m-d H:i:s')."'
+        ORDER BY av.date_from DESC";
+
+                     $result = $wpdb->get_results($query, ARRAY_A);
+
+                     foreach ( $result as $row ){
+                         $nearest_from_bookings[ $row['date_from'] ] = $row['guests'];
+                     }
+                 }
+
+                 $date_from_exc_obj = clone($date_from_obj);
+                 $date_to_exc_obj = clone($date_to_obj);
+                 $new_excluded_dates = [];
+                 $new_excluded_dates_meta = [];
+
+                 for($i = 0; $i < $nights_blocked_for_housekeeping; $i++){
+
+                     $date_from_exc = self::date_from_sql(
+                         $date_from_exc_obj
+                             ->modify('-1 day')
+                             ->format('Y-m-d')
+                     );
+                     $date_to_exc = self::date_from_sql(
+                         $date_to_exc_obj
+                             ->format('Y-m-d')
+                     );
+
+                     $new_excluded_dates[] = $date_from_exc;
+                     $new_excluded_dates[] = $date_to_exc;
+
+                     if( $new_guests > 0 ){
+                         $new_excluded_dates_meta[] = ['excluded_date' => $date_from_exc,];
+                         $new_excluded_dates_meta[] = ['excluded_date' => $date_to_exc,];
+                     }
+
+                     if( $new_guests < 0 ){
+
+                         if ( !empty($nearest_from_bookings) ){
+
+                             $existing_guests = 0;
+
+                             $date_to_check = clone($date_from_exc_obj);
+                             $date_to_check->modify('-1 day')
+                                 ->setTime(23,59,59)
+                             ;
+                             $date_from_check = clone($date_from_exc_obj);
+                             $date_from_check
+                                 ->modify('-'.$nights_blocked_for_housekeeping.' days')
+                                 ->setTime(0,0,0, 0)
+                             ;
+
+                             foreach( $nearest_from_bookings as $nearest_from_booking_date => $nearest_from_guests ){
+                                 $nearest_from_booking_date_obj = new DateTime($nearest_from_booking_date);
+                                 if( $nearest_from_booking_date_obj >= $date_from_check && $nearest_from_booking_date_obj <= $date_to_check ){
+                                     $existing_guests += $nearest_from_guests;
+                                 }
+                             }
+
+                             if( $existing_guests > 0 ){
+                                 $new_excluded_dates_meta[] = ['excluded_date' => $date_from_exc,];
+                             }
+                         }
+
+                         if ( !empty($nearest_to_bookings) ){
+
+                             $existing_guests = 0;
+
+                             $date_from_check = clone($date_to_exc_obj);
+                             $date_from_check->modify('+1 day')
+                                 ->setTime(0,0,0, 0)
+                             ;
+                             $date_to_check = clone($date_to_exc_obj);
+                             $date_to_check
+                                 ->modify('+'.$nights_blocked_for_housekeeping.' days')
+                                 ->setTime(23,59,59)
+                             ;
+
+                             foreach( $nearest_to_bookings as $nearest_to_booking_date => $nearest_to_guests ){
+                                 $nearest_to_booking_date_obj = new DateTime($nearest_to_booking_date);
+                                 if( $nearest_to_booking_date_obj >= $date_from_check && $nearest_to_booking_date_obj <= $date_to_check ){
+                                     $existing_guests += $nearest_to_guests;
+                                 }
+                             }
+
+                             if( $existing_guests > 0 ){
+                                 $new_excluded_dates_meta[] = ['excluded_date' => $date_to_exc,];
+                             }
+                         }
+                     }
+
+                     $date_to_exc_obj->modify('+1 day');
+                 }
+
+                 $excluded_dates_meta = (array)get_post_meta( $booking_obj_id, 'excluded_dates', true );
+
+                 if ( !empty($excluded_dates_meta) ){
+
+                     foreach($excluded_dates_meta as $excluded_date){
+
+                         if (
+                             !isset($excluded_date['excluded_date'])
+                             || in_array( $excluded_date['excluded_date'], $new_excluded_dates )
+                         ){
+                             continue;
+                         }
+
+                         $new_excluded_dates_meta[] = $excluded_date;
+                     }
+                 }
+
+                 update_post_meta($booking_obj_id, 'excluded_dates', $new_excluded_dates_meta);
+                 self::update_av_cal_excluded_dates($booking_obj_id);
+             }
+         }
+
         self::refresh_av_guests($booking_obj_id);
 
         self::reset_cache();

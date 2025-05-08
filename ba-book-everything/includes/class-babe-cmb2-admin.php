@@ -2566,6 +2566,20 @@ class BABE_CMB2_admin {
                     'before_row' => array( __CLASS__, 'cmb2_before_row_header'),
                     'row_title' => __( 'Booking rules section', 'ba-book-everything' ),
                 ) );
+
+                $cmb->add_field( array(
+                    'name'       => __( 'Block specified number of days after each booking for housekeeping purposes', 'ba-book-everything' ),
+                    'id'         => $prefix . 'nights_blocked_for_housekeeping_'.$category->slug,
+                    'type'       => 'text',
+                    'attributes' => array(
+                        'type' => 'number',
+                        'min' => '0',
+                        'pattern' => '[0-9]*',
+                        'class' => 'cmb2-text-small',
+                        'data-conditional-id'    => $prefix . BABE_Post_types::$categories_tax,
+                        'data-conditional-value' => $category->slug,
+                    ),
+                ) );
             }
 
             /// create metaboxes by meta

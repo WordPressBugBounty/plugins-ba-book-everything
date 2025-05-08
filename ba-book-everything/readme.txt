@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.8
-Stable tag: 1.8.3
+Stable tag: 1.8.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,10 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.4 =
+* Added an option to block specified number of days after each booking for housekeeping purposes for booking items with a basic booking period of "1 night"
+* Changed the application of the minimum nights restriction when selecting rates to bring it closer to business logic, when this value is taken from the rate of the first day of booking, and the remaining rates are connected based on their compliance with calendar days (fixes zero price issue).
 
 = 1.8.3 =
 * Fixed an issue with availability time after canceling orders for booking items with a basic booking period of "1 day"

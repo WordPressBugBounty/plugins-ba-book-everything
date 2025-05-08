@@ -2250,6 +2250,21 @@ class BABE_Post_types {
         return $last_av_booking_time && BABE_Calendar_functions::isValidTime($last_av_booking_time, 'H:i') ? $last_av_booking_time : $default;
     }
 
+    public static function get_post_number_nights_blocked_for_housekeeping($post_id) {
+
+        $default = 0;
+
+        $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($post_id);
+
+        if ( empty($rules_cat['category_slug']) || $rules_cat['rules']['basic_booking_period'] !== 'night' ){
+            return $default;
+        }
+
+        $nights_blocked_for_housekeeping = get_post_meta( $post_id, 'nights_blocked_for_housekeeping_'.$rules_cat['category_slug'], true);
+
+        return !empty($nights_blocked_for_housekeeping) ? absint($nights_blocked_for_housekeeping) : $default;
+    }
+
     ////////////////////////////
     /**
 	 * Get post items number

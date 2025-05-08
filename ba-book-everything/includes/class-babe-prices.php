@@ -1290,6 +1290,9 @@ class BABE_Prices {
             $date_rates_arr[$date->format("Y-m-d")] = 0; //// initial dates arr
         }
 
+        $booking_d_interval = date_diff($begin, $end);
+        $booking_days_total = (int)$booking_d_interval->format('%a'); // total days
+
         foreach ($rates as $rate){
 
             $rateDTO = RateDTO::instanceFromArray($rate);
@@ -1338,7 +1341,8 @@ class BABE_Prices {
                 && (
                     (
                         $rules_cat['rules']['basic_booking_period'] !== 'hour'
-                        && $rateDTO->minBookingPeriod > $days_total
+                        && $rateDTO->minBookingPeriod > $booking_days_total
+                        && $rate_begin_obj === $begin_check
                     )
                     || (
                         $rules_cat['rules']['basic_booking_period'] === 'hour'

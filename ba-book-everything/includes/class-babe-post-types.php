@@ -2190,41 +2190,50 @@ class BABE_Post_types {
      * @param array $post
      * @return string
 	 */
-    public static function get_post_duration($post) {
+    public static function get_post_duration($post): string
+    {
         $output = '';
+
+        if ( empty($post['duration']) ){
+            return $output;
+        }
         
         $arr = array();
-        
-        if (!empty($post) && isset($post['duration']) && !empty($post['duration'])){            
-            if ( !empty($post['duration']['d']) ) {
-                $arr[] = $post['duration']['d']
-                    .' '
-                    . (
-                        (int)$post['duration']['d'] === 1
-                            ? __('day', 'ba-book-everything')
-                            : __('days', 'ba-book-everything')
-                    );
-            }
-            if ( !empty($post['duration']['h']) ) {
-                $arr[] = $post['duration']['h']
-                    .' '
-                    . (
-                    (int)$post['duration']['h'] === 1
-                        ? __('hour', 'ba-book-everything')
-                        : __('hours', 'ba-book-everything')
-                    );
-            }
-            if ( !empty($post['duration']['i']) ) {
-                $arr[] = $post['duration']['i']
-                    .' '
-                    . (
-                    (int)$post['duration']['i'] === 1
-                        ? __('minute', 'ba-book-everything')
-                        : __('minutes', 'ba-book-everything')
-                    );
-            }
-            $output .= implode(' ', $arr);
+
+        $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($post['ID']);
+
+        if( $rules_cat['rules']['basic_booking_period'] !== 'recurrent_custom' ){
+            return $output;
         }
+
+        if ( !empty($post['duration']['d']) ) {
+            $arr[] = $post['duration']['d']
+                .' '
+                . (
+                (int)$post['duration']['d'] === 1
+                    ? __('day', 'ba-book-everything')
+                    : __('days', 'ba-book-everything')
+                );
+        }
+        if ( !empty($post['duration']['h']) ) {
+            $arr[] = $post['duration']['h']
+                .' '
+                . (
+                (int)$post['duration']['h'] === 1
+                    ? __('hour', 'ba-book-everything')
+                    : __('hours', 'ba-book-everything')
+                );
+        }
+        if ( !empty($post['duration']['i']) ) {
+            $arr[] = $post['duration']['i']
+                .' '
+                . (
+                (int)$post['duration']['i'] === 1
+                    ? __('minute', 'ba-book-everything')
+                    : __('minutes', 'ba-book-everything')
+                );
+        }
+        $output .= implode(' ', $arr);
         
         return $output;
     }

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: BA Book Everything 1.3.27\n"
-"POT-Creation-Date: 2025-05-07 16:21+0300\n"
+"POT-Creation-Date: 2025-05-27 11:32+0300\n"
 "PO-Revision-Date: 2016-07-05 22:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -125,6 +125,7 @@ msgstr ""
 #: includes/class-babe-cmb2-admin.php:2873
 #: includes/class-babe-post-types.php:139
 #: includes/class-babe-post-types.php:140
+#: includes/vendors/elementor/widgets/allitems.php:176
 msgid "Title"
 msgstr ""
 
@@ -180,7 +181,7 @@ msgstr ""
 #: includes/class-babe-booking-rules-admin.php:155
 #: includes/class-babe-booking-rules-admin.php:423
 #: includes/class-babe-booking-rules-admin.php:441
-#: includes/class-babe-post-types.php:2214
+#: includes/class-babe-post-types.php:2224
 #: includes/class-babe-prices.php:318
 msgid "hours"
 msgstr ""
@@ -277,7 +278,7 @@ msgid "Recurrent custom (weekly schedule for tours, events, etc.)"
 msgstr ""
 
 #: includes/class-babe-booking-rules-admin.php:421
-#: includes/class-babe-post-types.php:2205
+#: includes/class-babe-post-types.php:2215
 #: includes/class-babe-prices.php:315
 msgid "days"
 msgstr ""
@@ -645,7 +646,7 @@ msgstr ""
 #: includes/class-babe-order-admin.php:244
 #: includes/class-babe-search-form.php:82
 #: includes/class-babe-search-form.php:279
-#: includes/vendors/elementor/widgets/allitems.php:198
+#: includes/vendors/elementor/widgets/allitems.php:203
 msgid "Date from"
 msgstr ""
 
@@ -655,7 +656,7 @@ msgstr ""
 #: includes/class-babe-order-admin.php:245
 #: includes/class-babe-search-form.php:83
 #: includes/class-babe-search-form.php:284
-#: includes/vendors/elementor/widgets/allitems.php:211
+#: includes/vendors/elementor/widgets/allitems.php:216
 msgid "Date to"
 msgstr ""
 
@@ -900,6 +901,7 @@ msgstr ""
 #: includes/class-babe-prices.php:567 includes/class-babe-prices.php:763
 #: includes/class-babe-search-form.php:380
 #: includes/class-babe-search-form.php:730
+#: includes/vendors/elementor/widgets/allitems.php:175
 msgid "Price"
 msgstr ""
 
@@ -1419,7 +1421,7 @@ msgstr ""
 #: includes/class-babe-cmb2-admin.php:3441
 #: includes/vendors/elementor/widgets/allitems.php:104
 #: includes/vendors/elementor/widgets/allitems.php:115
-#: includes/vendors/elementor/widgets/allitems.php:236
+#: includes/vendors/elementor/widgets/allitems.php:241
 #: includes/vendors/elementor/widgets/booking_form.php:78
 #: includes/vendors/elementor/widgets/item_address_map.php:78
 #: includes/vendors/elementor/widgets/item_calendar.php:78
@@ -10916,6 +10918,7 @@ msgstr ""
 
 #: includes/class-babe-post-types.php:145
 #: includes/class-babe-post-types.php:146
+#: includes/vendors/elementor/widgets/allitems.php:177
 msgid "Availability date"
 msgstr ""
 
@@ -11148,7 +11151,7 @@ msgstr ""
 
 #: includes/class-babe-post-types.php:399
 #: includes/class-babe-settings-admin.php:1130
-#: includes/vendors/elementor/widgets/allitems.php:184
+#: includes/vendors/elementor/widgets/allitems.php:189
 msgid "Order"
 msgstr ""
 
@@ -11458,21 +11461,21 @@ msgstr ""
 msgid "Daily"
 msgstr ""
 
-#: includes/class-babe-post-types.php:2204
+#: includes/class-babe-post-types.php:2214
 #: includes/class-babe-prices.php:316
 msgid "day"
 msgstr ""
 
-#: includes/class-babe-post-types.php:2213
+#: includes/class-babe-post-types.php:2223
 #: includes/class-babe-prices.php:319
 msgid "hour"
 msgstr ""
 
-#: includes/class-babe-post-types.php:2222
+#: includes/class-babe-post-types.php:2232
 msgid "minute"
 msgstr ""
 
-#: includes/class-babe-post-types.php:2223
+#: includes/class-babe-post-types.php:2233
 msgid "minutes"
 msgstr ""
 
@@ -12812,41 +12815,49 @@ msgstr ""
 msgid "Order By"
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:175
-msgid "Price from"
+#: includes/vendors/elementor/widgets/allitems.php:178
+msgid "Post date"
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:185
+#: includes/vendors/elementor/widgets/allitems.php:179
+msgid "Post modified date"
+msgstr ""
+
+#: includes/vendors/elementor/widgets/allitems.php:180
+msgid "Menu order"
+msgstr ""
+
+#: includes/vendors/elementor/widgets/allitems.php:190
 msgid "Designates the ascending or descending order. Default by DESC"
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:188
+#: includes/vendors/elementor/widgets/allitems.php:193
 msgid "Ascending"
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:189
+#: includes/vendors/elementor/widgets/allitems.php:194
 msgid "Descending"
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:199
+#: includes/vendors/elementor/widgets/allitems.php:204
 msgid "Show items which are available from selected date."
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:212
+#: includes/vendors/elementor/widgets/allitems.php:217
 msgid "Show items which are available up to selected date."
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:224
+#: includes/vendors/elementor/widgets/allitems.php:229
 msgid "Extra class name"
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:225
+#: includes/vendors/elementor/widgets/allitems.php:230
 msgid ""
 "Style particular content element differently - add a class name and "
 "refer to it in custom CSS."
 msgstr ""
 
-#: includes/vendors/elementor/widgets/allitems.php:235
+#: includes/vendors/elementor/widgets/allitems.php:240
 msgid "Section background image"
 msgstr ""
 

@@ -172,7 +172,12 @@ class BABE_Elementor_Allitems_Widget extends \Elementor\Widget_Base {
 				'type' => \Elementor\Controls_Manager::SELECT,
 				'options' => array(
 					'rating' => esc_html__( 'Rating', 'ba-book-everything' ),
-					'price_from' => esc_html__( 'Price from', 'ba-book-everything' ),
+					'price_from' => esc_html__( 'Price', 'ba-book-everything' ),
+                    'post_title' => esc_html__( 'Title', 'ba-book-everything' ),
+                    'av_date_from' => esc_html__( 'Availability date', 'ba-book-everything' ),
+                    'post_date' => esc_html__( 'Post date', 'ba-book-everything' ),
+                    'post_modified' => esc_html__( 'Post modified date', 'ba-book-everything' ),
+                    'menu_order' => esc_html__( 'Menu order', 'ba-book-everything' ),
 				),
 				'default' => 'rating',
 			)

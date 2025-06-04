@@ -1273,6 +1273,26 @@ class BABE_Prices {
         $end_check = new DateTime( $end->format('Y-m-d') );
         
         $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($booking_obj_id);
+
+        $require_full_payment_when_less_than_days = get_post_meta($booking_obj_id, 'require_full_payment_when_less_than_days', true);
+
+        if(
+            !empty($require_full_payment_when_less_than_days)
+            && (int)$require_full_payment_when_less_than_days > 0
+            && (int)$require_full_payment_when_less_than_days < 366
+        ){
+            $date_now_obj = BABE_Functions::datetime_local();
+            $date_now_obj->modify( '-1 day' );
+            $before_booking_d_interval = date_diff($begin, $date_now_obj);
+            $before_booking_days = (int)$before_booking_d_interval->format('%a'); // total days
+
+            if(
+                $begin > $date_now_obj
+                && $before_booking_days <= (int)$require_full_payment_when_less_than_days
+            ){
+                $rules_cat['rules']['payment_model'] = 'full';
+            }
+        }
         
         $rates = self::get_rates($booking_obj_id, $begin->format('Y-m-d H:i:s'), $end->format('Y-m-d H:i:s'));
         

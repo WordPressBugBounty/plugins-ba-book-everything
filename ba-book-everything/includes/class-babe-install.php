@@ -1094,7 +1094,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
 	          'payment_model' => 'full',
 	          'recurrent_payments' => 0,
 	          'booking_mode' => 'object',
-          ),
+          ), */
          'Yacht' => array(
 	          'rule_id' => 0,
 	          'rule_title' => 'Yacht',
@@ -1105,7 +1105,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
 	          'payment_model' => 'full',
 	          'recurrent_payments' => 0,
 	          'booking_mode' => 'object',
-          ), */
+          ),
           'One time event' => array(
               'rule_id' => 0,
               'rule_title' => 'One time event',
@@ -1141,15 +1141,15 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
         );
         
         self::$demo_images = array(
-           'Tour' => 'StockSnap_7Y84D37QEG.jpg',
-           'Hotel' => 'StockSnap_6SMA09U7Y8.jpg',
-           'Hostel' => 'StockSnap_8B828310AC.jpg',
-           'Car' => 'StockSnap_WPGJ8XT8MB.jpg',
-           'One time event' => 'StockSnap_J45DTZD2VJ.jpg',
-           'Place' => 'StockSnap_HGVQPNFUDV.jpg',
-           'Service' => 'StockSnap_BRRVW36UIY.jpg',
-	  //     'Bike' =>'StockSnap_EAYRJAXV9F.jpg'
-	  //     'Yacht' =>'StockSnap_VBZO6FHEB2.jpg'
+            'Tour' => 'StockSnap_7Y84D37QEG.jpg',
+            'Hotel' => 'StockSnap_6SMA09U7Y8.jpg',
+            'Hostel' => 'StockSnap_8B828310AC.jpg',
+            'Car' => 'StockSnap_WPGJ8XT8MB.jpg',
+            'One time event' => 'StockSnap_J45DTZD2VJ.jpg',
+            'Place' => 'StockSnap_HGVQPNFUDV.jpg',
+            'Service' => 'StockSnap_BRRVW36UIY.jpg',
+            'Bike' =>'StockSnap_EAYRJAXV9F.jpg',
+            'Yacht' =>'StockSnap_VBZO6FHEB2.jpg',
         );
         /**
         Copyrights:
@@ -1199,7 +1199,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
     /**
 	 * Setup demo rules.
      * 
-     * @return
+     * @return void
 	 */
     public static function setup_rules(){
         
@@ -1227,8 +1227,6 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
 ///////////////////////////////////////    
     /**
 	 * Setup demo ages.
-     * 
-     * @return
 	 */
     public static function setup_ages(){
         
@@ -1267,9 +1265,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
           }  /// end foreach $demo_ages
           
           BABE_Post_types::clear_cache_ages();
-       }  
-        
-       return; 
+       }
     }
     
 ///////////////////////////////////////    
@@ -1363,48 +1359,46 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
 ///////////////////////////////////////    
     /**
 	 * Setup demo categories.
-     * 
-     * @return
 	 */
     public static function setup_categories(){
-        
-       $demo_rules = self::$demo_rules;
-       
-       $demo_rules['One time event']['categories_slug'] = 'one-time-event';
-       $demo_rules['One time event']['categories_remove_guests'] = 0;
-       $demo_rules['One time event']['categories_address'] = 1;
-       $demo_rules['One time event']['categories_gmap_active'] = 1;
-       
-       $demo_rules['Tour']['categories_slug'] = 'tour';
-       $demo_rules['Tour']['categories_remove_guests'] = 0;
-       $demo_rules['Tour']['categories_address'] = 1;
-       $demo_rules['Tour']['categories_gmap_active'] = 1;
-       
-       $demo_rules['Hotel']['categories_slug'] = 'hotel';
-       $demo_rules['Hotel']['categories_remove_guests'] = 0;
-       $demo_rules['Hotel']['categories_address'] = 0;
-       $demo_rules['Hotel']['categories_gmap_active'] = 0;
-       
-       $demo_rules['Hostel']['categories_slug'] = 'hostel';
-       $demo_rules['Hostel']['categories_remove_guests'] = 0;
-       $demo_rules['Hostel']['categories_address'] = 0;
-       $demo_rules['Hostel']['categories_gmap_active'] = 0;
-       
-       $demo_rules['Car']['categories_slug'] = 'car';
-       $demo_rules['Car']['categories_remove_guests'] = 1;
-       $demo_rules['Car']['categories_address'] = 0;
-       $demo_rules['Car']['categories_gmap_active'] = 0;
+
+        $demo_rules = self::$demo_rules;
+
+        $demo_rules['One time event']['categories_slug'] = 'one-time-event';
+        $demo_rules['One time event']['categories_remove_guests'] = 0;
+        $demo_rules['One time event']['categories_address'] = 1;
+        $demo_rules['One time event']['categories_gmap_active'] = 1;
+
+        $demo_rules['Tour']['categories_slug'] = 'tour';
+        $demo_rules['Tour']['categories_remove_guests'] = 0;
+        $demo_rules['Tour']['categories_address'] = 1;
+        $demo_rules['Tour']['categories_gmap_active'] = 1;
+
+        $demo_rules['Hotel']['categories_slug'] = 'hotel';
+        $demo_rules['Hotel']['categories_remove_guests'] = 0;
+        $demo_rules['Hotel']['categories_address'] = 0;
+        $demo_rules['Hotel']['categories_gmap_active'] = 0;
+
+        $demo_rules['Hostel']['categories_slug'] = 'hostel';
+        $demo_rules['Hostel']['categories_remove_guests'] = 0;
+        $demo_rules['Hostel']['categories_address'] = 0;
+        $demo_rules['Hostel']['categories_gmap_active'] = 0;
+
+        $demo_rules['Car']['categories_slug'] = 'car';
+        $demo_rules['Car']['categories_remove_guests'] = 1;
+        $demo_rules['Car']['categories_address'] = 0;
+        $demo_rules['Car']['categories_gmap_active'] = 0;
+
+        $demo_rules['Yacht']['categories_slug'] = 'yacht';
+        $demo_rules['Yacht']['categories_remove_guests'] = 1;
+        $demo_rules['Yacht']['categories_address'] = 0;
+        $demo_rules['Yacht']['categories_gmap_active'] = 0;
 
        /*
 	    $demo_rules['Bike']['categories_slug'] = 'bike';
 	    $demo_rules['Bike']['categories_remove_guests'] = 1;
 	    $demo_rules['Bike']['categories_address'] = 0;
 	    $demo_rules['Bike']['categories_gmap_active'] = 0;
-
-        $demo_rules['Yacht']['categories_slug'] = 'yacht';
-	    $demo_rules['Yacht']['categories_remove_guests'] = 1;
-	    $demo_rules['Yacht']['categories_address'] = 0;
-	    $demo_rules['Yacht']['categories_gmap_active'] = 0;
        */
        
        if (!empty($demo_rules)){
@@ -1876,6 +1870,17 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
           if ( $category_title === 'Hostel' || $category_title === 'Yacht'){
              $meta_input['guests'] = 12;
           }
+
+            if ( $category_title === 'Yacht'){
+                $meta_input['av_time_from_'.$category_term->slug] = array (
+                    0 => '09:00',
+                    1 => '14:00',
+                );
+                $meta_input['av_time_to_'.$category_term->slug] = array (
+                    0 => '13:00',
+                    1 => '18:00',
+                );
+            }
           
           //// start and end time
           if ( $category_title === 'One time event'){
@@ -1972,22 +1977,28 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
           update_post_meta($post_id, 'code_'.$category_term->slug, $generated_code);
           
           $price_arr = array( 0 => 49.0);
+          $price_from = 49.0;
 
-	        if ( $category_title === 'Bike' ){
-		        $price_arr[0] = 10;
-	        }
+            if ( $category_title === 'Bike' ){
+                $price_arr[0] = 10;
+                $price_from = 10;
+            }
+
+            if ( $category_title === 'Yacht' ){
+                $price_arr[0] = 10;
+                $price_from = 10;
+            }
           
           if ( $rules['ages'] ){
-            
-            $ages = BABE_Post_types::get_ages_arr();
-            $i = 1;
-            foreach ($ages as $age_arr){
-              $price_arr[$age_arr['age_id']] = $i <= 2 ? (float)($price_arr[0] - $i * 10) : 0.0;
-              $i++;
-            }
-            
-            unset($price_arr[0]);
-            
+              $ages = BABE_Post_types::get_ages_arr();
+              $i = 1;
+              foreach ($ages as $age_arr){
+                  $price_arr[$age_arr['age_id']] = $i <= 2 ? (float)($price_arr[0] - $i * 10) : 0.0;
+                  $i++;
+              }
+
+              unset($price_arr[0]);
+              $price_from = '';
           }
           
           $days_arr = BABE_Calendar_functions::get_week_days_arr();
@@ -2003,7 +2014,7 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
              'apply_days' => $rate_days_arr,
              'start_days' => $rate_days_arr,
              '_price_general' => $price_arr,
-             '_price_from' => '',
+             '_price_from' => $price_from,
              '_prices_conditional' => array(),
              '_rate_min_booking' => '',
              '_rate_max_booking' => '',
@@ -2011,8 +2022,44 @@ CREATE TABLE {$wpdb->prefix}babe_category_deactivate_schedule (
              '_rate_date_from' => '',
              '_rate_date_to' => '',
           );
+
+            if ( $category_title === 'Yacht' ){
+                $rate_arr = array(
+                    'post_id' => $post_id,
+                    'cat_slug' => $category_term->slug,
+                    'apply_days' => $rate_days_arr,
+                    'start_days' => $rate_days_arr,
+                    '_price_general' => $price_arr,
+                    '_price_from' => '',
+                    '_prices_conditional' => array(),
+                    '_rate_min_booking' => 9,
+                    '_rate_max_booking' => 9,
+                    '_rate_title' => __('9 hours', 'ba-book-everything'),
+                    '_rate_date_from' => '',
+                    '_rate_date_to' => '',
+                );
+            }
           
           BABE_Prices::save_rate($rate_arr);
+
+            if ( $category_title === 'Yacht' ){
+                $rate_arr = array(
+                    'post_id' => $post_id,
+                    'cat_slug' => $category_term->slug,
+                    'apply_days' => $rate_days_arr,
+                    'start_days' => $rate_days_arr,
+                    '_price_general' => $price_arr,
+                    '_price_from' => '',
+                    '_prices_conditional' => array(),
+                    '_rate_min_booking' => 4,
+                    '_rate_max_booking' => 4,
+                    '_rate_title' => __('4 hours', 'ba-book-everything'),
+                    '_rate_date_from' => '',
+                    '_rate_date_to' => '',
+                );
+
+                BABE_Prices::save_rate($rate_arr);
+            }
           
           BABE_CMB2_admin::update_booking_obj_post($post_id, [], (object)array());
             

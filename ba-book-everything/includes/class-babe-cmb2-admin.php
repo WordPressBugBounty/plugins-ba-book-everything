@@ -2472,17 +2472,31 @@ class BABE_CMB2_admin {
                 ) );
                 
         do_action('cmb2_booking_obj_after_select_category', $cmb, $prefix);
-        
+
         $cmb->add_field( array(
-         'name' => __( 'Fixed Deposit amount, ', 'ba-book-everything' ).BABE_Currency::get_currency_symbol(),
-         'id'   => $prefix . 'deposit_fixed',
-         'type' => 'text',
-         'before_row' => array( __CLASS__, 'cmb2_before_row_header'),
-         'row_title' => __( 'Prices', 'ba-book-everything' ),
+            'name' => __( 'Fixed Deposit amount, ', 'ba-book-everything' ).BABE_Currency::get_currency_symbol(),
+            'id'   => $prefix . 'deposit_fixed',
+            'type' => 'text',
+            'before_row' => array( __CLASS__, 'cmb2_before_row_header'),
+            'row_title' => __( 'Prices', 'ba-book-everything' ),
             'attributes' => array(
                 'class' => 'cmb2-text-small',
             ),
-         ) );
+        ) );
+
+        $cmb->add_field( array(
+            'name' => __( 'Require full payment when there are less than specified number of days left before the start of the booking (days, optional)', 'ba-book-everything' ),
+            'desc'       => __( 'leave blank to ignore', 'ba-book-everything' ),
+            'id'   => $prefix . 'require_full_payment_when_less_than_days',
+            'type' => 'text',
+            'attributes' => array(
+                'type' => 'number',
+                'min' => '0',
+                'max' => '365',
+                'pattern' => '[0-9]*',
+                'class' => 'cmb2-text-small',
+            ),
+        ) );
         
         $cmb->add_field( array(
          'name' => __( 'Prices', 'ba-book-everything' ),

@@ -381,7 +381,7 @@ public static function pager($max_num_pages){
       
      $pl_args = apply_filters('babe_pager_args', $pl_args);
 
-     return '<div class="babe_pager">'.paginate_links($pl_args).'</div>';
+     return '<div class="babe_pager"><div class="babe_pager_inner">'.paginate_links($pl_args).'</div></div>';
 }
 
 ///////////////////////////////////////

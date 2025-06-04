@@ -18,12 +18,12 @@ $(document).ready(function(){
             update_term_values_in_search_form(this);
         });
 
-        $('input[name="sr_sort_by"]').on('change', function(ev){
+        $('.babe_search_results input[name="sr_sort_by"]').on('change', function(ev){
             $('form#search_form input[name="search_results_sort_by"]').val($(this).val());
             babe_search_form_submit();
         });
 
-        $('.input_select_sort').on('click', function(ev){
+        $('.babe_search_results .input_select_sort').on('click', function(ev){
             $('form#search_form input[name="search_results_sort_by"]').val($(this).children("input").val());
             babe_search_form_submit();
         });
@@ -1964,6 +1964,138 @@ $(document).ready(function(){
         });
     }
 
+    //////////////////////////////////////////////
+
+    let listing_search_results_sort_by = '';
+
+    if( $('.babe_shortcode_babe_listing').length > 0 ){
+
+        listing_search_results_sort_by = $('.babe_shortcode_babe_listing').data('filter-sort-by');
+
+        $('.babe_shortcode_babe_listing_filters_button').on('click', function( event ){
+            babe_overlay_open();
+        });
+
+        $('#babe_shortcode_babe_listing_filters_button_apply').on('click', function( event ){
+            babe_overlay_close();
+        });
+
+        $('.babe_shortcode_babe_listing_filters_container').on('click', '.term_item_checkbox input', function( event ){
+            update_babe_listing_filters();
+        });
+
+        $('.babe_shortcode_babe_listing_filters_content').on(
+            'click',
+            '#babe_shortcode_babe_listing_filters_button_apply',
+            function( event ){
+                update_babe_listing_content( 1 );
+                babe_overlay_close();
+        });
+
+        $('.babe_shortcode_babe_listing').on(
+            'click',
+            '.babe_pager a',
+            function( event ){
+                event.preventDefault();
+                let page = parseInt(getUrlParameterFromHref('paged', $(this).attr('href'), 1 ));
+                update_babe_listing_content( page );
+                babe_overlay_close();
+            }
+        );
+
+        $('.babe_shortcode_babe_listing').on('change', 'input[name="sr_sort_by"]', function(ev){
+            listing_search_results_sort_by = $(this).val();
+            update_babe_listing_content( 1 );
+        });
+
+        $('.babe_shortcode_babe_listing').on('click', '.input_select_sort', function(ev){
+            listing_search_results_sort_by = $(this).children("input").val();
+            update_babe_listing_content( 1 );
+        });
+    }
+
+    function update_babe_listing_filters(){
+
+        let dynamic_filters = parseInt($('.babe_shortcode_babe_listing').data('dynamic'));
+
+        if( dynamic_filters !== 1 ){
+            return;
+        }
+
+        let term_ids = {};
+
+        $('.babe_shortcode_babe_listing_filters_container input:checkbox:checked').each(function(ind, elm){
+            let term_taxonomy_id = $(elm).val();
+            term_ids[ term_taxonomy_id ] = term_taxonomy_id;
+        });
+
+        let args = $('.babe_shortcode_babe_listing').data('args');
+
+        $('#babe_search_result_refresh').css('display', 'block');
+
+        $.ajax({
+            url : babe_lst.ajax_url,
+            type : 'POST',
+            data : {
+                action : 'babe_listing_update_filters',
+                term_ids : term_ids,
+                args : args,
+                // check
+                nonce : babe_lst.nonce
+            },
+            success : function( msg ) {
+                $('.babe_shortcode_babe_listing_filters_container').html(msg);
+            },
+            error : function( msg ) {
+            }
+        }).always(function(){
+            $('#babe_search_result_refresh').css('display', 'none');
+        });
+    }
+
+    function update_babe_listing_content( page ){
+        let term_ids = {};
+
+        $('.babe_shortcode_babe_listing_filters_container input:checkbox:checked').each(function(ind, elm){
+            let term_taxonomy_id = $(elm).val();
+            term_ids[ term_taxonomy_id ] = term_taxonomy_id;
+        });
+
+        let args = $('.babe_shortcode_babe_listing').data('args');
+
+        $('#babe_search_result_refresh').css('display', 'block');
+
+        $.ajax({
+            url : babe_lst.ajax_url,
+            type : 'POST',
+            data : {
+                action : 'babe_listing_filtered',
+                term_ids : term_ids,
+                args : args,
+                page : page,
+                listing_search_results_sort_by : listing_search_results_sort_by,
+                // check
+                nonce : babe_lst.nonce
+            },
+            success : function( msg ) {
+                try {
+                    var response = JSON.parse( msg );
+                } catch ( e ) {
+                    return false;
+                }
+
+                $('.babe_shortcode_babe_listing .babe_shortcode_block_content')
+                    .html(response.listing_filtered_content);
+                $('.babe_shortcode_babe_listing .babe_search_results_filters')
+                    .html(response.sort_by_filter);
+            },
+            error : function( msg ) {
+            }
+        }).always(function(){
+            $('#babe_search_result_refresh').css('display', 'none');
+        });
+    }
+
     ///////////////////////
     ///////My account///////////////////////
     
@@ -2162,6 +2294,13 @@ function getUrlParameter(sParam) {
     
     return '';
 }
+
+    function getUrlParameterFromHref(name, href, default_value) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(href);
+        return results === null ? default_value : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
 
 //////////////make route/////////////////////
     

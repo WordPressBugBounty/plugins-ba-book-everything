@@ -154,51 +154,83 @@ class BABE_Post_types {
      * @param array $args - search form args
      * @return array
 	 */
-    public static function search_filter_to_get_posts_args($args = array()){
-    
-       if (isset($args['search_results_sort_by'])){
-          switch ($args['search_results_sort_by']){
-	          case 'price_desc':
-		          $args['sort']    = 'price_from';
-		          $args['sort_by'] = 'DESC';
-		          break;
-	          case 'price_asc':
-		          $args['sort']    = 'price_from';
-		          $args['sort_by'] = 'ASC';
-		          break;
-	          case 'title_desc':
-		          $args['sort']    = 'post_title';
-		          $args['sort_by'] = 'DESC';
-		          break;
-	          case 'title_asc':
-		          $args['sort']    = 'post_title';
-		          $args['sort_by'] = 'ASC';
-		          break;
-	          case 'rating_desc':
-		          $args['sort']    = 'rating';
-		          $args['sort_by'] = 'DESC';
-		          break;
-	          case 'rating_asc':
-		          $args['sort']    = 'rating';
-		          $args['sort_by'] = 'ASC';
-		          break;
-              case 'avdatefrom_asc':
-                  $args['sort']    = 'av_date_from';
-                  $args['sort_by'] = 'ASC';
-                  break;
-              case 'avdatefrom_desc':
-                  $args['sort']    = 'av_date_from';
-                  $args['sort_by'] = 'DESC';
-                  break;
+    public static function search_filter_to_get_posts_args( array $args = [] ): array
+    {
+        if ( !isset($args['search_results_sort_by']) ){
+            return apply_filters('babe_search_filter_to_get_posts_args', $args);
+        }
 
-	          default:
-		          $args['sort']    = 'post_title';
-		          $args['sort_by'] = 'ASC';
-		          break;
-          }
+        switch ($args['search_results_sort_by']){
+            case 'price_desc':
+                $args['sort']    = 'price_from';
+                $args['sort_by'] = 'DESC';
+                break;
+            case 'price_asc':
+                $args['sort']    = 'price_from';
+                $args['sort_by'] = 'ASC';
+                break;
+            case 'title_desc':
+                $args['sort']    = 'post_title';
+                $args['sort_by'] = 'DESC';
+                break;
+            case 'title_asc':
+                $args['sort']    = 'post_title';
+                $args['sort_by'] = 'ASC';
+                break;
+            case 'rating_desc':
+                $args['sort']    = 'rating';
+                $args['sort_by'] = 'DESC';
+                break;
+            case 'rating_asc':
+                $args['sort']    = 'rating';
+                $args['sort_by'] = 'ASC';
+                break;
+            case 'avdatefrom_asc':
+                $args['sort']    = 'av_date_from';
+                $args['sort_by'] = 'ASC';
+                break;
+            case 'avdatefrom_desc':
+                $args['sort']    = 'av_date_from';
+                $args['sort_by'] = 'DESC';
+                break;
+
+            default:
+                $args['sort']    = 'post_title';
+                $args['sort_by'] = 'ASC';
+                break;
         }
             
         return apply_filters('babe_search_filter_to_get_posts_args', $args);
+    }
+
+    public static function sort_args_to_search_filter_arg( array $args = [] ): array
+    {
+        if ( !isset($args['sort'], $args['sort_by']) ){
+            return apply_filters('babe_sort_args_to_search_filter_arg', $args);
+        }
+
+        switch ($args['sort']){
+            case 'price_from':
+                $args['search_results_sort_by'] = 'price';
+                break;
+            case 'post_title':
+                $args['search_results_sort_by'] = 'title';
+                break;
+            case 'rating':
+                $args['search_results_sort_by'] = 'rating';
+                break;
+            case 'av_date_from':
+                $args['search_results_sort_by'] = 'avdatefrom';
+                break;
+            default:
+                $args['search_results_sort_by'] = 'title';
+                break;
+        }
+
+        $args['search_results_sort_by'] .= strtolower($args['sort_by']) === 'desc'
+            ? '_desc' : '_asc';
+
+        return apply_filters('babe_sort_args_to_search_filter_arg', $args);
     }
 
 //////////////////////////////
@@ -2618,6 +2650,8 @@ class BABE_Post_types {
             'name' => '',
             'prefix_char' => ' ',
             'term_id_name' => 'term_id',
+            'term_taxonomy_id' => '', // array of term ids
+            'hide_empty' => false,
             'data-conditional-id' => '',
             'data-conditional-value' => '',
         ) );
@@ -2635,8 +2669,9 @@ class BABE_Post_types {
 
         $terms_all = get_terms( array(
             'taxonomy' => $args['taxonomy'],
-            'hide_empty' => false,
-            'parent' => $args['parent_term_id']
+            'hide_empty' => $args['hide_empty'],
+            'parent' => $args['parent_term_id'],
+            'term_taxonomy_id' => $args['term_taxonomy_id'],
         ) );
 
         $prefix = substr($args['prefix_char'].$args['prefix_char'].$args['prefix_char'].$args['prefix_char'].$args['prefix_char'].$args['prefix_char'].$args['prefix_char'], 0, $args['level']*mb_strlen($args['prefix_char']));

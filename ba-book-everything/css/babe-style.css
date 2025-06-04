@@ -831,7 +831,7 @@ div.input_select_sort i:hover{
 }
 
 #babe_search_result_refresh{
-    z-index: 100;
+    z-index: 10010;
     position: fixed;
     background-color: #fff;
     opacity: 0.8;
@@ -2786,7 +2786,7 @@ table.order_item_age_prices td, table.order_item_age_prices td{
     width: 33%;
     box-sizing: border-box;
     max-width: none;
-    padding: 10px 20px 30px 20px;
+    padding: 20px 20px 30px 20px;
     margin: 0;
 }
 
@@ -3547,4 +3547,59 @@ div.input-group .search-keyword-block .search-keyword {
 
 .widget_babe_widget_search_filter_reset_button{
     text-align: center;
+}
+
+/*======= Shortcode babe-listing ==========*/
+
+.babe_shortcode_babe_listing_filters{
+    display: flex;
+    justify-content: space-between;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 10px;
+}
+
+.babe_shortcode_babe_listing .babe_shortcode_block_inner{
+    justify-content: space-between;
+}
+
+.babe_shortcode_babe_listing_filter_terms{
+    margin-bottom: 20px;
+}
+
+.babe_shortcode_babe_listing_filter_terms_title{
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.babe_shortcode_babe_listing_filter_terms_content{
+    text-align: left;
+}
+
+.babe_shortcode_babe_listing_filter_terms_content .term_item_checkbox input{
+    margin-right: 10px;
+}
+
+.babe_shortcode_block_content > .babe_pager{
+    flex-basis: 100%;
+    margin-top: 10px;
+}
+
+.babe_shortcode_block_content .babe_pager_inner{
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.babe_shortcode_babe_listing .babe_all_items_item{
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.babe_shortcode_babe_listing .babe_shortcode_block_with_bg{
+    padding: 20px;
 }

@@ -1,11 +1,15 @@
 
 jQuery(function($){
-           
-      $('#modal_close, #babe_overlay, .babe_overlay_inner #close, .babe_overlay_inner #cancel').click(function(event) {
-              babe_overlay_close();
-      });
-      
-      //////////
+
+    $('#modal_close, #babe_overlay, .babe_overlay_inner #close, .babe_overlay_inner #cancel').click(function(event) {
+        babe_overlay_close();
+    });
+
+    $('#babe_overlay_container').on('click', function( event ){
+        if( event.target.id === 'babe_overlay_container' ){
+            babe_overlay_close();
+        }
+    });
 });
 
 function babe_overlay_close(){

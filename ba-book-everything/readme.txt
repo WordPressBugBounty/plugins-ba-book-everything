@@ -4,15 +4,15 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.8
-Stable tag: 1.8.6
+Stable tag: 1.8.7
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-The really fast and powerful Booking engine for theme/site developers to create any booking or rental sites (tours, cars, events, apartments etc.)
+The really fast and powerful Booking engine for theme/site developers to create any booking or rental sites (tours, cars, events, apartments, etc.)
 
 == Description ==
 
-BA Book Everything plugin - the really fast and powerful Booking engine with management system for theme/site developers to create any booking or rental sites (tours, hotels, hostels, apartments, cars, events etc., or all together). **Magic one-click "Demo Setup" feature helps you get started with the plugin in minutes!**
+BA Book Everything plugin - the really fast and powerful Booking engine with management system for theme/site developers to create any booking or rental sites (tours, hotels, hostels, apartments, cars, events, yachts, etc., or all together). **Magic one-click "Demo Setup" feature helps you get started with the plugin in minutes!**
 Rates and prices system is easy to use and incredibly flexible in adjusting any price variations based on seasons (dates), week days (weekend rates, etc.), number of the guests or/and number of the days/nights.
 Thanks to **integration with Elementor plugin**, you’ll be able to see BA Book Everything shortcodes and widgets (e.g. search availability form, booking form, booking item calendar, slideshow and other post elements) in the list of the content modules in the Elementor builder.
 It’s highly customizable with hooks, so you need to have some programming skills to drive it on the top gear in your project. But even "out of the box" the plugin is ready for use and could be sufficient in many cases – **[Try Demo](https://ba-booking.com/ba-book-everything/search-result/?request_search_results=1)** and **[Read details](https://ba-booking.com/ba-book-everything/)**.
@@ -37,7 +37,7 @@ You can find [Docs](https://ba-booking.com/ba-book-everything/documentation/inst
 *   Full control on the Booking process – e-mail confirmations and notifications, customizable booking form, checkout form, option for manually availability confirmation (both email and admin dashboard)
 *   Availability calendar with prices, synchronized with booking form widget
 *   Widgets: booking form, search form, taxonomy terms filter, prices filter
-*   Shortcode [all-items]
+*   Shortcodes [all-items], [babe-listing]
 *   Elementor support
 *   5 stars rating integrated with WP comments
 *   Product schema markup
@@ -59,6 +59,7 @@ You can find [Docs](https://ba-booking.com/ba-book-everything/documentation/inst
 *   Backend bookings from dashboard: creating, editing, cancellation, manual refund (full or partial)
 *   Editing/cancellation orders for both customers and administrators, extra charge, full or partial refund, custom refund rules
 *   Export orders to XLSX file
+*   Multi Vendor Marketplace extension
 *   PayPal payments
 *   Stripe payment gateway for credit card payments, including 3D Secure, Apple Pay, Google Pay, Microsoft Pay and the Payment Request API
 *   Authorize.net payment gateway for credit card payments
@@ -80,9 +81,9 @@ You can find [Docs](https://ba-booking.com/ba-book-everything/documentation/inst
 *   Vipps payment gateway
 *   OnePay payment gateway (Vietnam)
 *   Transbank Webpay Plus (Chile) payment gateway
-*   more on request
+*   and more
 
-You can find [BA Book Everything Addons and Themes](https://ba-booking.com/shop/) and more detailed information about the plugin on [ba-booking.com](https://ba-booking.com/).
+You can find all [BA Book Everything Addons and Themes](https://ba-booking.com/shop/) and more detailed information about the plugin on [ba-booking.com](https://ba-booking.com/).
 
 = Limitations =
 The War is a fact that has already affected many businesses around the world, including ours. Until the war is over, we are not providing any products or services to the russian audience.
@@ -113,6 +114,10 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.7 =
+* Additional option "Require full payment when there are less than specified number of days left before the start of the booking" added to booking item settings
+* Added shortcode [babe-listing] and Elementor widget "Listing" - improved version of [all-items] shortcode with taxonomy filters
 
 = 1.8.6 =
 * Additional sorting options added to "All items" Elementor widget

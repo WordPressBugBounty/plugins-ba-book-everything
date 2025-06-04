@@ -23,6 +23,7 @@ function babe_el_init(){
    // Include custom functions of elementor widgets
    $widgets = [
        'allitems',
+       'listing',
        'search_form',
        'booking_form',
        'item_stars',
@@ -56,6 +57,7 @@ function babe_el_register_widgets( $widgets_manager ){
     $widgets_manager->register(new BABE_Elementor_Searchform_Widget());
     $widgets_manager->register(new BABE_Elementor_Bookingform_Widget());
     $widgets_manager->register(new BABE_Elementor_Allitems_Widget());
+    $widgets_manager->register(new BABE_Elementor_Listing_Widget());
 
     $widgets_manager->register(new BABE_Elementor_Itemrelated_Widget());
 

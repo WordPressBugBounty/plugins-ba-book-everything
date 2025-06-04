@@ -17,6 +17,10 @@ class BABE_Search_filter_reset_button extends WP_Widget {
 
     public function widget( $args, $instance ) {
 
+        if ( !isset($_GET['request_search_results']) && !isset($_POST['request_search_results']) ){
+            return;
+        }
+
         if ( ! isset( $args['widget_id'] ) ) {
             $args['widget_id'] = $this->id;
         }

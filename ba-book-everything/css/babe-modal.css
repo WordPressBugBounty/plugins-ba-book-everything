@@ -26,13 +26,14 @@
 	height:100%;
 	left:0;
 	display:none;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .babe_overlay_inner {
   z-index: 50;
   padding: 30px 30px 20px 30px;
   position: relative;
-  background: #fff;
   max-width: 95%;
   min-width: 300px;
   height: auto;
@@ -43,6 +44,12 @@
   background-color: #fff;
   margin-left: auto;
   margin-right: auto;
+}
+
+@media (min-width: 576px) {
+  .babe_overlay_inner {
+    max-width: 500px;
+  }
 }
 
 .babe_overlay_inner h1{

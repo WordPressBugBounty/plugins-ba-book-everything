@@ -1885,6 +1885,17 @@ class BABE_CMB2_admin {
       ) );
 
         $cmb->add_field( array(
+            'name' => __( 'Use only the main age to calculate the total number of guests in conditional prices', 'ba-book-everything' ),
+            'id'   => $prefix . 'use_main_age_only_for_guests_in_conditional_prices',
+            'type'    => 'radio_inline',
+            'options' => array(
+                0 => __( 'No', 'ba-book-everything' ),
+                1 => __( 'Yes', 'ba-book-everything' ),
+            ),
+            'default' => 0,
+        ) );
+
+        $cmb->add_field( array(
             'name' => __( 'Is mandatory?', 'ba-book-everything' ),
             'id'   => $prefix . 'is_mandatory',
             'type'    => 'radio_inline',
@@ -2503,6 +2514,17 @@ class BABE_CMB2_admin {
          'id'   => $prefix . 'prices',
          'type' => 'price_details',
          ) );
+
+        $cmb->add_field( array(
+            'name' => __( 'Use only the main age to calculate the total number of guests in conditional prices', 'ba-book-everything' ),
+            'id'   => $prefix . 'use_main_age_only_for_guests_in_conditional_prices',
+            'type'    => 'radio_inline',
+            'options' => array(
+                0 => __( 'No', 'ba-book-everything' ),
+                1 => __( 'Yes', 'ba-book-everything' ),
+            ),
+            'default' => 0,
+        ) );
          
          //discount for promotions
          $cmb->add_field( array(

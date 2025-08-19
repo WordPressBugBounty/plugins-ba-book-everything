@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.8
-Stable tag: 1.8.7
+Stable tag: 1.8.8
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -98,7 +98,7 @@ When using our products, russian audiences may encounter unexpected behavior.
 
 = Installation =
 
-1. Log in to your WordPress dashboard, navigate to the "Plugins" > "Add New" menu, search for "BA Book Everything" and  click "Install Now". You can also add the plugin manually as described in the [WordPress codex instructions](https://wordpress.org/documentation/article/manage-plugins/#manual-plugin-installation-1).
+1. Log in to your WordPress dashboard, navigate to the "Plugins" > "Add New" menu, search for "BA Book Everything" and click "Install Now". You can also add the plugin manually as described in the [WordPress codex instructions](https://wordpress.org/documentation/article/manage-plugins/#manual-plugin-installation-1).
 1. Activate the "BA Book Everything" plugin through the 'Plugins' menu in WordPress
 1. Go to "BA Settings" menu to make main settings
 1. Go to "BA Settings" > "Demo content" menu to setup demo content in one click
@@ -114,6 +114,12 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.8 =
+* Added an option to hide prices in guest selection fields on the booking form ("BA Settings" > "Booking form" admin menu)
+* Fixed an issue with calculating the number of days remaining before the start of the booking
+* Added new setting "Use only the main age to calculate the total number of guests in conditional prices" to the Service post meta fields and Booking object post meta fields
+* Added an option to remove all prices from booking item availability calendar ("BA Settings" > "Booking object" admin menu)
 
 = 1.8.7 =
 * Additional option "Require full payment when there are less than specified number of days left before the start of the booking" added to booking item settings

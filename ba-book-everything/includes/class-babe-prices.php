@@ -149,8 +149,8 @@ class BABE_Prices {
         }
 
         if ($datetime_from && $datetime_to){
-            $rate_date_from = new DateTime( $datetime_from );
-            $rate_date_to = new DateTime( $datetime_to );
+            $rate_date_from = BABE_Functions::datetime_local( $datetime_from );
+            $rate_date_to = BABE_Functions::datetime_local( $datetime_to );
             if ($rate_date_to == $rate_date_from){
                 $rate_date_to->modify('+1 day');
             }
@@ -640,12 +640,12 @@ class BABE_Prices {
 
             $output .= '<div class="view-rate-dates">';
             if ($rate['date_from']){
-                $date_from = new DateTime($rate['date_from']);
+                $date_from = BABE_Functions::datetime_local($rate['date_from']);
                 $output .= $date_from->format(get_option('date_format')).' - ';
             }
 
             if ($rate['date_to']){
-                $date_to = new DateTime($rate['date_to']);
+                $date_to = BABE_Functions::datetime_local($rate['date_to']);
                 $output .= $rate['date_from'] ? '' : ' - ';
                 $output .= $date_to->format(get_option('date_format'));
             }
@@ -1266,11 +1266,11 @@ class BABE_Prices {
         
         $date_to = !$date_to ? $date_from : $date_to;
         
-        $begin = new DateTime( $date_from );
-        $end = new DateTime( $date_to );
+        $begin = BABE_Functions::datetime_local( $date_from );
+        $end = BABE_Functions::datetime_local( $date_to );
         
-        $begin_check = new DateTime( $begin->format('Y-m-d') );
-        $end_check = new DateTime( $end->format('Y-m-d') );
+        $begin_check = BABE_Functions::datetime_local( $begin->format('Y-m-d') );
+        $end_check = BABE_Functions::datetime_local( $end->format('Y-m-d') );
         
         $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($booking_obj_id);
 
@@ -1282,13 +1282,12 @@ class BABE_Prices {
             && (int)$require_full_payment_when_less_than_days < 366
         ){
             $date_now_obj = BABE_Functions::datetime_local();
-            $date_now_obj->modify( '-1 day' );
-            $before_booking_d_interval = date_diff($begin, $date_now_obj);
+            $before_booking_d_interval = date_diff($date_now_obj, $begin);
             $before_booking_days = (int)$before_booking_d_interval->format('%a'); // total days
 
             if(
                 $begin > $date_now_obj
-                && $before_booking_days <= (int)$require_full_payment_when_less_than_days
+                && $before_booking_days < (int)$require_full_payment_when_less_than_days
             ){
                 $rules_cat['rules']['payment_model'] = 'full';
             }
@@ -1322,8 +1321,8 @@ class BABE_Prices {
             $rate['date_to'] = $rate['date_to'] ?: $date_to;
 
             //////
-            $rate_date_from = new DateTime( $rate['date_from'] );
-            $rate_date_to = new DateTime( $rate['date_to'] );
+            $rate_date_from = BABE_Functions::datetime_local( $rate['date_from'] );
+            $rate_date_to = BABE_Functions::datetime_local( $rate['date_to'] );
 
             $rate_begin_obj = $rate_date_from < $begin ? clone($begin) : clone($rate_date_from);
             $rate_end_obj = $rate_date_to > $end ? clone($end) : clone($rate_date_to);
@@ -1340,7 +1339,7 @@ class BABE_Prices {
                 // skip first day up to begin time
                 $begin_time = $begin->format('H:i');
                 $rate_begin_obj_date = $rate_begin_obj->format('Y-m-d');
-                $rate_begin_obj = new DateTime( $rate_begin_obj_date . ' ' . $begin_time );
+                $rate_begin_obj = BABE_Functions::datetime_local( $rate_begin_obj_date . ' ' . $begin_time );
                 if ($rate_begin_obj > $rate_end_obj){
                     continue;
                 }
@@ -1443,9 +1442,9 @@ class BABE_Prices {
         $discount_arr = BABE_Post_types::get_post_discount($booking_obj_id);
         $prices += $discount_arr;
         
-        $deposit = apply_filters('babe_deposit_percents', $rules_cat['rules']['deposit'], $booking_obj_id, $rules_cat );
+        $deposit = (float)apply_filters('babe_deposit_percents', $rules_cat['rules']['deposit'], $booking_obj_id, $rules_cat );
         
-        $prices['deposit'] = $rules_cat['rules']['payment_model'] !== 'full' && $deposit && $deposit <= 100 && $deposit > 0 ? $deposit : 100;
+        $prices['deposit'] = $rules_cat['rules']['payment_model'] !== 'full' && $deposit <= 100 && $deposit > 0 ? $deposit : 100;
         
         $prices['deposit_fixed'] = $rules_cat['rules']['payment_model'] !== 'full' ? self::localize_price((float)get_post_meta($booking_obj_id, 'deposit_fixed', true), $currency) : 0;
         
@@ -1534,7 +1533,6 @@ class BABE_Prices {
 
       $tax_am = (float)apply_filters('babe_prices_calculate_price_post_tax', BABE_Post_types::get_post_tax($rules_cat['post_id']), $rules_cat['post_id'])/100;
 
-      $guests_total = array_sum($guests);
       $prices_arr = array();
       
       foreach ($guests as $age_id => $guests_number){
@@ -1558,16 +1556,34 @@ class BABE_Prices {
           /// check conditional prices
           if ( !empty($rate['prices_conditional']) ){
 
-              $conditional_price = self::calculate_rate_conditional_price( $rate['prices_conditional'], $age_id, $guests_total, $days_total, $multiplier_local );
+              $guests_total_for_conditional_prices = array_sum($guests);
+              if( !empty( get_post_meta(
+                  $rules_cat['post_id'],
+                  'use_main_age_only_for_guests_in_conditional_prices',
+                  true)
+              ) ){
+                  $main_age_id = BABE_Post_types::get_main_age_id($rules_cat['rules']);
+                  if( isset($guests[$main_age_id]) ){
+                      $guests_total_for_conditional_prices = (int)$guests[$main_age_id];
+                  }
+              }
 
-              if ( $conditional_price !== false && $conditional_price ){
+              $conditional_price = self::calculate_rate_conditional_price(
+                  $rate['prices_conditional'],
+                  $age_id,
+                  $guests_total_for_conditional_prices,
+                  $days_total,
+                  $multiplier_local
+              );
+
+              if ( $conditional_price ){
                   $price_clear = self::localize_price((float)$conditional_price, $currency);
               }
           }
 
           $prices_arr['clear'][$age_id] += $price_clear;
 
-          $prices_arr['clear_with_taxes'][$age_id] = isset($prices['clear_with_taxes'][$age_id]) ? $prices['clear_with_taxes'][$age_id] : 0;
+          $prices_arr['clear_with_taxes'][$age_id] = $prices['clear_with_taxes'][$age_id] ?? 0;
           $prices_arr['clear_with_taxes'][$age_id] += $price_clear + round($price_clear * $tax_am, 2);
       }
       
@@ -1590,8 +1606,8 @@ class BABE_Prices {
 
         if ( !in_array($rules_cat['rules']['basic_booking_period'], ['single_custom', 'recurrent_custom']) ){
 
-            $rate_date_from = new DateTime( $rate_start );
-            $rate_date_to = new DateTime( $rate_end );
+            $rate_date_from = BABE_Functions::datetime_local( $rate_start );
+            $rate_date_to = BABE_Functions::datetime_local( $rate_end );
 
             $d_interval_start = date_diff($rate_date_from, $rate_date_to);
 
@@ -1724,7 +1740,6 @@ class BABE_Prices {
         $prices_arr = array();
         
         $date_to = !$date_to ? $date_from : $date_to;
-        $guests_total = array_sum($guests);
 
         $tax_am = (float)apply_filters('babe_prices_get_service_price_post_tax', BABE_Post_types::get_post_tax($booking_obj_id), $booking_obj_id)/100;
 
@@ -1739,12 +1754,20 @@ class BABE_Prices {
             return $prices_arr;
         }
 
+        $guests_total_for_conditional_prices = array_sum($guests);
+        if( !empty($service_meta['use_main_age_only_for_guests_in_conditional_prices']) ){
+            $main_age_id = BABE_Post_types::get_main_age_id($rules_cat['rules']);
+            if( isset($guests[$main_age_id]) ){
+                $guests_total_for_conditional_prices = (int)$guests[$main_age_id];
+            }
+        }
+
         if ( !is_array($service_meta['prices']) || empty($service_meta['prices']) ){
             $service_meta['prices'][0] = 0;
         }
 
-        $begin = new DateTime( $date_from );
-        $end = new DateTime( $date_to );
+        $begin = BABE_Functions::datetime_local( $date_from );
+        $end = BABE_Functions::datetime_local( $date_to );
 
         $babe_post = BABE_Post_types::get_post($booking_obj_id);
         
@@ -1795,7 +1818,13 @@ class BABE_Prices {
 
             /// check conditional prices
             if ( isset($service_meta['conditional_prices']) ){
-                $conditional_price = self::calculate_rate_conditional_price( $service_meta['conditional_prices'], $age_id, $guests_total, $days_total, 1 );
+                $conditional_price = self::calculate_rate_conditional_price(
+                    $service_meta['conditional_prices'],
+                    $age_id,
+                    $guests_total_for_conditional_prices,
+                    $days_total,
+                    1
+                );
                 if ( $conditional_price !== false ){
                     $price_clear = (float)$conditional_price*$service_qty;
                 }
@@ -1836,7 +1865,13 @@ class BABE_Prices {
 
                 /// check conditional prices
                 if ( isset($service_meta['conditional_prices']) ){
-                    $conditional_price = self::calculate_rate_conditional_price( $service_meta['conditional_prices'], $age_id, $guests_total, $days_total, 1 );
+                    $conditional_price = self::calculate_rate_conditional_price(
+                        $service_meta['conditional_prices'],
+                        $age_id,
+                        $guests_total_for_conditional_prices,
+                        $days_total,
+                        1
+                    );
                     if ( $conditional_price !== false ){
                         $price_clear = (float)$conditional_price*$service_qty;
                     }

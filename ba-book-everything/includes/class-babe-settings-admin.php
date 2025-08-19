@@ -860,6 +860,15 @@ function setup_demo_content(i){
         );
 
         add_settings_field(
+            'av_calendar_remove_all_prices', // ID
+            __('Remove all prices from availability calendar', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_object', // Section
+            array('option' => 'av_calendar_remove_all_prices', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
             'av_calendar_remove_hover_prices', // ID
             __('Remove price details on hover from availability calendar', 'ba-book-everything'), // Title
             array( __CLASS__, 'is_active_callback' ), // Callback
@@ -982,6 +991,15 @@ function setup_demo_content(i){
             BABE_Settings::$option_menu_slug, // Page
             'setting_section_booking_form', // Section
             array('option' => 'prefill_date_in_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
+        );
+
+        add_settings_field(
+            'hide_guest_prices_in_booking_form', // ID
+            __('Hide prices in guest selection fields on the booking form', 'ba-book-everything'), // Title
+            array( __CLASS__, 'is_active_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_booking_form', // Section
+            array('option' => 'hide_guest_prices_in_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
         );
 
         add_settings_field(
@@ -2133,11 +2151,13 @@ function setup_demo_content(i){
           $new_input['unitegallery_remove'] = !$input['unitegallery_remove'] ? 0 : 1;
           $new_input['av_calendar_remove'] = !$input['av_calendar_remove'] ? 0 : 1;
           $new_input['av_calendar_remove_hover_prices'] = !$input['av_calendar_remove_hover_prices'] ? 0 : 1;
+          $new_input['av_calendar_remove_all_prices'] = !$input['av_calendar_remove_all_prices'] ? 0 : 1;
           $new_input['av_calendar_show_all_rates'] = !$input['av_calendar_show_all_rates'] ? 0 : 1;
           $new_input['google_map_remove'] = !$input['google_map_remove'] ? 0 : 1;
 
           $new_input['services_to_booking_form'] = !$input['services_to_booking_form'] ? 0 : 1;
           $new_input['prefill_date_in_booking_form'] = empty($input['prefill_date_in_booking_form']) ? 0 : 1;
+          $new_input['hide_guest_prices_in_booking_form'] = empty($input['hide_guest_prices_in_booking_form']) ? 0 : 1;
           $new_input['use_minimized_css'] = empty($input['use_minimized_css']) ? 0 : 1;
           $new_input['use_minimized_js'] = empty($input['use_minimized_js']) ? 0 : 1;
 
@@ -2216,7 +2236,24 @@ function setup_demo_content(i){
             '<input type="text"'.$add_class.' id="'.$args['option'].'" name="'.$args['settings_name'].'['.$args['option'].']" value="%s" />',
             isset( BABE_Settings::$settings[$args['option']] ) ? esc_attr( BABE_Settings::$settings[$args['option']]) : ''
         );
-    }    
+    }
+
+    public static function text_field_with_label_callback( array $args ){
+
+        $label = isset($args['label']) ? '<label for="'.$args['option'].'">'
+            . $args['label']
+            .'</label>' : '';
+
+        echo '<p>'
+            .' <input id="'.$args['option'].'" 
+        name="'.$args['settings_name'].'['.$args['option'].']" 
+        type="text" 
+        value="'
+            .(isset( BABE_Settings::$settings[$args['option']] ) ? esc_attr( BABE_Settings::$settings[$args['option']]) : '')
+            .'" /> '. $label.'
+        </p>'
+        ;
+    }
 
 /////////////////////////////////////////
     

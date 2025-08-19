@@ -34,7 +34,8 @@ class BABE_html {
         add_action( 'init', array(__CLASS__, 'action_init'), 10);
         
         add_filter( 'babe_search_result_description', array( __CLASS__, 'search_result_description_price'), 10, 2);
-        
+        add_filter( 'babe_av_calendar_cell_pricefrom', array( __CLASS__, 'babe_av_calendar_cell_pricefrom'), 10, 2);
+
         add_filter( 'babe_post_content', array( __CLASS__, 'babe_post_content'), 10, 3);
         add_filter( 'babe_post_content_before_tabs', array( __CLASS__, 'babe_post_content_block_slider'), 20, 3);
         add_filter( 'babe_post_content_before_tabs', array( __CLASS__, 'babe_post_content_item_code'), 30, 3);
@@ -87,6 +88,10 @@ class BABE_html {
 
         add_action( 'wp_body_open', array( __CLASS__, 'wp_body_open' ), 10 );
 	}
+
+    public static function babe_av_calendar_cell_pricefrom( string $price_from_html ){
+        return !BABE_Settings::$settings['av_calendar_remove_all_prices'] ? $price_from_html : '';
+    }
 
     public static function wp_body_open(): void
     {
@@ -2044,9 +2049,12 @@ class BABE_html {
             }
 
             if (
-                $rules_cat['rules']['basic_booking_period'] === 'recurrent_custom'
-                || $rules_cat['rules']['booking_mode'] === 'tickets'
-                || $rules_cat['rules']['booking_mode'] === 'places'
+                !BABE_Settings::$settings['hide_guest_prices_in_booking_form']
+                && (
+                    $rules_cat['rules']['basic_booking_period'] === 'recurrent_custom'
+                    || $rules_cat['rules']['booking_mode'] === 'tickets'
+                    || $rules_cat['rules']['booking_mode'] === 'places'
+                )
             ){
                 $price_arr = BABE_Prices::get_obj_total_price_arr($post_id, $date_from, array( $age_term['age_id'] => max(1, $guests_min) ), $date_to, array());
                 $price = BABE_Prices::get_obj_total_price($post_id, $price_arr);
@@ -2147,7 +2155,7 @@ class BABE_html {
         ////// check dates for one time event
         if ($rules_cat['rules']['basic_booking_period'] === 'single_custom'){
             $current_date_obj = BABE_Functions::datetime_local();
-            $date_from_obj = new DateTime( BABE_Calendar_functions::date_to_sql($babe_post['start_date']).' '.$babe_post['start_time']);
+            $date_from_obj = BABE_Functions::datetime_local( BABE_Calendar_functions::date_to_sql($babe_post['start_date']).' '.$babe_post['start_time']);
 
             if ($current_date_obj >= $date_from_obj){
                 return $output;
@@ -4439,13 +4447,6 @@ class BABE_html {
          $av_cal = BABE_Calendar_functions::get_av_cal($post_id);
          
          if (!empty($av_cal)){
-            
-            $date_now_obj = BABE_Functions::datetime_local();
-            
-            //$date_from = $date_now_obj->format("Y-m-d");
-            //$date_to = date("Y-m-d", strtotime("+1 year +1 month"));
-            ///// get rates
-            //$rates = BABE_Prices::get_rates($post_id, $date_from, $date_to);
 
              ///// get rules
             $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($post_id);
@@ -4617,7 +4618,10 @@ class BABE_html {
 
                     $prices_table = '';
 
-                     if ( !BABE_Settings::$settings['av_calendar_remove_hover_prices'] ){
+                     if (
+                         !BABE_Settings::$settings['av_calendar_remove_all_prices']
+                         && !BABE_Settings::$settings['av_calendar_remove_hover_prices']
+                     ){
                          //// get prices table from $rate_current
                          
                          foreach( $av_cal[$date_cal->format('Y-m-d')]['rates'] as $rate_details){
@@ -4985,8 +4989,10 @@ class BABE_html {
 
             $sr_block = '';
 
-            $general_price = (float)$service['prices'][0];
+            $general_price = isset($service['prices'][0])
+                ? (float)$service['prices'][0] : (float)reset($service['prices']);
             $other_prices = $service['prices'];
+            $other_prices_conditional = [];
 
             // check conditional prices
             if (
@@ -5006,17 +5012,30 @@ class BABE_html {
                 if ( !$days_total ){
                     $days_total = 1;
                 }
-                $guests_total = array_sum($guests);
-                $other_prices_conditional = [];
+
+                $guests_total_for_conditional_prices = array_sum($guests);
+                if( !empty($service['use_main_age_only_for_guests_in_conditional_prices']) ){
+                    $main_age_id = BABE_Post_types::get_main_age_id($rules_cat['rules']);
+                    if( isset($guests[$main_age_id]) ){
+                        $guests_total_for_conditional_prices = (int)$guests[$main_age_id];
+                    }
+                }
+
                 foreach( $service['prices'] as $age_id => $service_price ){
-                    $conditional_price = BABE_Prices::calculate_rate_conditional_price( $service['conditional_prices'], $age_id, $guests_total, $days_total, 1 );
+                    $conditional_price = BABE_Prices::calculate_rate_conditional_price(
+                        $service['conditional_prices'],
+                        $age_id,
+                        $guests_total_for_conditional_prices,
+                        $days_total,
+                        1
+                    );
                     if ( $conditional_price !== false ){
                         $other_prices_conditional[$age_id] = (float)$conditional_price;
                     }
                 }
                 if ( !empty($other_prices_conditional) ){
                     $other_prices = $other_prices_conditional;
-                    $general_price = (float)$other_prices[0];
+                    $general_price = isset($other_prices[0]) ? (float)$other_prices[0] : (float)reset($other_prices);
                 }
             }
 
@@ -5075,6 +5094,10 @@ class BABE_html {
                     if (!$is_percent){
 
                         $price_value = $is_other_prices && $age['age_id'] && isset($other_prices[$age['age_id']]) ? $other_prices[$age['age_id']] : $general_price;
+
+                        if( !empty($other_prices_conditional) && !isset($other_prices_conditional[$age['age_id']]) ){
+                            $price_value = '';
+                        }
 
                         if ($price_value !== ''){
 

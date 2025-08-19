@@ -1620,7 +1620,7 @@ class BABE_Order {
 
          if ( $payment_model === 'full' ){
              update_post_meta($order_id, '_prepaid_amount', $amount);
-         } elseif( $order_status === 'draft' && !$deposit_fixed && !$prepaid_received ) {
+         } elseif( ($order_status === 'draft' || $order_status === 'payment_expected') && !$deposit_fixed && !$prepaid_received ) {
              update_post_meta($order_id, '_prepaid_amount', $prepaid_amount);
          }
 

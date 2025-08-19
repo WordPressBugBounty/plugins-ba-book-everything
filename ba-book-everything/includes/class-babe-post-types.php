@@ -1093,7 +1093,7 @@ class BABE_Post_types {
          if ( (isset($rule['ages']) && $rule['ages']) || empty($rule) ){
               $ages = self::get_ages_arr();
               if (!empty($ages)){
-                 $output = $ages[0]['age_id'];
+                 $output = (int)$ages[0]['age_id'];
               }
          }          
         
@@ -1819,6 +1819,13 @@ class BABE_Post_types {
         FROM ".$wpdb->postmeta."
         WHERE meta_key = 'allow_quantity'
         ) pmq ON posts.ID = pmq.pmq_post_id
+        
+        LEFT JOIN #get use_main_age_only_for_guests_in_conditional_prices
+        (
+        SELECT meta_value AS use_main_age_only_for_guests_in_conditional_prices, post_id AS pmu_post_id 
+        FROM ".$wpdb->postmeta."
+        WHERE meta_key = 'use_main_age_only_for_guests_in_conditional_prices'
+        ) pmu ON posts.ID = pmu.pmu_post_id
         
         LEFT JOIN #get max_quantity
         (

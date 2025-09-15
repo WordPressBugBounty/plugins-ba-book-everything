@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.8
-Stable tag: 1.8.8
+Stable tag: 1.8.9
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -114,6 +114,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.9 =
+* Translations added
 
 = 1.8.8 =
 * Added an option to hide prices in guest selection fields on the booking form ("BA Settings" > "Booking form" admin menu)

@@ -450,10 +450,29 @@ ADD KEY is_default (is_default)" );
 	 */
 	public static function load_textdomain() {
 
-        $locale = apply_filters( 'plugin_locale', get_locale(), 'ba-book-everything' );
+        $textdomain = 'ba-book-everything';
+        load_plugin_textdomain( $textdomain, false,  '/ba-book-everything/languages' );
 
-		load_textdomain( 'ba-book-everything', WP_LANG_DIR . '/ba-book-everything/ba-book-everything-' . $locale . '.mo' );
-		load_plugin_textdomain( 'ba-book-everything', false, BABE_PLUGIN_DIR . '/languages' );
+        $locale = apply_filters( 'plugin_locale', determine_locale(), $textdomain );
+
+        $plugin_path = BABE_PLUGIN_DIR . '/languages/' . $textdomain . '-' . $locale . '.mo';
+        $plugin_alt_path = BABE_PLUGIN_DIR . '/languages/' . $textdomain . '-' . substr($locale, 0, 2) . '.mo';
+
+        $custom_translation_path = WP_LANG_DIR . '/ba-book-everything/' . $textdomain . '-' . $locale . '.mo';
+        $plugin_translation_path = WP_LANG_DIR . '/plugins/' . $textdomain . '-' . $locale . '.mo';
+
+        if ( file_exists( $plugin_path ) && is_readable( $plugin_path ) ) {
+            load_textdomain( $textdomain, $plugin_path );
+        } elseif ( file_exists( $plugin_alt_path ) && is_readable( $plugin_alt_path ) ) {
+            load_textdomain( $textdomain, $plugin_alt_path );
+        }
+
+        if ( file_exists( $custom_translation_path ) && is_readable( $custom_translation_path ) ) {
+            load_textdomain( $textdomain, $custom_translation_path );
+        }
+        if ( file_exists( $plugin_translation_path ) && is_readable( $plugin_translation_path ) ) {
+            load_textdomain( $textdomain, $plugin_translation_path );
+        }
 	}
         
 //////////////////////////////

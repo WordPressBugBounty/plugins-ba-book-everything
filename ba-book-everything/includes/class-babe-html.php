@@ -1628,7 +1628,7 @@ class BABE_html {
         $order_id = 0;
         $currency = BABE_Currency::get_currency();
 
-        if ( isset($_POST['order_item_id']) ){
+        if ( isset($_POST['order_item_id']) && (int)$_POST['order_item_id'] > 0 ){
             $order_item_id = absint($_POST['order_item_id']);
             $order_id = BABE_Order::get_order_id_by_item_id( $order_item_id );
 

@@ -1423,6 +1423,7 @@ class BABE_Prices {
                 if ($rate_start && $rate_end){
                     //// add prices
                     $prices = self::calculate_price($rate_start, $rate_end, $rate, $guests_for_obj, $rules_cat, $prices, $currency);
+                    $prices['used_rates'][] = $rate;
 
                     $rate_start = '';
                     $rate_end = '';
@@ -1435,6 +1436,7 @@ class BABE_Prices {
                 }
                 //// add prices
                 $prices = self::calculate_price($rate_start, $last_date, $rate, $guests_for_obj, $rules_cat, $prices, $currency);
+                $prices['used_rates'][] = $rate;
             }
         }
 
@@ -1449,6 +1451,43 @@ class BABE_Prices {
         $prices['deposit_fixed'] = $rules_cat['rules']['payment_model'] !== 'full' ? self::localize_price((float)get_post_meta($booking_obj_id, 'deposit_fixed', true), $currency) : 0;
         
         $prices['payment_model'] = $rules_cat['rules']['payment_model'];
+
+        /////
+
+        if ( $order_id > 0 ){
+            $payment_gateway_name = BABE_Order::get_order_payment_method($order_id);
+            $payment_gateway_fee_percents = BABE_Order::get_order_payment_gateway_fee_percents($order_id);
+            $prices[ 'payment_gateway_fee' ] = [
+                $payment_gateway_name => $payment_gateway_fee_percents,
+            ];
+
+            $prices[ 'coupon' ] = [
+                'coupon_num' => BABE_Order::get_order_coupon_num($order_id),
+                'coupon_amount_applied' => BABE_Order::get_order_coupon_amount_applied($order_id)
+            ];
+
+            $order_items = BABE_Order::get_order_items($order_id);
+            $order_item = reset($order_items);
+
+            if(
+                !empty($order_item['meta']['booking_obj_id'])
+                && !empty($order_item['meta']['date_from'])
+                && !empty($order_item['meta']['date_to'])
+                && !empty($order_item['meta']['guests'])
+                && !empty($order_item['meta']['price_arr']['clear_with_taxes'])
+                && (int)$booking_obj_id === (int)$order_item['meta']['booking_obj_id']
+                && $date_from === $order_item['meta']['date_from']
+                && $date_to === $order_item['meta']['date_to']
+                && json_encode($order_item['meta']['guests']) === json_encode($guests)
+            ){
+                // use values from order creation
+                $prices['clear'] = $order_item['meta']['price_arr']['clear'];
+                $prices['clear_with_taxes'] = $order_item['meta']['price_arr']['clear_with_taxes'];
+                if( !empty($order_item['meta']['price_arr']['used_rates']) ){
+                    $prices['used_rates'] = $order_item['meta']['price_arr']['used_rates'];
+                }
+            }
+        }
 
         /////
 
@@ -1470,21 +1509,6 @@ class BABE_Prices {
             $fee_tmp_prices = self::get_fee_price($booking_obj_id, $fee_id, $rules_cat, $date_from, $guests, $date_to, $prices, $currency);
 
             $prices['fees'] = isset($prices['fees']) ? $prices['fees'] + $fee_tmp_prices['fees'] : $fee_tmp_prices['fees'];
-        }
-
-        /////
-
-        if ( $order_id ){
-            $payment_gateway_name = BABE_Order::get_order_payment_method($order_id);
-            $payment_gateway_fee_percents = BABE_Order::get_order_payment_gateway_fee_percents($order_id);
-            $prices[ 'payment_gateway_fee' ] = [
-                $payment_gateway_name => $payment_gateway_fee_percents,
-            ];
-
-            $prices[ 'coupon' ] = [
-                'coupon_num' => BABE_Order::get_order_coupon_num($order_id),
-                'coupon_amount_applied' => BABE_Order::get_order_coupon_amount_applied($order_id)
-            ];
         }
         
         return $prices;

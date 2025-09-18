@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.8
-Stable tag: 1.8.9
+Stable tag: 1.8.10
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,7 +12,7 @@ The really fast and powerful Booking engine for theme/site developers to create 
 
 == Description ==
 
-BA Book Everything plugin - the really fast and powerful Booking engine with management system for theme/site developers to create any booking or rental sites (tours, hotels, hostels, apartments, cars, events, yachts, etc., or all together). **Magic one-click "Demo Setup" feature helps you get started with the plugin in minutes!**
+BA Book Everything plugin - the really fast and powerful Booking engine with a management system for theme/site developers to create any booking or rental sites (tours, hotels, hostels, apartments, cars, events, yachts, etc., or all together). **Magic one-click "Demo Setup" feature helps you get started with the plugin in minutes!**
 Rates and prices system is easy to use and incredibly flexible in adjusting any price variations based on seasons (dates), week days (weekend rates, etc.), number of the guests or/and number of the days/nights.
 Thanks to **integration with Elementor plugin**, you’ll be able to see BA Book Everything shortcodes and widgets (e.g. search availability form, booking form, booking item calendar, slideshow and other post elements) in the list of the content modules in the Elementor builder.
 It’s highly customizable with hooks, so you need to have some programming skills to drive it on the top gear in your project. But even "out of the box" the plugin is ready for use and could be sufficient in many cases – **[Try Demo](https://ba-booking.com/ba-book-everything/search-result/?request_search_results=1)** and **[Read details](https://ba-booking.com/ba-book-everything/)**.
@@ -114,6 +114,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.10 =
+* Improved order total recalculation
 
 = 1.8.9 =
 * Translations added

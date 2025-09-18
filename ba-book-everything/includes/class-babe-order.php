@@ -1091,7 +1091,7 @@ class BABE_Order {
         ////////
         
         foreach ($item_arr['meta'] as $meta_key => $meta_value){
-            self::update_order_item_meta($item_arr['order_item_id'], $meta_key, $meta_value);
+            self::update_order_item_meta($order_id, $item_arr['order_item_id'], $meta_key, $meta_value);
         }
         
         self::$order_items = [];
@@ -1202,57 +1202,60 @@ class BABE_Order {
 ////////////////////////
      /**
 	 * Update order item meta
+     * @param int $order_id
      * @param int $order_item_id
      * @param string $meta_key
      * @param string|array $meta_value
      * @return int
 	 */
-     public static function update_order_item_meta($order_item_id, $meta_key, $meta_value){
-        
-        global $wpdb;
-        
-        $output = 0;
-        
-        $meta_value = maybe_serialize($meta_value);
-        
-        $order_item_id = absint($order_item_id);
-        
-        if (is_string($meta_key)){
-        
-        /// get order item meta
-        $meta_arr = $wpdb->get_results("SELECT * FROM ".self::$table_order_itemmeta." WHERE order_item_id = '".$order_item_id."' AND meta_key = '".$meta_key."'", ARRAY_A);
-        
-        if (!empty($meta_arr)){
-            //// update row by meta_id
-            //$output = $wpdb->query( "UPDATE ".self::$table_order_itemmeta." SET meta_value = '".$meta_value."' WHERE meta_id = ".$meta_arr[0]['meta_id'] );
-            
-            $output = $wpdb->update(
-              self::$table_order_itemmeta,
-              array(
-                 'meta_value' => $meta_value,
-              ),
-              array( 'meta_id' => $meta_arr[0]['meta_id'] )
-            );
+     public static function update_order_item_meta(
+         $order_id,
+         $order_item_id,
+         $meta_key,
+         $meta_value
+     ){
+         global $wpdb;
 
-        } else {
-            //// create row
-            $wpdb->insert(
-                   self::$table_order_itemmeta,
+         $output = 0;
+
+         update_post_meta($order_id, '_' . $meta_key, $meta_value);
+
+         $order_item_id = absint($order_item_id);
+
+         if (is_string($meta_key)){
+
+             /// get order item meta
+             $meta_arr = $wpdb->get_results("SELECT * FROM ".self::$table_order_itemmeta." WHERE order_item_id = '".$order_item_id."' AND meta_key = '".$meta_key."'", ARRAY_A);
+
+             if (!empty($meta_arr)){
+                 //// update row by meta_id
+
+                 $output = $wpdb->update(
+                     self::$table_order_itemmeta,
                      array(
-                       'order_item_id' => $order_item_id,
-                       'meta_key' => $meta_key,
-                       'meta_value' => $meta_value,
-                     )
-            );
-            $output = (int)$wpdb->insert_id;
-        }
+                         'meta_value' => maybe_serialize($meta_value),
+                     ),
+                     array( 'meta_id' => $meta_arr[0]['meta_id'] )
+                 );
 
-            self::$order_items = [];
-            self::$order_prices = [];
-        }
-        
-        return $output;
-        
+             } else {
+                 //// create row
+                 $wpdb->insert(
+                     self::$table_order_itemmeta,
+                     array(
+                         'order_item_id' => $order_item_id,
+                         'meta_key' => $meta_key,
+                         'meta_value' => maybe_serialize($meta_value),
+                     )
+                 );
+                 $output = (int)$wpdb->insert_id;
+             }
+
+             self::$order_items = [];
+             self::$order_prices = [];
+         }
+
+         return $output;
      }
      
 ////////////////////////
@@ -1521,7 +1524,7 @@ class BABE_Order {
         $order_items = self::get_order_items( $order_id );
         $order_item = reset($order_items);
         $order_item_id = key($order_items);
-        self::update_order_item_meta($order_item_id, 'price_arr', $price_arr);
+        self::update_order_item_meta($order_id, $order_item_id, 'price_arr', $price_arr);
         $prepaid_amount = self::update_order_amount($order_id);
     }
 

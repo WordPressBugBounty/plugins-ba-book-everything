@@ -150,14 +150,39 @@ class BABE_Currency {
         return apply_filters( 'babe_currency_price', $return, $price, $currency, $args );
     }
 
-    public static function get_zero_price_display_value( $currency = '' ){
-
+    /**
+     * Returns customer-friendly zero price value
+     *
+     * @param string $currency
+     * @param int|null $post_id
+     * @return string
+     */
+    public static function get_zero_price_display_value(
+        string $currency = '',
+        ?int $post_id = null // either a service post, a fee post, or a booking object post
+    ): string
+    {
         $option_zero_price_display_value = BABE_Settings::get_option('zero_price_display_value');
+        $output = $option_zero_price_display_value;
+
         if ( in_array($option_zero_price_display_value, ["0", "0.00", "0,00"]) ){
-            return self::get_currency_price($option_zero_price_display_value, $currency);
+            $output = self::get_currency_price($option_zero_price_display_value, $currency);
         }
 
-        return $option_zero_price_display_value;
+        if( $post_id !== null ){
+            $post_zero_price_display_value = get_post_meta($post_id, 'zero_price_display_value', true);
+            if( $post_zero_price_display_value !== null & $post_zero_price_display_value !== '' ){
+                $output = $post_zero_price_display_value;
+            }
+        }
+
+        return apply_filters(
+            'babe_get_zero_price_display_value',
+            (string)$output,
+            $option_zero_price_display_value,
+            $currency,
+            $post_id
+        );
     }
 
     /////////////////////////////

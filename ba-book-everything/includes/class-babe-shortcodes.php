@@ -95,31 +95,33 @@ class BABE_shortcodes {
             'type'      => 'home_url',
         ), $atts, $tag );
 
+        $title = sanitize_text_field($args['title']);
+
         switch ($args['type']){
             case 'admin_confirmation_success':
-                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_admin_confirmation_page($order_id, 'confirm'), 1);
+                $output = BABE_html_emails::email_get_row_button( $title, BABE_Order::get_admin_confirmation_page($order_id, 'confirm'), 1);
                 break;
             case 'admin_confirmation_reject':
-                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_admin_confirmation_page($order_id, 'reject'), 2);
+                $output = BABE_html_emails::email_get_row_button( $title, BABE_Order::get_admin_confirmation_page($order_id, 'reject'), 2);
                 break;
             case 'admin_confirmation_change':
-                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_admin_confirmation_page($order_id, 'change'), 3);
+                $output = BABE_html_emails::email_get_row_button( $title, BABE_Order::get_admin_confirmation_page($order_id, 'change'), 3);
                 break;
             case 'customer_confirmation_success':
-                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_customer_confirmation_page($order_id, 'confirm'), 1);
+                $output = BABE_html_emails::email_get_row_button( $title, BABE_Order::get_customer_confirmation_page($order_id, 'confirm'), 1);
                 break;
             case 'customer_confirmation_reject':
-                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_customer_confirmation_page($order_id, 'reject'), 2);
+                $output = BABE_html_emails::email_get_row_button( $title, BABE_Order::get_customer_confirmation_page($order_id, 'reject'), 2);
                 break;
             case 'my_account':
-                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Settings::get_my_account_page_url());
+                $output = BABE_html_emails::email_get_row_button( $title, BABE_Settings::get_my_account_page_url());
                 break;
             case 'pay_now':
-                $output = BABE_html_emails::email_get_row_button( $args['title'], BABE_Order::get_order_payment_page($order_id));
+                $output = BABE_html_emails::email_get_row_button( $title, BABE_Order::get_order_payment_page($order_id));
                 break;
             case 'home_url':
             default:
-                $output = BABE_html_emails::email_get_row_button( $args['title'], home_url());
+                $output = BABE_html_emails::email_get_row_button( $title, home_url());
                 break;
         }
 
@@ -672,7 +674,7 @@ class BABE_shortcodes {
             'title'      => '',
         ), $atts, 'babe-search-form' );
 
-        $output .= BABE_Search_From::render_form($args['title']);
+        $output .= BABE_Search_From::render_form( sanitize_text_field($args['title']) );
 
         return $output;
     }
@@ -1109,9 +1111,12 @@ class BABE_shortcodes {
             $listing_filtered_content = __( 'No results were found for your request', 'ba-book-everything' );
         }
 
+        $sort_by_filter = !empty( $args['with_sorting_option'] ) && (int)$args['with_sorting_option'] === 1
+            ? BABE_html::get_search_filter_html($args['search_results_sort_by']) : '';
+
         $output = [
             'listing_filtered_content' => $listing_filtered_content,
-            'sort_by_filter' => BABE_html::get_search_filter_html($args['search_results_sort_by'] ?? 'price_asc'),
+            'sort_by_filter' => $sort_by_filter,
         ];
 
         echo json_encode($output);

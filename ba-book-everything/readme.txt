@@ -1,25 +1,25 @@
 ﻿=== BA Book Everything ===
 Contributors: bookingalgorithms
-Tags: booking, tours, rental, apartments, properties
+Tags: booking, tours, properties, yachts, rental
 Requires at least: 6.0
 Requires PHP: 8.1
-Tested up to: 6.8
-Stable tag: 1.8.10
+Tested up to: 6.9
+Stable tag: 1.8.20
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-The really fast and powerful Booking engine for theme/site developers to create any booking or rental sites (tours, cars, events, apartments, etc.)
+The really fast and powerful Booking engine for theme/site developers to create any booking or rental sites (tours, cars, events, apartments, yachts)
 
 == Description ==
 
 BA Book Everything plugin - the really fast and powerful Booking engine with a management system for theme/site developers to create any booking or rental sites (tours, hotels, hostels, apartments, cars, events, yachts, etc., or all together). **Magic one-click "Demo Setup" feature helps you get started with the plugin in minutes!**
 Rates and prices system is easy to use and incredibly flexible in adjusting any price variations based on seasons (dates), week days (weekend rates, etc.), number of the guests or/and number of the days/nights.
 Thanks to **integration with Elementor plugin**, you’ll be able to see BA Book Everything shortcodes and widgets (e.g. search availability form, booking form, booking item calendar, slideshow and other post elements) in the list of the content modules in the Elementor builder.
-It’s highly customizable with hooks, so you need to have some programming skills to drive it on the top gear in your project. But even "out of the box" the plugin is ready for use and could be sufficient in many cases – **[Try Demo](https://ba-booking.com/ba-book-everything/search-result/?request_search_results=1)** and **[Read details](https://ba-booking.com/ba-book-everything/)**.
+It’s highly customizable via hooks, but even "out of the box" the plugin is ready for use and works fine – **[Try Demo](https://ba-booking.com/ba-book-everything/search-result/?request_search_results=1)** and **[Read details](https://ba-booking.com/ba-book-everything/)**.
 
 = Docs & Support =
 
-You can find [Docs](https://ba-booking.com/ba-book-everything/documentation/installation/) and more detailed information about BA Book Everything on [ba-booking.com](https://ba-booking.com/ba-book-everything/). If you were unable to find the answer to your question in any of the documentation, you should check the [support forum](https://wordpress.org/support/plugin/ba-book-everything/) on WordPress.org. If you can't locate any topics that pertain to your particular issue, post a new topic for it.
+You can find [Docs](https://ba-booking.com/ba-book-everything-docs/) and more detailed information about BA Book Everything on [ba-booking.com](https://ba-booking.com/ba-book-everything/). If you were unable to find the answer to your question in any of the documentation, you should check the [support forum](https://wordpress.org/support/plugin/ba-book-everything/) on WordPress.org. If you can't locate any topics that pertain to your particular issue, post a new topic for it or send us a message via the site contact form.
 
 = Features =
 *   One-click Demo content setup
@@ -54,34 +54,9 @@ You can find [Docs](https://ba-booking.com/ba-book-everything/documentation/inst
 
 = Available in Addons =
 *   Currency switcher
-*   iCal synchronization
-*   PDF invoices
-*   Backend bookings from dashboard: creating, editing, cancellation, manual refund (full or partial)
-*   Editing/cancellation orders for both customers and administrators, extra charge, full or partial refund, custom refund rules
-*   Export orders to XLSX file
+*   Backoffice: iCal synchronization, PDF invoices, backend bookings, editing/cancellation orders for both customers and administrators, extra charge, full or partial refund, custom refund rules, export orders to XLSX file, custom order statuses and email notifications, etc.
 *   Multi Vendor Marketplace extension
-*   PayPal payments
-*   Stripe payment gateway for credit card payments, including 3D Secure, Apple Pay, Google Pay, Microsoft Pay and the Payment Request API
-*   Authorize.net payment gateway for credit card payments
-*   Razorpay payment gateway for credit card payments
-*   ePayco payment gateway for credit card payments
-*   Yoco payment gateway for credit card payments
-*   Wompi payment gateway for credit card payments
-*   Mercado Pago payment gateway for credit card payments
-*   Mi Cuenta Web (IZIPAY) payment gateway
-*   Kashier payment gateway for credit card payments
-*   PARAM payment gateway for credit card payments (TRY)
-*   IfthenPay payment gateway for Multibanco (Pag. Serviços), MB WAY, Credit card and Payshop payments
-*   "Bank transfer" payment option
-*   Network N-Genius payment gateway
-*   Pesapal payment gateway (Kenya, Malawi, Tanzania, Rwanda, Uganda, Zambia, Zimbabwe)
-*   Paymentez payment gateway
-*   SimplePay payment gateway
-*   Cashfree (India) payment gateway
-*   Vipps payment gateway
-*   OnePay payment gateway (Vietnam)
-*   Transbank Webpay Plus (Chile) payment gateway
-*   and more
+*   Payment gateways: PayPal, Stripe, Razorpay, ePayco, Yoco, Wompi, Mercado Pago, Mi Cuenta Web (IZIPAY), Kashier, PARAM, IfthenPay, "Bank transfer" payment option and more
 
 You can find all [BA Book Everything Addons and Themes](https://ba-booking.com/shop/) and more detailed information about the plugin on [ba-booking.com](https://ba-booking.com/).
 
@@ -114,6 +89,38 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.20 =
+* Added hooks for customization to the BABE_Post_types::get_posts method
+
+= 1.8.19 =
+* Allows to specify an amount with decimal places for the discount setting of the booking item
+
+= 1.8.18 =
+* Added a hook to filter popup prices html of the booking calendar
+
+= 1.8.17 =
+* Updated sweetalert scripts
+* Updated login form
+
+= 1.8.16 =
+* Added an option to use only the main age for minimum number of guests condition into booking objects
+
+= 1.8.15 =
+* Minor fixes
+
+= 1.8.14 =
+* Added new argument and filter into the BABE_Currency::get_zero_price_display_value method
+* Added new option "Use this title instead of 0 price" into Service post type
+
+= 1.8.13 =
+* Added sorting by "Date from" to the list of orders in the admin dashboard
+
+= 1.8.12 =
+* Fixed the sorting filter visibility issue on pagination in the "babe-listing" shortcode
+
+= 1.8.11 =
+* Fixed an issue with the "Disable My Account page and new user email" option not working
 
 = 1.8.10 =
 * Improved order total recalculation

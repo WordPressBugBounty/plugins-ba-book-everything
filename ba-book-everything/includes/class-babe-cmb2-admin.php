@@ -222,7 +222,11 @@ class BABE_CMB2_admin {
         
         $output = '';
         
-        if ( isset($_POST['nonce']) && wp_verify_nonce( $_POST['nonce'], self::$nonce_title ) ){
+        if (
+                isset($_POST['nonce'])
+                && wp_verify_nonce( $_POST['nonce'], self::$nonce_title )
+                && current_user_can("edit_".BABE_Post_types::$coupon_post_type."s")
+        ){
             $output = BABE_Coupons::generate_coupon_num();
         }
         
@@ -976,10 +980,10 @@ class BABE_CMB2_admin {
 			'id'    => $field_type->_id( '_discount' ),
 			'value' => $value['discount'],
             'class' => 'cmb2-text-small',
-            'type' => 'number',
+            'type' => 'text',
+            'pattern' => '[0-9\.]*',
             'min' => '0',
             'max' => '99',
-            'pattern' => '[0-9]*',
             'desc'  => '',
 		) ).'
        </div>
@@ -1931,6 +1935,12 @@ class BABE_CMB2_admin {
             'default' => 1,
         ) );
 
+        $cmb->add_field( array(
+            'name'       => __( 'Use this title instead of 0 price', 'ba-book-everything' ),
+            'id'         => $prefix . 'zero_price_display_value',
+            'type'       => 'text',
+        ) );
+
         do_action('cmb2_service_after_fields', $cmb, $prefix);
       
     }
@@ -2431,7 +2441,6 @@ class BABE_CMB2_admin {
         //minimum number of guests
         $cmb->add_field( array(
             'name'       => __( 'Minimum number of Guests', 'ba-book-everything' ),
-            'desc'       => __( 'used in the guest selection dropdown for main age, default 0', 'ba-book-everything' ),
             'id'         => $prefix . 'min_guests',
             'type'       => 'text',
             'default' => '1',
@@ -2443,10 +2452,20 @@ class BABE_CMB2_admin {
             ),
         ) );
 
+        $cmb->add_field( array(
+                'name' => __( 'Use only the main age for minimum number of guests condition', 'ba-book-everything' ),
+                'id'   => $prefix . 'use_main_age_only_for_min_guests',
+                'type'    => 'radio_inline',
+                'options' => array(
+                        0 => __( 'No', 'ba-book-everything' ),
+                        1 => __( 'Yes', 'ba-book-everything' ),
+                ),
+                'default' => 0,
+        ) );
+
         //maximum number of guests
         $cmb->add_field( array(
             'name'       => __( 'Maximum number of Guests', 'ba-book-everything' ),
-            // 'desc'       => __( 'field description (optional)', 'ba-book-everything' ),
             'id'         => $prefix . 'guests',
             'type'       => 'text',
             'attributes' => array(

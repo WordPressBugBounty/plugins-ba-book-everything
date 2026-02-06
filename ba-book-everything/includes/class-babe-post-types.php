@@ -1647,6 +1647,8 @@ class BABE_Post_types {
         WHERE meta_key = 'guests'
         ) pm ON ( posts.ID = pm.pm_post_id AND pm.guests >= ".$max_guests." )
         
+        ".apply_filters('babe_get_posts_search_query_before_left_joins', '', $args)."
+        
         #add categories_booking_rule meta
         LEFT JOIN ".$wpdb->termmeta." tm ON tr.term_taxonomy_id = tm.term_id AND tm.meta_key = 'categories_booking_rule'
         
@@ -1685,6 +1687,8 @@ class BABE_Post_types {
         FROM ".BABE_Prices::$table_discount."
         WHERE date_from <= '".$date_now."' AND date_to >= '".$date_now."'
         ) pmd ON posts.ID = pmd.discount_obj_id
+        
+        ".apply_filters('babe_get_posts_search_query_after_left_joins', '', $args)."
         
         WHERE posts.post_type = '".self::$booking_obj_post_type."'
            AND posts.post_status = 'publish'

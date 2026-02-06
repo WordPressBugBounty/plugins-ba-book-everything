@@ -4,13 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * BABE_Order_admin Class.
- * Get general settings
- * @class 		BABE_Order_admin
- * @version		1.3.9
- * @author 		Booking Algorithms
- */
+BABE_Order_admin::init();
 
 class BABE_Order_admin {
     
@@ -24,10 +18,13 @@ class BABE_Order_admin {
         
         add_filter( 'manage_'.BABE_Post_types::$order_post_type.'_posts_columns', array( __CLASS__, 'order_table_head'));
         add_action( 'manage_'.BABE_Post_types::$order_post_type.'_posts_custom_column', array( __CLASS__, 'order_table_content'), 10, 2 );
+        add_action( 'manage_edit-'.BABE_Post_types::$order_post_type.'_sortable_columns', array( __CLASS__, 'order_table_sortable_columns'), 10, 2 );
 
-        add_filter( 'posts_where', array( __CLASS__, 'search_where' ));
+        add_filter( 'posts_where', array( __CLASS__, 'search_where' ), 10, 2);
         add_filter( 'posts_join', array( __CLASS__, 'search_join' ), 10, 2);
-        add_filter( 'posts_groupby', array( __CLASS__, 'search_group_by' ));
+        add_filter( 'posts_groupby', array( __CLASS__, 'search_group_by' ), 10, 2);
+        add_filter( 'posts_orderby', array( __CLASS__, 'search_orderby' ), 10, 2);
+        add_action( 'pre_get_posts', array( __CLASS__, 'search_pre_get_posts' ) );
 
         add_action( 'restrict_manage_posts', array( __CLASS__, 'restrict_manage_posts'), 10);
         
@@ -75,18 +72,19 @@ class BABE_Order_admin {
      */
     public static function restrict_manage_posts() {
 
-        if ( !isset($_GET['post_type']) ){
+        if (
+            !isset($_GET['post_type'])
+            || $_GET['post_type'] !== BABE_Post_types::$order_post_type
+        ){
             return;
         }
 
-        if ( $_GET['post_type'] == BABE_Post_types::$order_post_type ){
+        // add order status dropdown
+        $current_filter_status = !empty($_GET['order_date_from'])
+        && BABE_Calendar_functions::isValidDate($_GET['order_date_from'], BABE_Settings::$settings['date_format'])
+            ? sanitize_text_field($_GET['order_date_from']) : '';
 
-            // add order status dropdown
-            $current_filter_status = !empty($_GET['order_date_from'])
-            && BABE_Calendar_functions::isValidDate($_GET['order_date_from'], BABE_Settings::$settings['date_format'])
-                ? sanitize_text_field($_GET['order_date_from']) : '';
-
-            $filter = '<div class="alignleft">
+        $filter = '<div class="alignleft">
              <input type="text" class="order_datepicker" 
              name="order_date_from" 
              value="'.esc_attr($current_filter_status).'" 
@@ -94,8 +92,7 @@ class BABE_Order_admin {
              placeholder="'.__('Date from', 'ba-book-everything').'">
              </div>';
 
-            echo $filter;
-        }
+        echo $filter;
     }
      
 ///////////////////////////////////////    
@@ -105,32 +102,39 @@ class BABE_Order_admin {
     public static function ajax_order_request_payment(){
 
         $output = '';
-        
-        if (isset($_POST['prepaid_amount']) && isset($_POST['order_id']) && isset($_POST['nonce']) && wp_verify_nonce( $_POST['nonce'], self::$nonce_title ) && BABE_Users::current_user_can_edit_post($_POST['order_id'])){
-             
-             $order_id = absint($_POST['order_id']);
-             $prepaid_amount = (float)$_POST['prepaid_amount'];
-             
-             if ( BABE_Order::get_order_hash($order_id) && $prepaid_amount > 0 ){
-                
-                BABE_Order::update_order_prepaid_amount($order_id, $prepaid_amount);
 
-                $old_status = BABE_Order::get_order_status($order_id);
+        if (
+            !isset($_POST['prepaid_amount'], $_POST['order_id'], $_POST['nonce'])
+            || !wp_verify_nonce($_POST['nonce'], self::$nonce_title)
+            || !BABE_Users::current_user_can_edit_post($_POST['order_id'])
+        )
+        {
+            echo $output;
+            wp_die();
+        }
 
-                if ( $old_status === 'payment_expected' ){
+        $order_id = absint($_POST['order_id']);
+        $prepaid_amount = (float)$_POST['prepaid_amount'];
 
-                    add_filter( 'babe_order_status_update_status_router', array( __CLASS__, 'order_status_router_remove_expected_to_deferred' ), 10, 4);
+        if ( BABE_Order::get_order_hash($order_id) && $prepaid_amount > 0 ){
 
-                    BABE_Order::update_order_status($order_id, 'payment_deferred');
+            BABE_Order::update_order_prepaid_amount($order_id, $prepaid_amount);
 
-                    remove_filter( 'babe_order_status_update_status_router', array( __CLASS__, 'order_status_router_remove_expected_to_deferred' ), 10);
-                }
+            $old_status = BABE_Order::get_order_status($order_id);
 
-                BABE_Order::update_order_status($order_id, 'payment_expected');
+            if ( $old_status === 'payment_expected' ){
 
-                $output = __('Done!', 'ba-book-everything');
-                 do_action('babe_order_payment_requested', $order_id, $prepaid_amount);
-             }
+                add_filter( 'babe_order_status_update_status_router', array( __CLASS__, 'order_status_router_remove_expected_to_deferred' ), 10, 4);
+
+                BABE_Order::update_order_status($order_id, 'payment_deferred');
+
+                remove_filter( 'babe_order_status_update_status_router', array( __CLASS__, 'order_status_router_remove_expected_to_deferred' ), 10);
+            }
+
+            BABE_Order::update_order_status($order_id, 'payment_expected');
+
+            $output = __('Done!', 'ba-book-everything');
+            do_action('babe_order_payment_requested', $order_id, $prepaid_amount);
         }
         
         echo $output;
@@ -161,26 +165,27 @@ class BABE_Order_admin {
         if (
             is_admin()
             && $wp_query->is_main_query()
-            && !empty( $_GET['s'] )
             && $pagenow === 'edit.php'
             && $wp_query->query['post_type'] === BABE_Post_types::$order_post_type
         ){
-            $join .='LEFT JOIN '.$wpdb->postmeta. ' postmetasc ON '. $wpdb->posts . '.ID = postmetasc.post_id LEFT JOIN '.BABE_Order::$table_order_items. ' toiasc ON '. $wpdb->posts . '.ID = toiasc.order_id LEFT JOIN '.BABE_Order::$table_order_itemmeta. ' tomasc ON toiasc.order_item_id = tomasc.order_item_id ';
+            $join .= "INNER JOIN ".BABE_Order::$table_order_items." toidateasc ON ". $wpdb->posts .".ID = toidateasc.order_id INNER JOIN ".BABE_Order::$table_order_itemmeta." tomdateasc ON toidateasc.order_item_id = tomdateasc.order_item_id AND tomdateasc.meta_key = 'date_from' ";
 
-        }
 
-        if (
-            !empty($_GET['order_date_from'])
-            && $wp_query->is_main_query()
-                // validate date
-            && BABE_Calendar_functions::isValidDate($_GET['order_date_from'], BABE_Settings::$settings['date_format'])
-            && $pagenow === 'edit.php'
-            && $wp_query->query['post_type'] === BABE_Post_types::$order_post_type
-        ){
-            // already validated
-            $date_from = BABE_Calendar_functions::date_to_sql($_GET['order_date_from']);
+            if( !empty( $_GET['s'] ) ){
 
-            $join .= "INNER JOIN ".BABE_Order::$table_order_items." toidateasc ON ". $wpdb->posts .".ID = toidateasc.order_id INNER JOIN ".BABE_Order::$table_order_itemmeta." tomdateasc ON toidateasc.order_item_id = tomdateasc.order_item_id AND tomdateasc.meta_key = 'date_from' AND DATE(tomdateasc.meta_value) = '".$date_from."'";
+                $join .='LEFT JOIN '.$wpdb->postmeta. ' postmetasc ON '. $wpdb->posts . '.ID = postmetasc.post_id LEFT JOIN '.BABE_Order::$table_order_items.' toiasc ON '. $wpdb->posts .'.ID = toiasc.order_id LEFT JOIN '.BABE_Order::$table_order_itemmeta. ' tomasc ON toiasc.order_item_id = tomasc.order_item_id ';
+
+            }
+
+            if (
+                !empty($_GET['order_date_from'])
+                && BABE_Calendar_functions::isValidDate($_GET['order_date_from'], BABE_Settings::$settings['date_format'])
+            ){
+                // already validated
+                $date_from = BABE_Calendar_functions::date_to_sql($_GET['order_date_from']);
+
+                $join .= "INNER JOIN ".BABE_Order::$table_order_itemmeta." tomdateasc1 ON toidateasc.order_item_id = tomdateasc1.order_item_id AND tomdateasc1.meta_key = 'date_from' AND DATE(tomdateasc1.meta_value) = '".$date_from."' ";
+            }
         }
 
         return $join;
@@ -192,16 +197,16 @@ class BABE_Order_admin {
      * @param string $where - where sql clauses
      * @return string
 	 */
-    public static function search_where( $where ){
+    public static function search_where( $where, WP_Query $wp_query ){
 
         global $pagenow, $wpdb;
 
         if (
             is_admin()
             && !empty( $_GET['s'] )
+            && $wp_query->is_main_query()
             && $pagenow === 'edit.php'
-            && !empty($_GET['post_type'])
-            && $_GET['post_type'] == BABE_Post_types::$order_post_type
+            && $wp_query->query['post_type'] === BABE_Post_types::$order_post_type
         ){
             $new_where = "(".$wpdb->posts.".post_title LIKE $1) OR ((postmetasc.meta_key = '_status') AND (postmetasc.meta_value LIKE $1)) OR ((postmetasc.meta_key = 'first_name') AND (postmetasc.meta_value LIKE $1)) OR ((postmetasc.meta_key = 'last_name') AND (postmetasc.meta_value LIKE $1)) OR ((postmetasc.meta_key = 'email') AND (postmetasc.meta_value LIKE $1)) OR ((postmetasc.meta_key = 'phone') AND (postmetasc.meta_value LIKE $1)) OR (toiasc.order_item_name LIKE $1) OR ((tomasc.meta_key = 'date_from') AND (tomasc.meta_value LIKE $1))";
 
@@ -221,14 +226,19 @@ class BABE_Order_admin {
      * @param string $groupby - group by sql clauses
      * @return string
 	 */
-    public static function search_group_by($groupby) {
-    global $pagenow, $wpdb;
-    if ( isset( $_GET['s'] )){
-      if ( is_admin() && $pagenow == 'edit.php' && $_GET['post_type']==BABE_Post_types::$order_post_type && $_GET['s'] != '' ) {
-        $groupby = "$wpdb->posts.ID";
-      }
-    }  
-    return $groupby;
+    public static function search_group_by(string $groupby, WP_Query $wp_query) {
+
+        global $pagenow, $wpdb;
+
+        if (
+            is_admin()
+            && $wp_query->is_main_query()
+            && $pagenow === 'edit.php'
+            && $wp_query->query['post_type'] === BABE_Post_types::$order_post_type
+        ) {
+            $groupby = "$wpdb->posts.ID";
+        }
+        return $groupby;
 }
 
 /////////////////////
@@ -378,8 +388,50 @@ class BABE_Order_admin {
             echo '<div class="babe_admin_edit_order_status order_status_'.$status.'">'.( isset(BABE_Order::$order_statuses[$status]) ? BABE_Order::$order_statuses[$status] : $status).'</div>';
         }
     }
+
+    public static function order_table_sortable_columns( array $columns )
+    {
+        unset($columns['title']);
+        $columns['date_from'] = 'date_from';
+        return $columns;
+    }
+
+    public static function search_orderby (string $orderby, WP_Query $wp_query){
+
+        global $pagenow;
+        if (
+            is_admin()
+            && $wp_query->is_main_query()
+            && $pagenow === 'edit.php'
+            && $wp_query->query['post_type'] === BABE_Post_types::$order_post_type
+            && !empty($_GET['orderby'])
+            && in_array( $_GET['orderby'], [
+                'date_from',
+            ])
+        ){
+            $orderby = 'DATE(tomdateasc.meta_value) '
+                . ( !empty($_GET['order']) && $_GET['order'] === 'asc' ? 'ASC' : 'DESC' )
+            ;
+        }
+
+        return $orderby;
+    }
+
+    public static function search_pre_get_posts (WP_Query $wp_query){
+        global $pagenow;
+
+        if (
+            is_admin()
+            && $wp_query->is_main_query()
+            && $pagenow === 'edit.php'
+            && $wp_query->query['post_type'] === BABE_Post_types::$order_post_type
+            && !empty($_GET['orderby'])
+        ){
+            // fix an empty result issue
+            $wp_query->set('orderby', '');
+            $wp_query->set('order', '');
+        }
+    }
         
 ////////////////////    
 }
-
-BABE_Order_admin::init(); 

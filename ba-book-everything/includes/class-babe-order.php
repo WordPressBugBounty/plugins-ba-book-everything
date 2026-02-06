@@ -1822,7 +1822,18 @@ class BABE_Order {
                 
             }
         }
-     }     
+     }
+
+     public static function reset_booking_vars(array $arr): array
+     {
+         $arr['booking_obj_id'] = 0;
+         $arr['date_from'] = '';
+         $arr['date_to'] = '';
+         $arr['guests'] = [0 => 1];
+         $arr['services'] = [];
+         $arr['fees'] = [];
+         return $arr;
+     }
      
 //////////////////////////////
     /**
@@ -1841,21 +1852,13 @@ class BABE_Order {
         $output['booking_obj_id'] = !empty($arr['booking_obj_id']) ? absint($arr['booking_obj_id']) : 0;
 
         if ( !BABE_Post_types::is_post_booking_obj($output['booking_obj_id']) ){
-            $output['booking_obj_id'] = 0;
-            $output['date_from'] = '';
-            $output['date_to'] = '';
-            $output['guests'] = [0 => 1];
-            $output['services'] = [];
-            $output['fees'] = [];
+            $output = self::reset_booking_vars($output);
             return apply_filters('babe_sanitize_booking_vars', $output, $arr);
         }
 
         $post_id = $output['booking_obj_id'];
         $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($post_id);
         $main_age_id = BABE_Post_types::get_main_age_id($rules_cat['rules']);
-
-        $min_guests_string = (string)get_post_meta($post_id, 'min_guests', true);
-        $min_guests = $min_guests_string === '0' ? 0 : max(absint( $min_guests_string ),1);
 
         if( !empty($arr['booking_meeting_point']) ){
             $output['booking_meeting_point'] = absint($arr['booking_meeting_point']);
@@ -1917,6 +1920,17 @@ class BABE_Order {
             }
         }
 
+        $use_main_age_only_for_min_guests = get_post_meta(
+            $post_id,
+            'use_main_age_only_for_min_guests',
+            true
+        );
+
+        $min_guests = max(absint( get_post_meta($post_id, 'min_guests', true) ),1);
+        $max_guests = absint( get_post_meta($post_id, 'guests', true) );
+        $max_guests = (int)BABE_Settings::$settings['max_guests_select'] > 0
+            ? min($max_guests, BABE_Settings::$settings['max_guests_select']) : $max_guests;
+
         $post_ages = BABE_Post_types::get_post_ages($post_id);
         $post_ages = empty($post_ages) ? array(
             0 => array(
@@ -1934,7 +1948,7 @@ class BABE_Order {
 
         $output['guests'] = [];
 
-        $guests = !empty($arr['booking_guests']) ? array_map('absint', (array)$arr['booking_guests']) : [0 => $min_guests];
+        $guests = !empty($arr['booking_guests']) ? array_map('absint', (array)$arr['booking_guests']) : [$main_age_id => $min_guests];
 
         foreach ( $guests as $age_id => $guest_num){
             if ( !isset($guest_ages[$age_id]) ){
@@ -1944,13 +1958,31 @@ class BABE_Order {
         }
 
         if ( empty($output['guests']) ){
-            $output['guests'] = [0 => $min_guests];
+            $output['guests'][$main_age_id] = $min_guests;
+        }
+
+        if(
+            $main_age_id > 0
+            && !empty($use_main_age_only_for_min_guests)
+            && (
+                empty($output['guests'][$main_age_id])
+                || $output['guests'][$main_age_id] < $min_guests
+            )
+        ){
+            $output['guests'][$main_age_id] = $min_guests;
         }
 
         $total_guests = array_sum($output['guests']);
 
-        if( !$total_guests ){
-            $output['guests'][$main_age_id] = 1;
+        if( $total_guests < $min_guests ){
+            $diff_guests = $min_guests - $total_guests;
+            $output['guests'][$main_age_id] = isset($output['guests'][$main_age_id]) ? $output['guests'][$main_age_id] + $diff_guests : $diff_guests;
+            $total_guests = array_sum($output['guests']);
+        }
+
+        if ( $total_guests > $max_guests ){
+            $output = self::reset_booking_vars($output);
+            return apply_filters('babe_sanitize_booking_vars', $output, $arr);
         }
 
         $services = !empty($arr['booking_services']) ? array_map('absint', (array)$arr['booking_services']) : [];

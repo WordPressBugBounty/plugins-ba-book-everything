@@ -5,12 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 BABE_Emails::init();
 
-/**
- * BABE_Emails Class
- * @class 		BABE_Emails
- * @version		1.7.9
- * @author 		Booking Algorithms
- */
 class BABE_Emails {
 
 
@@ -19,9 +13,12 @@ class BABE_Emails {
         add_action( 'babe_order_status_update_before_order_actions', array( __CLASS__, 'send_standard_emails' ), 10, 5);
 
         add_action( 'wp_mail_failed', array( __CLASS__, 'send_email_errors' ) );
-        
-        add_action( 'babe_user_password_reseted', array( __CLASS__, 'send_email_password_reseted'), 10, 2);
 
+        add_action( 'init', array( __CLASS__, 'init_settings'), 20 );
+	}
+
+    public static function init_settings(): void
+    {
         if (
             class_exists('BABE_Settings')
             && !empty(BABE_Settings::$settings['my_account_disable'])
@@ -30,7 +27,9 @@ class BABE_Emails {
         }
 
         add_action( 'babe_created_customer', array( __CLASS__, 'send_email_new_customer_created' ), 10, 3);
-	}
+
+        add_action( 'babe_user_password_reseted', array( __CLASS__, 'send_email_password_reseted'), 10, 2);
+    }
 
     ////////////////////////
     /**

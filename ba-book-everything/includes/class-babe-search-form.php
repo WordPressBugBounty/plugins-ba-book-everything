@@ -326,7 +326,7 @@ class BABE_Search_From {
         /////////Build search form ////////
         
         $form_title = $title ? '<div class="search-box-header">
-					<h3>'.$title.'</h3>	
+					<h3>'.esc_html($title).'</h3>	
 				</div>' : '';
                 
         $form_title = apply_filters('babe_search_form_header', $form_title, $title);        

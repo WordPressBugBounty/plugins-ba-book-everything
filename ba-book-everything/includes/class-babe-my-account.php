@@ -56,44 +56,48 @@ class BABE_My_account {
 
         add_action( 'template_redirect', array( __CLASS__, 'admin_av_confirmation'), 25);
 
+        add_action( 'init', array( __CLASS__, 'init_settings'), 20 );
+	}
+
+    public static function init_settings(): void
+    {
         if ( class_exists('BABE_Settings') && !empty(BABE_Settings::$settings['my_account_disable']) ){
             return;
         }
-        
+
         add_action( 'init', array( __CLASS__, 'init_icons') );
-        
+
         add_filter( 'babe_my_account_content', array( __CLASS__, 'my_account_content'), 10, 1 );
-        
+
         add_filter( 'babe_myaccount_page_content_customer', array( __CLASS__, 'customer_dashboard'), 10, 2 );
         add_filter( 'babe_myaccount_page_content_customer', array( __CLASS__, 'edit_profile'), 10, 2 );
         add_filter( 'babe_myaccount_page_content_customer', array( __CLASS__, 'change_user_password'), 10, 2 );
         add_filter( 'babe_myaccount_page_content_customer', array( __CLASS__, 'my_bookings'), 10, 2 );
-        
+
         add_filter( 'babe_myaccount_page_content_manager', array( __CLASS__, 'manager_dashboard'), 10, 2 );
         add_filter( 'babe_myaccount_page_content_manager', array( __CLASS__, 'edit_profile'), 10, 2 );
         add_filter( 'babe_myaccount_page_content_manager', array( __CLASS__, 'change_user_password'), 10, 2 );
-        
+
         add_filter( 'babe_myaccount_page_content_manager', array( __CLASS__, 'admin_orders'), 10, 2 );
-        
+
         add_filter( 'babe_myaccount_page_content_manager', array( __CLASS__, 'edit_post'), 10, 2 );
-        
+
         add_filter( 'babe_myaccount_page_content_manager', array( __CLASS__, 'all_posts'), 10, 2 );
-        
+
         add_action( 'template_redirect', array( __CLASS__, 'login_action'), 10);
-        
+
         add_action( 'template_redirect', array( __CLASS__, 'register_customer'), 10);
-        
+
         add_filter( 'babe_login_form_message', array( __CLASS__, 'after_registration_message'), 10, 1);
-        
+
         add_action( 'template_redirect', array( __CLASS__, 'my_account_update'), 20);
-        
+
         add_action( 'template_redirect', array( __CLASS__, 'new_post'), 30);
-        
+
         add_action( 'wp_logout', array( __CLASS__, 'logout_page') );
         add_action( 'wp_login_failed', array( __CLASS__, 'login_failed' ));
         add_filter( 'wp_login_errors', array( __CLASS__, 'login_errors'), 10, 2 );
-         
-	}
+    }
     
 ///////////////////////////////////////
     /**
@@ -243,6 +247,8 @@ class BABE_My_account {
             <div class="statement">
                <span class="register-notes">'.__('A password will be emailed to you.', 'ba-book-everything').'</span>
             </div>
+            
+            <input type="hidden" name="nonce" value="'.wp_create_nonce(self::$nonce_title).'">
 			
 			<div class="new-submit">
 				<input type="submit" name="new-submit" id="new-submit" class="button button-primary" value="'.__('Sign up', 'ba-book-everything').'">
@@ -299,12 +305,12 @@ class BABE_My_account {
           '.wp_login_form( $args ).'
         </div>
         ';
-        
+
         */
         
         $message = '';
         
-        if (isset($_GET['action']) && $_GET['action'] == 'login_error'){
+        if (isset($_GET['action']) && $_GET['action'] === 'login_error'){
             $message .= '
           <div id="login_error">
             '.__( '<strong>ERROR</strong>: Invalid username or password.', 'ba-book-everything' ).' <a href="'.BABE_Settings::get_my_account_page_url(array('action' => 'lostpassword')).'">'.__( 'Forgot your password?', 'ba-book-everything' ).'</a>
@@ -346,6 +352,8 @@ class BABE_My_account {
 			</div>
             
             '.apply_filters('babe_login_form_after_fields', '').'
+            
+            <input type="hidden" name="nonce" value="'.wp_create_nonce(self::$nonce_title).'">
             
             <div class="login_submit">
 				<input type="submit" name="login_submit" id="login_submit" class="button button-primary" value="'.__('Sign in', 'ba-book-everything').'">
@@ -483,14 +491,23 @@ class BABE_My_account {
 ////////////////////////////
      /**
 	 * Do login actions
-     * 
-     * @return
 	 */
-     public static function login_action(){
-        
+     public static function login_action(): void
+     {
        global $post; 
         
-       if (is_singular() && $post->ID == (int)BABE_Settings::$settings['my_account_page'] && isset($_GET['action']) && $_GET['action'] === 'login' && isset($_POST['login_username']) && isset($_POST['login_pw']) && $_POST['login_username'] && $_POST['login_pw']){
+       if (
+           is_singular()
+           && $post->ID == (int)BABE_Settings::$settings['my_account_page']
+           && isset($_GET['action'])
+           && $_GET['action'] === 'login'
+           && isset($_POST['login_username'])
+           && isset($_POST['login_pw'])
+           && $_POST['login_username']
+           && $_POST['login_pw']
+           && isset($_POST['nonce'])
+           && wp_verify_nonce( $_POST['nonce'], self::$nonce_title )
+       ){
         
        $redirect_flag = false; 
         
@@ -638,11 +655,9 @@ class BABE_My_account {
 //////////////////////////////////////
     /**
 	 * Register new customer
-     * 
-     * @return void
 	 */
-    public static function register_customer(){    
-        
+    public static function register_customer(): void
+    {
         global $post;
         
         if (is_user_logged_in()) {
@@ -662,6 +677,8 @@ class BABE_My_account {
             && $_POST['new_email_confirm'] == $_POST['new_email']
             && !empty($_POST['new_first_name'])
             && !empty($_POST['new_last_name'])
+            && isset($_POST['nonce'])
+            && wp_verify_nonce( $_POST['nonce'], self::$nonce_title )
         ){
             
             $meta['email'] = sanitize_email($_POST['new_email']);
@@ -1294,6 +1311,7 @@ class BABE_My_account {
             
             </div>
             
+            <input type="hidden" name="nonce" value="'.wp_create_nonce(self::$nonce_title).'">
             <input type="hidden" name="action" value="change_user_password">
             
             <div class="submit_group">

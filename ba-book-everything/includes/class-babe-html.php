@@ -225,12 +225,14 @@ class BABE_html {
          $basic_booking_period = $rules_cat['rules']['basic_booking_period'] ?? '';
          $cal_first_click = !in_array($basic_booking_period, ['recurrent_custom', 'single_custom', 'hour',]);
          $cal_first_click = apply_filters( 'babe_localize_script_calendar_clicks', $cal_first_click, $post_id, $rules_cat);
+         $main_age_id = BABE_Post_types::get_main_age_id($post_id);
             
      } else {
          $av_cal = array();
          $first_av_date_obj = new DateTime();
          $cal_first_click = false;
          $basic_booking_period = '';
+         $main_age_id = 0;
      }  ///// end if (is_single() && $post->post_type == BABE_Post_types::$booking_obj_post_type)
 
         $date_from = isset($_GET['date_from']) && BABE_Calendar_functions::isValidDate($_GET['date_from'], BABE_Settings::$settings['date_format']) ? $_GET['date_from'] : null;
@@ -303,6 +305,7 @@ class BABE_html {
                 'min_av_cal_date' => $min_av_cal_date,
                 'max_av_cal_date' => $max_av_cal_date,
                 'basic_booking_period' => $basic_booking_period,
+                'main_age_id' => $main_age_id,
                 'cal_first_click' => $cal_first_click,
                 'google_map_active' => (int) BABE_Settings::$settings['google_map_active'],
                 'start_lat' => BABE_Settings::$settings['google_map_start_lat'],
@@ -2040,6 +2043,12 @@ class BABE_html {
             $guests_max = $av_cal_first_rec['max_booking_period'] ? min($max_guests, $av_cal_first_rec['max_booking_period']) : $guests_max;
         }
 
+        $use_main_age_only_for_min_guests = get_post_meta(
+            $post_id,
+            'use_main_age_only_for_min_guests',
+            true
+        );
+
         $number_of_ages = count($post_ages);
 
         foreach ($post_ages as $age_term){
@@ -2077,14 +2086,15 @@ class BABE_html {
 
             $field_title = $age_term['name'] || $price_html ? '<div class="input_select_title_value">'. $age_term['name'] . $age_term['description'] . $price_html . '</div>' : '';
 
+            $min_value_to_select = $number_of_ages === 1
+                || (
+                    !empty($use_main_age_only_for_min_guests)
+                    && $age_term['age_id'] === $main_age_id
+                ) ? $guests_min : 0;
+
             $selected_value = $selected_guests_arr[$age_term['age_id']] ?? 0;
-            if (
-                !$selected_value
-                && (
-                    $number_of_ages === 1
-                )
-            ){
-                $selected_value = $guests_min;
+            if ( !$selected_value ){
+                $selected_value = $min_value_to_select;
             }
 
             $output .= '
@@ -2095,10 +2105,7 @@ class BABE_html {
                                     <input type="text" id="guests_'.$age_term['age_id'].'" class="input_select_input input_select_input_value select_guests" data-guests-min="'.$guests_min.'" data-guests-max="'.$guests_max.'" name="booking_guests['.$age_term['age_id'].']" data-age-id="'.$age_term['age_id'].'" value="'.$selected_value.'">
                                     <ul class="input_select_list">
                                     '.self::get_range_input_select_options(
-                                        (
-                                            $number_of_ages === 1
-                                                ? $guests_min : 0
-                                        ),
+                                        $min_value_to_select,
                                         $guests_max,
                                         1,
                                         $selected_value
@@ -3562,9 +3569,18 @@ class BABE_html {
                         if ($service_qty){
                             $age_details[$age_id] = $age_id && isset($ages_arr_ordered_by_id[$age_id]) ? $ages_arr_ordered_by_id[$age_id]['name'] . ' x'.$service_qty : 'x'.$service_qty;
                             if ( !$age_price ){
-                                $age_details[$age_id] .= ' ('.BABE_Currency::get_zero_price_display_value($currency) . ')';
+                                $age_details[$age_id] .= ' ('
+                                    .BABE_Currency::get_zero_price_display_value(
+                                        $currency,
+                                        (int)$service_id
+                                    )
+                                    . ')'
+                                ;
                             } else {
-                                $age_details[$age_id] .= ' ('.BABE_Currency::get_currency_price($age_price, $currency) . ')';
+                                $age_details[$age_id] .= ' ('
+                                    .BABE_Currency::get_currency_price($age_price, $currency)
+                                    . ')'
+                                ;
                             }
                         }
                     }
@@ -3578,7 +3594,13 @@ class BABE_html {
                                 continue;
                             }
                             $age_details[$age_id] = $age_id && isset($ages_arr_ordered_by_id[$age_id]) ? $ages_arr_ordered_by_id[$age_id]['name'] . ' x'.$service_qty : 'x'.$service_qty;
-                            $age_details[$age_id] .= ' ('.BABE_Currency::get_zero_price_display_value($currency) . ')';
+                            $age_details[$age_id] .= ' ('
+                                .BABE_Currency::get_zero_price_display_value(
+                                    $currency,
+                                    $service_id
+                                )
+                                . ')'
+                            ;
                         }
                     }
 
@@ -4730,7 +4752,13 @@ class BABE_html {
                          if ( $prices_table ){
                              $prices_table = '
                   <div class="view-rate-details">
-                    <div class="view-rate-details-item">' . $prices_table . '</div></div>';
+                    <div class="view-rate-details-item">' . apply_filters(
+                                     'babe_av_calendar_cell_price_details_popup',
+                                     $prices_table,
+                                     $currency,
+                                     $av_cal,
+                                     $date_cal
+                                 ) . '</div></div>';
                          }
                      }
                        
@@ -4849,7 +4877,10 @@ class BABE_html {
             if ( $general_price ){
                 $sr_block .= $is_percent ? $general_price.__( '%', 'ba-book-everything' ) : BABE_Currency::get_currency_price($general_price);
             } else {
-                $sr_block .= BABE_Currency::get_zero_price_display_value();
+                $sr_block .= BABE_Currency::get_zero_price_display_value(
+                    BABE_Currency::get_currency(),
+                    $fee['ID']
+                );
             }
 
             $sr_block .= '</span>';
@@ -5103,7 +5134,18 @@ class BABE_html {
 
                             $price_value = (float)$price_value;
 
-                            $price_value_html = $price_value == 0 ? BABE_Currency::get_zero_price_display_value() : BABE_Currency::get_currency_price($price_value + round($price_value * $tax_am, BABE_Currency::get_currency_precision()));
+                            $price_value_html = $price_value == 0
+                                ? BABE_Currency::get_zero_price_display_value(
+                                    BABE_Currency::get_currency(),
+                                    $service['ID']
+                                )
+                                : BABE_Currency::get_currency_price(
+                                    $price_value + round(
+                                        $price_value * $tax_am,
+                                        BABE_Currency::get_currency_precision()
+                                    )
+                                )
+                            ;
 
                             $price_label = '<label>'.apply_filters('translate_text', $age['name']).':</label>';
 
@@ -5131,7 +5173,18 @@ class BABE_html {
 
                 if (!$is_percent){
 
-                    $sr_block .= $general_price == 0 ? BABE_Currency::get_zero_price_display_value() : BABE_Currency::get_currency_price($general_price + round($general_price * $tax_am, BABE_Currency::get_currency_precision()));
+                    $sr_block .= $general_price == 0
+                        ? BABE_Currency::get_zero_price_display_value(
+                            BABE_Currency::get_currency(),
+                            $service['ID']
+                        )
+                        : BABE_Currency::get_currency_price(
+                            $general_price + round(
+                                $general_price * $tax_am,
+                                BABE_Currency::get_currency_precision()
+                            )
+                        )
+                    ;
 
                 } else {
 
@@ -5443,7 +5496,18 @@ class BABE_html {
                           
                           if ($price_value !== ''){
                             
-                             $price_value_html = $price_value == 0 ? BABE_Currency::get_zero_price_display_value() : BABE_Currency::get_currency_price($price_value + round($price_value * $tax_am, BABE_Currency::get_currency_precision()));
+                             $price_value_html = $price_value == 0
+                                 ? BABE_Currency::get_zero_price_display_value(
+                                     BABE_Currency::get_currency(),
+                                     $service['ID']
+                                 )
+                                 : BABE_Currency::get_currency_price(
+                                     $price_value + round(
+                                         $price_value * $tax_am,
+                                         BABE_Currency::get_currency_precision()
+                                     )
+                                 )
+                             ;
                              
                              $sr_block .= '<label>'.apply_filters('translate_text', $age['name']).':</label>'.$price_value_html.'</span>';
                             
@@ -5461,7 +5525,18 @@ class BABE_html {
                         
                         if (!$is_percent){
                             
-                          $price_value_html = $general_price == 0 ? BABE_Currency::get_zero_price_display_value() : BABE_Currency::get_currency_price($general_price + round($general_price * $tax_am, BABE_Currency::get_currency_precision()));
+                          $price_value_html = $general_price == 0
+                              ? BABE_Currency::get_zero_price_display_value(
+                                  BABE_Currency::get_currency(),
+                                  $service['ID']
+                              )
+                              : BABE_Currency::get_currency_price(
+                                  $general_price + round(
+                                      $general_price * $tax_am,
+                                      BABE_Currency::get_currency_precision()
+                                  )
+                              )
+                          ;
                             
                           $sr_block .= $price_value_html;
                           

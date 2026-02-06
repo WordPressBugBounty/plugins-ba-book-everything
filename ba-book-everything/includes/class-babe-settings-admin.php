@@ -1584,13 +1584,30 @@ function setup_demo_content(i){
         
     }
 
+    public static function settings_email_tips() {
+
+        $output = '<div>'. wpautop(__('<strong>There are some useful shortcodes to add order details into emails:</strong>
+[babe-order-number] - order number
+[babe-order-customer-name] - customer name
+[babe-order-admin-notes] - order clarification/notes from the administrator to the client
+<i>The following is automatically added to every message:</i>
+[babe-order-items] - order items (table view, with property name, price, total amount, paid amount, etc.)
+[babe-order-customer-details] - order customer details (table view)
+', 'ba-book-everything')).'</div>';
+
+        $output .= '<div>'. wpautop(__('<strong>Notes:</strong>
+Typically, the order number and customer name are automatically added to the email templates below in place of placeholders such as %s, %1$s, %2$s
+', 'ba-book-everything')).'</div>';
+
+        echo $output;
+    }
+
     ////////////////////////////////////////////////
     /**
      * Add standard email settings
      */
     public static function settings_standard_emails()
     {
-
         add_settings_field(
             'email_new_order_separator', // ID
             __('Customer New order email', 'ba-book-everything'), // Title
@@ -1598,6 +1615,15 @@ function setup_demo_content(i){
             BABE_Settings::$option_menu_slug, // Page
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
+        );
+
+        add_settings_field(
+                '_email_shortcode_tips', // ID
+                '', // Title
+                array( __CLASS__, 'settings_email_tips' ), // Callback
+                BABE_Settings::$option_menu_slug, // Page
+                'setting_section_emails',  // Section
+                array('option' => '_email_shortcode_tips', 'settings_name' => BABE_Settings::$option_name) // Args array
         );
 
         add_settings_field(

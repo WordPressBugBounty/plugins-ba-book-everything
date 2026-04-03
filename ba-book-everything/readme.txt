@@ -4,7 +4,7 @@ Tags: booking, tours, properties, yachts, rental
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.9
-Stable tag: 1.8.20
+Stable tag: 1.8.21
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -89,6 +89,11 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.21 =
+* Added an option in the search form to switch between selecting a date range and selecting a single date
+* Added Google captcha and Cloudflare captcha integrations for login/register forms (new option in the BA Settings admin menu)
+* Fixed an issue where the State field on the checkout form would not update when the Country field was automatically filled in
 
 = 1.8.20 =
 * Added hooks for customization to the BABE_Post_types::get_posts method

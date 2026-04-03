@@ -256,6 +256,12 @@ Your order has been canceled:', 'ba-book-everything'),
             'rating_stars_num' => 5,
             'rating_criteria' => array(),
             'use_extended_wp_import' => 1,
+            'captcha_type'           => 'disabled',
+            'recaptcha_site_key'     => '',
+            'recaptcha_secret_key'   => '',
+            'recaptcha_score'        => 0.5,
+            'turnstile_site_key'     => '',
+            'turnstile_secret_key'   => '',
         );
 
     }

@@ -312,7 +312,9 @@ $(document).ready(function(){
     });
     
     $('#date_to.search_date').on('click', function(){
-        $('#date_from.search_date').trigger('click.daterangepicker');
+        if ( !$('#date_to.search_date').data('daterangepicker') ){
+            $('#date_from.search_date').trigger('click.daterangepicker');
+        }
     });
 
     activate_search_form_daterangepicker( get_search_form_active_tab_slug() );
@@ -1611,6 +1613,10 @@ $(document).ready(function(){
 
     $('#checkout_form .select2').select2();
 
+    $('#checkout_form #billing_address_country').on('change', function(e){
+        $(this).trigger('select2:select');
+    });
+
     $('#checkout_form #billing_address_country').on('select2:select', function (e) {
         let country = $(this).val();
         let newOptions = '<option value>' + babe_lst.messages.select2select + '</option>';
@@ -2621,23 +2627,13 @@ function getUrlParameter(sParam) {
 
     /////////////////////////////////////////
 
-    function init_search_form_daterangepicker( is_single ){
-
-        if ( !$('#date_from.search_date').length ){
-            return;
-        }
-
-        $('#date_from.search_date').daterangepicker({
+    function drp_base_opts(){
+        return {
             minDate: moment().format(babe_lst.drp_date_format),
-            singleDatePicker: is_single,
             autoApply: true,
             autoUpdateInput: false,
             dateFormat: babe_lst.drp_date_format,
             customClass: 'search-popup-date',
-            widthSingle: 500,
-            timePickerIncrement: 60,
-            timePickerSeconds: false,
-            timePicker: false,
             locale: {
                 "format": babe_lst.drp_date_format,
                 "separator": " - ",
@@ -2651,13 +2647,44 @@ function getUrlParameter(sParam) {
                 "monthNames": Object.keys(babe_lst.daterangepickerLocale.monthNames).map(function (key) { return babe_lst.daterangepickerLocale.monthNames[key]; }),
                 "firstDay": babe_lst.daterangepickerLocale.firstDay
             }
-        });
+        };
+    }
 
-        if ( babe_lst.date_from != null){
-            $('#date_from.search_date').data('daterangepicker').setStartDate(babe_lst.date_from);
+    function init_search_form_daterangepicker( is_single ){
+
+        if ( !$('#date_from.search_date').length ){
+            return;
         }
-        if ( babe_lst.date_to != null){
-            $('#date_from.search_date').data('daterangepicker').setEndDate(babe_lst.date_to);
+
+        $('#date_from.search_date').daterangepicker($.extend( drp_base_opts(), {
+            singleDatePicker: is_single,
+            widthSingle: 500,
+            timePickerIncrement: 60,
+            timePickerSeconds: false,
+            timePicker: false
+        } ));
+
+        let dfVal = $('#date_from.search_date').val();
+        let dtVal = $('#date_to.search_date').val();
+        let dVal = dtVal ? dtVal : dfVal;
+        if ( dVal ) {
+            if( !is_single ){
+                if( dfVal ){
+                    $('#date_from.search_date').data('daterangepicker')
+                        .setStartDate(moment(dfVal, babe_lst.drp_date_format));
+                }
+                if( dtVal ){
+                    $('#date_from.search_date').data('daterangepicker')
+                        .setEndDate(moment(dtVal, babe_lst.drp_date_format));
+                }
+            }
+        } else {
+            if ( babe_lst.date_from != null ){
+                $('#date_from.search_date').data('daterangepicker').setStartDate(babe_lst.date_from);
+            }
+            if ( babe_lst.date_to != null ){
+                $('#date_from.search_date').data('daterangepicker').setEndDate(babe_lst.date_to);
+            }
         }
 
         $('#date_from.search_date').on('apply.daterangepicker', function(ev, picker) {
@@ -2669,13 +2696,58 @@ function getUrlParameter(sParam) {
     }
 
     function remove_search_form_daterangepicker(){
-        $('#date_from.search_date').data('daterangepicker');
+        $('#date_from.search_date').data('daterangepicker').remove();
+        if ( $('#date_to.search_date').data('daterangepicker') ){
+            $('#date_to.search_date').data('daterangepicker').remove();
+        }
     }
 
     function activate_search_form_daterangepicker( tab_slug ){
         var date_to_active = $("#search_form .search_date_wrapper_date_to[data-active-"+tab_slug+"]").data("active-"+tab_slug) != undefined ? true : false;
         var is_single = !date_to_active;
-        init_search_form_daterangepicker( is_single );
+        var single_calendar = !is_single && $("#search_form .search_date_wrapper_date_to").data("single-calendar-"+tab_slug) == 1;
+        init_search_form_daterangepicker( single_calendar ? true : is_single );
+        if ( single_calendar ) {
+            $('#date_from.search_date').off('apply.daterangepicker')
+                .on('apply.daterangepicker', function(ev, picker) {
+                var selectedDate = picker.startDate.clone();
+                $(this).val(selectedDate.format(babe_lst.drp_date_format));
+                var dateToPicker = $('#date_to.search_date').data('daterangepicker');
+                if ( dateToPicker ) {
+                    dateToPicker.minDate = selectedDate.clone();
+                    var dateToVal = $('#date_to.search_date').val();
+                    if ( dateToVal && moment(dateToVal, babe_lst.drp_date_format).isBefore(selectedDate, 'day') ) {
+                        $('#date_to.search_date').val('');
+                    }
+                }
+            });
+            init_date_to_single_daterangepicker();
+        }
+    }
+
+    function init_date_to_single_daterangepicker(){
+        if ( !$('#date_to.search_date').length ){ return; }
+
+        $('#date_to.search_date').daterangepicker($.extend( drp_base_opts(), {
+            linkedCalendars: false,
+            singleDatePicker: true,
+            widthSingle: 500,
+        } ));
+
+        $('#date_to.search_date').off('show.daterangepicker').on('show.daterangepicker', function(ev, picker) {
+            let dfVal = $('#date_from.search_date').val();
+            let dtVal = $('#date_to.search_date').val();
+            let dVal = dtVal ? dtVal : dfVal;
+            if ( dVal ) {
+                let minDateVal = dfVal ? dfVal : dtVal;
+                let dfMoment = moment(dVal, babe_lst.drp_date_format);
+                picker.minDate = moment(minDateVal, babe_lst.drp_date_format);
+                picker.setStartDate(dfMoment);
+            }
+        });
+        $('#date_to.search_date').off('apply.daterangepicker').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.endDate.format(babe_lst.drp_date_format));
+        });
     }
 
     function get_search_form_active_tab_slug(){

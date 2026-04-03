@@ -319,6 +319,9 @@ class BABE_Search_From {
 				   if ($field['extended']){
 					   $output_arr[$field_slug]['extended'][$tab_slug] = $tab_slug;
 				   }
+                   if ( $field_slug === 'date_to' && !empty($field['single_calendar']) ){
+                       $output_arr[$field_slug]['data']['single_calendar'][$tab_slug] = 1;
+                   }
 			   }
 		   }
 	   }
@@ -422,6 +425,11 @@ class BABE_Search_From {
 		          $data_advanced_str .= ' data-title-' . $tab_slug . '="' . $data_val . '"';
 		          $data_str          .= ' data-title-' . $tab_slug . '="' . $data_val . '"';
 	          }
+          if ( !empty($field_data['data']['single_calendar']) ) {
+              foreach ( $field_data['data']['single_calendar'] as $tab_slug => $data_val ) {
+                  $data_str .= ' data-single-calendar-' . $tab_slug . '="1"';
+              }
+          }
             
               $icon = !empty(self::$search_form_fields_icons[$field_slug]) ? apply_filters('babe_search_form_taxonomy_before_title', '<i class="'.esc_attr(self::$search_form_fields_icons[$field_slug]).'"></i>', $field_slug, self::$search_form_fields_icons) : '';
 

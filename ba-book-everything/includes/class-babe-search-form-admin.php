@@ -409,6 +409,13 @@ class BABE_Search_From_admin {
                     <label for="search_field_extended_'.$field_slug.'_'.$tab_ind.'">'.esc_html($option_title).'</label><br />
                     ';
 
+                  if ( $field_slug === 'date_to' ){
+                      $output .= '
+                    <input type="checkbox" id="search_field_single_cal_'.$field_slug.'_'.$tab_ind.'" name="search_field_single_cal_'.$field_slug.'_'.$tab_ind.'" '.$data_str.'="single_calendar" value="1"'. ( !empty(BABE_Search_From::$search_form_fields[$tab_ind][$field_slug]['single_calendar']) ? ' checked="checked"' : '' ) .'>
+                    <label for="search_field_single_cal_'.$field_slug.'_'.$tab_ind.'">'.__('single calendar', 'ba-book-everything').'</label><br />
+                    ';
+                  }
+
               } else {
 
                   $output .= '

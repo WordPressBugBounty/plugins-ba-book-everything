@@ -1582,6 +1582,86 @@ function setup_demo_content(i){
         
         do_action('babe_settings_after_google_fields', BABE_Settings::$option_menu_slug, BABE_Settings::$option_name);
         
+         ///////// BABE Captcha
+
+        add_settings_section(
+            'setting_section_captcha', // ID
+            __('Login form Captcha','ba-book-everything'), // Title
+            '__return_false', // Callback
+            BABE_Settings::$option_menu_slug // Page
+        );
+
+        add_settings_field(
+            'captcha_type', // ID
+            __('Captcha provider','ba-book-everything'), // Title
+            array( __CLASS__, 'setting_captcha_type' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_captcha' // Section
+        );
+
+        add_settings_field(
+            'captcha_title_google', // ID
+            __('Google reCAPTCHA v3','ba-book-everything'), // Title
+            '__return_false', // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_captcha', // Section
+            array('class' => 'babe_setting_subtitle')
+        );
+
+        add_settings_field(
+            'recaptcha_site_key', // ID
+            '<a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener noreferrer">' . __('Site Key','ba-book-everything') . '</a>', // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_captcha', // Section
+            array('option' => 'recaptcha_site_key', 'settings_name' => BABE_Settings::$option_name)
+        );
+
+        add_settings_field(
+            'recaptcha_secret_key', // ID
+            '<a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener noreferrer">' . __('Secret Key','ba-book-everything') . '</a>', // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_captcha', // Section
+            array('option' => 'recaptcha_secret_key', 'settings_name' => BABE_Settings::$option_name)
+        );
+
+        add_settings_field(
+            'recaptcha_score', // ID
+            __('Minimum score (0.0–1.0)','ba-book-everything'), // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_captcha', // Section
+            array('option' => 'recaptcha_score', 'settings_name' => BABE_Settings::$option_name)
+        );
+
+        add_settings_field(
+            'captcha_title_turnstile', // ID
+            __('Cloudflare Turnstile','ba-book-everything'), // Title
+            '__return_false', // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_captcha', // Section
+            array('class' => 'babe_setting_subtitle')
+        );
+
+        add_settings_field(
+            'turnstile_site_key', // ID
+            '<a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer">' . __('Site Key','ba-book-everything') . '</a>', // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_captcha', // Section
+            array('option' => 'turnstile_site_key', 'settings_name' => BABE_Settings::$option_name)
+        );
+
+        add_settings_field(
+            'turnstile_secret_key', // ID
+            '<a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer">' . __('Secret Key','ba-book-everything') . '</a>', // Title
+            array( __CLASS__, 'text_field_callback' ), // Callback
+            BABE_Settings::$option_menu_slug, // Page
+            'setting_section_captcha', // Section
+            array('option' => 'turnstile_secret_key', 'settings_name' => BABE_Settings::$option_name)
+        );
+
     }
 
     public static function settings_email_tips() {
@@ -2235,6 +2315,17 @@ Typically, the order number and customer name are automatically added to the ema
           }
           ///////////////////
 
+          
+          $allowed_captcha_types = array( 'disabled', 'google', 'turnstile' );
+          $new_input['captcha_type']       = isset( $input['captcha_type'] ) && in_array( $input['captcha_type'], $allowed_captcha_types, true ) ? $input['captcha_type'] : 'disabled';
+          $new_input['recaptcha_site_key']   = $input['recaptcha_site_key']   ?? '';
+          $new_input['recaptcha_secret_key'] = $input['recaptcha_secret_key'] ?? '';
+          $new_input['recaptcha_score']      = isset( $input['recaptcha_score'] ) ? min( 1.0, max( 0.0, (float) $input['recaptcha_score'] ) ) : 0.5;
+          $new_input['turnstile_site_key']   = $input['turnstile_site_key']   ?? '';
+          $new_input['turnstile_secret_key'] = $input['turnstile_secret_key'] ?? '';
+
+          ///////////////////
+
           $new_input = apply_filters('babe_sanitize_'.BABE_Settings::$option_name, $new_input, $input);
 
           if ( !empty($input['reset_settings']) ){
@@ -2254,6 +2345,8 @@ Typically, the order number and customer name are automatically added to the ema
 }
     
 ////////////////////////////////////
+
+
     
     public static function text_field_callback($args){
         $add_class = isset($args['translate']) ? ' class="q_translatable"' : '';
@@ -2484,6 +2577,22 @@ Typically, the order number and customer name are automatically added to the ema
 
         echo '<p><input id="'.BABE_Settings::$option_name.'[order_availability_confirm]1" name="'.BABE_Settings::$option_name.'[order_availability_confirm]" type="radio" value="auto" '.$checked1.'/><label id="'.BABE_Settings::$option_name.'_order_availability_confirm1" for="'.BABE_Settings::$option_name.'[order_availability_confirm]1">'.__('Automatically', 'ba-book-everything').'</label></p>';
         echo '<p><input id="'.BABE_Settings::$option_name.'[order_availability_confirm]2" name="'.BABE_Settings::$option_name.'[order_availability_confirm]" type="radio" value="manually" '.$checked2.'/><label id="'.BABE_Settings::$option_name.'_order_availability_confirm2" for="'.BABE_Settings::$option_name.'[order_availability_confirm]2">'.__('Manually (by dashboard or e-mail)', 'ba-book-everything').'</label></p>';
+
+    }
+
+///////////////setting_captcha_type/////////////
+
+    public static function setting_captcha_type() {
+
+        $check = BABE_Settings::get_option( 'captcha_type', 'disabled' );
+
+        $checked1 = checked( 'disabled',  $check, false );
+        $checked2 = checked( 'google',    $check, false );
+        $checked3 = checked( 'turnstile', $check, false );
+
+        echo '<p><input id="'.BABE_Settings::$option_name.'[captcha_type]disabled" name="'.BABE_Settings::$option_name.'[captcha_type]" type="radio" value="disabled" '.$checked1.'/><label for="'.BABE_Settings::$option_name.'[captcha_type]disabled">'.__('Disabled','ba-book-everything').'</label></p>';
+        echo '<p><input id="'.BABE_Settings::$option_name.'[captcha_type]google" name="'.BABE_Settings::$option_name.'[captcha_type]" type="radio" value="google" '.$checked2.'/><label for="'.BABE_Settings::$option_name.'[captcha_type]google">'.__('Google reCAPTCHA v3','ba-book-everything').'</label></p>';
+        echo '<p><input id="'.BABE_Settings::$option_name.'[captcha_type]turnstile" name="'.BABE_Settings::$option_name.'[captcha_type]" type="radio" value="turnstile" '.$checked3.'/><label for="'.BABE_Settings::$option_name.'[captcha_type]turnstile">'.__('Cloudflare Turnstile','ba-book-everything').'</label></p>';
 
     }
 

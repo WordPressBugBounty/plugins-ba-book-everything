@@ -842,7 +842,35 @@ class BABE_Order {
         self::$get_posts_pages = $posts_per_page == -1 ? 1 : ceil(self::$get_posts_count/$posts_per_page);
              
         return $output;
-     }                                
+     }
+
+    public static function get_active_orders_for_booking_obj( $post_id ){
+        global $wpdb;
+
+        $query = "SELECT order_items.*, 
+            post_order_meta.meta_value AS order_status,
+            oidf.meta_value AS date_from,
+            oidt.meta_value AS date_to,
+            oidg.meta_value AS guests_serialized
+            FROM ".self::$table_order_items." order_items
+            
+            INNER JOIN ".self::$table_order_itemmeta." oidf ON oidf.order_item_id = order_items.order_item_id AND oidf.meta_key = 'date_from'
+            
+            INNER JOIN ".self::$table_order_itemmeta." oidt ON oidt.order_item_id = order_items.order_item_id AND oidt.meta_key = 'date_to'
+            
+            INNER JOIN ".self::$table_order_itemmeta." oidg ON oidg.order_item_id = order_items.order_item_id AND oidg.meta_key = 'guests'
+            
+            INNER JOIN ".$wpdb->posts." post_order
+            ON post_order.ID = order_items.order_id AND post_order.post_status = 'publish'
+            
+            INNER JOIN ".$wpdb->postmeta." post_order_meta
+            ON post_order.ID = post_order_meta.post_id AND post_order_meta.meta_key = '_status' AND post_order_meta.meta_value NOT IN ('draft','not_available','canceled')
+            
+            WHERE order_items.booking_obj_id = ". (int)$post_id ."
+            ";
+
+        return $wpdb->get_results($query, ARRAY_A);
+    }
     
 //////////////////////
      /**

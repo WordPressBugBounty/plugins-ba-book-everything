@@ -4,7 +4,7 @@ Tags: booking, tours, properties, yachts, rental
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.9
-Stable tag: 1.8.21
+Stable tag: 1.8.22
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -89,6 +89,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.22 =
+* Added an admin option (button) to rebuild the booking item availability calendar
 
 = 1.8.21 =
 * Added an option in the search form to switch between selecting a date range and selecting a single date

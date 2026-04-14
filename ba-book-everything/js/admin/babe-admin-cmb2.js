@@ -376,6 +376,41 @@ $(document).ready(function(){
 
     ///////////////////////////////////////////
 
+    $('#recalculate_av_cal').on('click', function(el){
+        el.stopPropagation();
+        el.preventDefault();
+
+        $('#recalculate_av_cal_spinner').html('<span class="spin_f"><i class="fas fa-spinner fa-spin fa-2x"></i></span>');
+
+        let post_id = $(this).data('obj-id');
+
+        $.ajax({
+            url : babe_cmb2_lst.ajax_url,
+            type : 'POST',
+            data : {
+                action : 'recalculate_av_cal',
+                post_id : post_id,
+                // check
+                nonce : babe_cmb2_lst.nonce
+            },
+            success : function( msg ) {
+
+                if ( msg === '' ){
+                    swal_error_general();
+                    return;
+                }
+                swal_success();
+            },
+            error : function(){
+                swal_error_general();
+            }
+        }).always( function(){
+            $('#recalculate_av_cal_spinner').html('');
+        });
+    });
+
+    ///////////////////////////////////////////
+
     $('#get_the_rest_amount').on('click', function(el){
         $('#_prepaid_amount').val( $('#_total_amount').val() - $('#_prepaid_received').val() );
     });

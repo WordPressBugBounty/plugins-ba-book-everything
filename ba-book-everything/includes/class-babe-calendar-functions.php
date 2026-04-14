@@ -481,6 +481,8 @@ class BABE_Calendar_functions {
         
         self::update_av_cal_excluded_dates($booking_obj_id);
 
+         self::fix_negative_guests();
+
         self::refresh_av_guests($booking_obj_id);
 
         self::reset_cache();
@@ -1324,12 +1326,14 @@ class BABE_Calendar_functions {
         
         $query = "UPDATE ".self::$table_av_cal." SET guests = guests + ".$new_guests."
         
-        WHERE (
-           booking_obj_id = ".$booking_obj_id."
+        WHERE booking_obj_id = ".$booking_obj_id."
           AND date_from >= '".$datetime_from."'
-          AND date_from ".($rules_cat['rules']['basic_booking_period'] === 'night' ? "<" : "<=")." '".$datetime_to."'
-        )    
-";
+          AND date_from ".($rules_cat['rules']['basic_booking_period'] === 'night' ? "<" : "<=")." '".$datetime_to."'";
+
+        if( $new_guests < 0 ){
+            $query .= " AND guests >= " . (-1 * $new_guests);
+        }
+
         /// update guests
         $output = $wpdb->query($query, ARRAY_A);
         
@@ -1517,6 +1521,8 @@ class BABE_Calendar_functions {
              }
          }
 
+         self::fix_negative_guests();
+
         self::refresh_av_guests($booking_obj_id);
 
         self::reset_cache();
@@ -1524,9 +1530,14 @@ class BABE_Calendar_functions {
         return $output;
      }
 
-     public static function refresh_av_guests($booking_obj_id){
+    public static function fix_negative_guests(){
+        /** @var wpdb $wpdb */
+        global $wpdb;
+        $wpdb->query( "UPDATE ".self::$table_av_cal." SET guests = 0 WHERE guests < 0" );
+    }
 
-         /** var QM_DB $wpdb */
+     public static function refresh_av_guests($booking_obj_id){
+         /** @var wpdb $wpdb */
          global $wpdb;
 
          $item_max_guests = absint(get_post_meta( $booking_obj_id, 'guests', true ));
@@ -1535,6 +1546,55 @@ class BABE_Calendar_functions {
          $wpdb->query( "UPDATE {$wpdb->prefix}babe_av_cal ac 
            SET ac.av_guests = (". $item_max_guests*$items_number ." - ac.guests) WHERE ac.booking_obj_id = ". (int)$booking_obj_id .";" );
      }
+
+    public static function recalculate_av_cal_by_booking_obj_id($booking_obj_id){
+        global $wpdb;
+
+        $babe_post = BABE_Post_types::get_post($booking_obj_id);
+
+        self::delete_av_cal_by_booking_obj_id($booking_obj_id);
+
+        self::update_av_cal(
+            $booking_obj_id,
+            $babe_post['start_date'],
+            $babe_post['end_date'],
+            $babe_post['schedule'],
+            $babe_post['cyclic_start_every'],
+            $babe_post['cyclic_av']
+        );
+
+        $orders = BABE_Order::get_active_orders_for_booking_obj($booking_obj_id);
+
+        foreach ($orders as $order){
+            $guests = maybe_unserialize($order['guests_serialized']);
+            BABE_Calendar_functions::update_av_guests(
+                $booking_obj_id,
+                $order['date_from'],
+                $order['date_to'],
+                array_sum($guests)
+            );
+        }
+
+        $current_lang = BABE_Functions::get_current_language();
+        $current_lang = apply_filters( 'wpml_current_language', $current_lang );
+        $all_languages = BABE_Functions::get_all_languages();
+        unset($all_languages[$current_lang]);
+
+        if ( empty($all_languages) ){
+            return;
+        }
+
+        $processed_post_ids = [ $booking_obj_id => $booking_obj_id ];
+
+        foreach ($all_languages as $lang_code => $lang_arr ){
+            $post_id = (int)apply_filters( 'wpml_object_id', $booking_obj_id, BABE_Post_types::$booking_obj_post_type, false, $lang_code );
+            if ( isset($processed_post_ids[$post_id]) ){
+                continue;
+            }
+            BABE_Calendar_functions::sync_two_calendars($booking_obj_id, $post_id);
+            $processed_post_ids[$post_id] = $post_id;
+        }
+    }
 
 /////////////////////////////    
     

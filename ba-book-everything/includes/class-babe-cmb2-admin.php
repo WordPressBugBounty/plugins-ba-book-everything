@@ -70,6 +70,7 @@ class BABE_CMB2_admin {
         add_action( 'wp_ajax_add_category_exclude_dates', array( __CLASS__, 'ajax_add_category_exclude_dates'));
         add_action( 'wp_ajax_delete_category_exclude_dates', array( __CLASS__, 'ajax_delete_category_exclude_dates'));
         add_action( 'wp_ajax_recalculate_rating', array( __CLASS__, 'ajax_recalculate_rating'));
+        add_action( 'wp_ajax_recalculate_av_cal', array( __CLASS__, 'ajax_recalculate_av_cal'));
 
         add_filter( 'cmb2_render_price_details', array( __CLASS__, 'cmb2_price_details'), 10, 5 );
         add_filter( 'cmb2_render_object_code', array( __CLASS__, 'cmb2_object_code'), 10, 5 );
@@ -77,6 +78,7 @@ class BABE_CMB2_admin {
         add_filter( 'cmb2_render_time_shift', array( __CLASS__, 'cmb2_time_shift'), 10, 5 );
         add_filter( 'cmb2_render_schedule', array( __CLASS__, 'cmb2_schedule'), 10, 5 );
         add_filter( 'cmb2_render_recalculate_rating', array( __CLASS__, 'cmb2_recalculate_rating'), 10, 5 );
+        add_filter( 'cmb2_render_recalculate_av_cal', array( __CLASS__, 'cmb2_recalculate_av_cal'), 10, 5 );
 
         add_filter( 'cmb2_render_service_prices', array( __CLASS__, 'cmb2_service_prices'), 10, 5 );
         add_filter( 'cmb2_sanitize_service_prices', array( __CLASS__, 'cmb2_sanitize_service_prices'), 10, 5 );
@@ -529,6 +531,19 @@ class BABE_CMB2_admin {
 
       echo $output;
      }
+
+    public static function cmb2_recalculate_av_cal($field, $value, $object_id, $object_type, $field_type){
+
+        $output = '<div>
+        <button id="recalculate_av_cal" class="button-secondary" data-obj-id="'.$object_id.'">'
+                . __('Rebuild the calendar', 'ba-book-everything')
+                . ' <i class="fas fa-sync-alt"></i>'
+                .'</button>
+        &nbsp;&nbsp;<span id="recalculate_av_cal_spinner"></span>
+      </div>';
+
+        echo $output;
+    }
   
 //////////////////////////////////////
      /**
@@ -2504,6 +2519,15 @@ class BABE_CMB2_admin {
         do_action('cmb2_booking_obj_after_select_category', $cmb, $prefix);
 
         $cmb->add_field( array(
+                'name'       => __( 'Rebuild the calendar', 'ba-book-everything' ),
+                'desc' => '',
+                'id'   => $prefix . 'recalculate_av_cal',
+                'type' => 'recalculate_av_cal',
+                'before_row' => array( __CLASS__, 'cmb2_before_row_header'),
+                'row_title' => __( 'Troubleshooting the Availability Calendar', 'ba-book-everything' ),
+        ) );
+
+        $cmb->add_field( array(
             'name' => __( 'Fixed Deposit amount, ', 'ba-book-everything' ).BABE_Currency::get_currency_symbol(),
             'id'   => $prefix . 'deposit_fixed',
             'type' => 'text',
@@ -3432,6 +3456,28 @@ class BABE_CMB2_admin {
         ]);
 
         BABE_Rating::recalculate_post_rating( $post_id, $comments );
+
+        echo __('Success!', 'ba-book-everything');
+        wp_die();
+    }
+
+    public static function ajax_recalculate_av_cal(){
+
+        $output = '';
+
+        if (
+            empty($_POST['post_id'])
+            || !wp_verify_nonce( $_POST['nonce'], self::$nonce_title )
+            || !BABE_Post_types::is_post_booking_obj($_POST['post_id'])
+            || !BABE_Users::current_user_can_edit_post($_POST['post_id'])
+        ){
+            echo $output;
+            wp_die();
+        }
+
+        $post_id = (int)$_POST['post_id'];
+
+        BABE_Calendar_functions::recalculate_av_cal_by_booking_obj_id($post_id);
 
         echo __('Success!', 'ba-book-everything');
         wp_die();

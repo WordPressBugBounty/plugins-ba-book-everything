@@ -1548,26 +1548,48 @@ class BABE_Calendar_functions {
      }
 
     public static function recalculate_av_cal_by_booking_obj_id($booking_obj_id){
-        global $wpdb;
-
-        $babe_post = BABE_Post_types::get_post($booking_obj_id);
 
         self::delete_av_cal_by_booking_obj_id($booking_obj_id);
 
+        $start_date = get_post_meta( $booking_obj_id, 'start_date', true);
+        $end_date = get_post_meta( $booking_obj_id, 'end_date', true);
+        $cyclic_start_every = get_post_meta( $booking_obj_id, 'cyclic_start_every', true);
+        $cyclic_av = get_post_meta( $booking_obj_id, 'cyclic_av', true);
+
+        $rules = BABE_Booking_Rules::get_rule_by_obj_id($booking_obj_id);
+
+        $schedule = array();
+
+        if( isset($rules['rules']['basic_booking_period']) ) {
+
+            if ( $rules['rules']['basic_booking_period'] === 'recurrent_custom' ){
+
+                $schedule = get_post_meta( $booking_obj_id, 'schedule', true);
+                $schedule = empty($schedule) ? array() : $schedule;
+
+            } elseif( $rules['rules']['basic_booking_period'] === 'single_custom'){
+
+                $start_time = get_post_meta( $booking_obj_id, 'start_time_'.$rules['category_slug'], true);
+                $start_date_obj = new DateTime( self::date_to_sql($start_date).' '.$start_time );
+                $day_num = self::get_week_day_num($start_date_obj);
+                $schedule[$day_num] = array($start_date_obj->format('H:i'));
+            }
+        }
+
         self::update_av_cal(
             $booking_obj_id,
-            $babe_post['start_date'],
-            $babe_post['end_date'],
-            $babe_post['schedule'],
-            $babe_post['cyclic_start_every'],
-            $babe_post['cyclic_av']
+            $start_date,
+            $end_date,
+            $schedule,
+            $cyclic_start_every,
+            $cyclic_av
         );
 
         $orders = BABE_Order::get_active_orders_for_booking_obj($booking_obj_id);
 
         foreach ($orders as $order){
             $guests = maybe_unserialize($order['guests_serialized']);
-            BABE_Calendar_functions::update_av_guests(
+            self::update_av_guests(
                 $booking_obj_id,
                 $order['date_from'],
                 $order['date_to'],
@@ -1591,7 +1613,7 @@ class BABE_Calendar_functions {
             if ( isset($processed_post_ids[$post_id]) ){
                 continue;
             }
-            BABE_Calendar_functions::sync_two_calendars($booking_obj_id, $post_id);
+            self::sync_two_calendars($booking_obj_id, $post_id);
             $processed_post_ids[$post_id] = $post_id;
         }
     }

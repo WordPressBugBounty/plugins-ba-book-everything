@@ -3695,7 +3695,7 @@ class BABE_html {
 
         $order_coupon_num = BABE_Order::get_order_coupon_num($order_id);
         $order_coupon_amount = BABE_Order::get_order_coupon_amount_applied($order_id);
-        $total_with_coupon = BABE_Order::get_order_total_amount($order_id);
+        $order_total = BABE_Order::get_order_total_amount($order_id);
         if ($order_coupon_amount){
             $output .= '
              <tr><td class="order_items_row_total order_items_row_coupon" colspan="2">
@@ -3706,12 +3706,24 @@ class BABE_html {
             </td></tr>';
         }
 
+        $order_points_discount = BABE_Order::get_order_rewards_points_discount($order_id);
+        $order_points_spent    = BABE_Order::get_order_rewards_points_spent($order_id);
+        if ($order_points_discount){
+            $output .= '
+             <tr><td class="order_items_row_total order_items_row_points" colspan="2">
+            <span class="o  rder_items_row_total_label">'.sprintf(__( 'Redeemed points (%1$s pts)', 'ba-book-everything' ), $order_points_spent) . ':</span>
+            </td>
+            <td class="order_items_row_total_amount order_items_row_points">
+            <span>-'.BABE_Currency::get_currency_price($order_points_discount, $currency).'</span>
+            </td></tr>';
+        }
+
         $output .= '
             <tr><td class="order_items_row_total" colspan="2">
             <span class="order_items_row_total_label">'.__( 'Total:', 'ba-book-everything' ).'</span>
             </td>
             <td class="order_items_row_total_amount">
-            <span id="order_items_row_total_amount">'.BABE_Currency::get_currency_price($total, $currency).'</span>
+            <span id="order_items_row_total_amount">'.BABE_Currency::get_currency_price($order_total, $currency).'</span>
             </td></tr>';
 
         $prepaid_received = BABE_Order::get_order_prepaid_received($order_id) - BABE_Order::get_order_refunded_amount($order_id);
@@ -3724,7 +3736,7 @@ class BABE_html {
             <span id="order_items_row_paid_amount">'.BABE_Currency::get_currency_price($prepaid_received, $currency).'</span>
             </td></tr>';
 
-        $amount_to_pay = $total_with_coupon - $prepaid_received;
+        $amount_to_pay = $order_total - $prepaid_received;
 
         $output .= '
             <tr><td class="order_items_row_total order_items_row_due" colspan="2">

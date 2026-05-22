@@ -695,6 +695,22 @@ class BABE_Order {
      }
 
      /**
+	 * Get order rewards points discount amount
+	 */
+     public static function get_order_rewards_points_discount( int $order_id ): float
+     {
+        return (float)get_post_meta($order_id, '_rewards_points_discount', true);
+     }
+
+     /**
+	 * Get order rewards points spent
+	 */
+     public static function get_order_rewards_points_spent( int $order_id ): int
+     {
+        return (float)get_post_meta($order_id, '_rewards_points_spent', true);
+     }
+
+     /**
 	 * Get order payment method
      * @param int $order_id
      * @return string

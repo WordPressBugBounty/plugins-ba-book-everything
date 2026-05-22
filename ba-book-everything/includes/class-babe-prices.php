@@ -1223,6 +1223,14 @@ class BABE_Prices {
             $price['total_with_taxes'] -= $price['total_coupon_amount_applied'];
         }
 
+        $price['total_rewards_points_discount'] = 0;
+
+        if ( !empty($price_arr['rewards_points']['points_discount']) ){
+            $price['total_rewards_points_discount'] = round( $price_arr['rewards_points']['points_discount'], $precision);
+            $price['total_with_taxes'] -= $price['total_rewards_points_discount'];
+            $price['total_with_taxes'] = max( 0, $price['total_with_taxes'] );
+        }
+
         $price['total_payment_gateway_fee'] = 0;
 
         if ( isset($price_arr['payment_gateway_fee']) && is_array($price_arr['payment_gateway_fee']) ){
@@ -1464,6 +1472,10 @@ class BABE_Prices {
             $prices[ 'coupon' ] = [
                 'coupon_num' => BABE_Order::get_order_coupon_num($order_id),
                 'coupon_amount_applied' => BABE_Order::get_order_coupon_amount_applied($order_id)
+            ];
+
+            $prices[ 'rewards_points' ] = [
+                'points_discount' => BABE_Order::get_order_rewards_points_discount($order_id),
             ];
 
             $order_items = BABE_Order::get_order_items($order_id);

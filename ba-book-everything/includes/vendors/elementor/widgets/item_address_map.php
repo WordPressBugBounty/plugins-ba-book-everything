@@ -117,7 +117,7 @@ class BABE_Elementor_Itemaddressmap_Widget extends \Elementor\Widget_Base {
           if (jQuery('#block_address_map').length > 0){
               init_address_map('#google_map_address');
           }
-          function init_address_map(map_div){
+          async function init_address_map(map_div){
         
         var dom_obj = jQuery(map_div)[0];
         var post_id = jQuery(map_div).data('obj-id');
@@ -125,33 +125,32 @@ class BABE_Elementor_Itemaddressmap_Widget extends \Elementor\Widget_Base {
         var var_lng = parseFloat(jQuery(map_div).data('lng'));
         var address = jQuery(map_div).data('address'); 
         
-        var map = new google.maps.Map(dom_obj, {
+        const { Map } = await google.maps.importLibrary('maps');
+        const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary('marker');
+
+        var map = new Map(dom_obj, {
           center: {lat: var_lat, lng: var_lng},
         //  mapTypeControl: false,
         //  panControl: false,
         //  streetViewControl: false,
-          zoom: parseInt(babe_lst.start_zoom)
+          zoom: parseInt(babe_lst.start_zoom),
+          mapId: 'DEMO_MAP_ID'
         });
-        
+
         var infowindow = new google.maps.InfoWindow();
-        var marker = new google.maps.Marker({
-          map: map,
-          position: {lat: var_lat, lng: var_lng}
+
+        const pin = new PinElement({
+            glyphSrc: babe_lst.marker_icon
         });
-        
-        marker.setIcon(/** @type {google.maps.Icon} */({
-            url: babe_lst.marker_icon,
-            size: new google.maps.Size(40, 50),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(20, 50)
-          }));
-          
-          marker.setShape({
-                coords: [1, 1, 1, 50, 40, 50, 40, 1],
-                type: 'poly'
-            });
+
+        var marker = new AdvancedMarkerElement({
+            map: map,
+            position: {lat: var_lat, lng: var_lng},
+            content: pin
+        });
+
           infowindow.setContent('<div>' + address + '</div>');
-          infowindow.open(map, marker);     
+          infowindow.open(map, marker);
         
     }
          </script>";

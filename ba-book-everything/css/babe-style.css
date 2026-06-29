@@ -88,6 +88,8 @@
     border: 1px solid #aaa;
     border-radius: 5px;
     padding: 5px;
+    align-items: center;
+    gap: 8px;
 }
 
 .meeting-points .address-autocomplete{
@@ -114,6 +116,17 @@
     line-height: unset;
     font-size: 14px;
     font-weight: 500;
+}
+
+/* new PlaceAutocompleteElement fills the row so the Search button sits next to it, vertically centered */
+.meeting_points_search gmp-place-autocomplete{
+    flex: 1 1 auto;
+    min-width: 0;        /* allow the field to shrink instead of overlapping the Search button */
+    color-scheme: light; /* keep the field light even when the browser is in dark mode */
+}
+
+.meeting_points_search .find_points{
+    flex: 0 0 auto;      /* button keeps its size next to the field */
 }
 
 #travel_mode_panel, #travel_mode_panel_modal{

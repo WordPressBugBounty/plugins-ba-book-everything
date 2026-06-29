@@ -1958,6 +1958,7 @@ $(document).ready(function(){
             $(gmap_div).data('lng', $(this).data('lng'));
             $(gmap_div).data('address', $(this).data('address'));
 
+            $('#block_address_map_with_direction').remove('.address-autocomplete');
             $('#block_address_map_with_direction').append(babe_lst.travel_mode_html);
 
             babe_overlay_open();
@@ -2310,22 +2311,69 @@ function getUrlParameter(sParam) {
 
 //////////////make route/////////////////////
     
-    function make_route(directionsRenderer, directionsService, origin, destination){
-        var selectedMode = $('#travel_mode').val();
-        directionsService.route({
-          origin: origin,
-          destination: destination,
-          // Note that Javascript allows us to access the constant
-          // using square brackets and a string value as its
-          // "property."
-          travelMode: google.maps.TravelMode[selectedMode]
-        }, function(response, status) {
-          if (status == 'OK') {
-              directionsRenderer.setDirections(response);
-          } else {
-            // window.alert('Directions request failed due to ' + status);
-          }
+    async function make_route(map, origin, destination){
+        var selectedMode = $('#travel_mode').val() || 'DRIVING';
+
+        // remember the last route so it can be recomputed when the travel mode changes
+        map.__babeRouteOrigin = origin;
+        map.__babeRouteDestination = destination;
+
+        // The new Routes API has no auto-replacing renderer, so we keep a
+        // reference to the drawn polylines on the map and clear them ourselves.
+        if (map.__babeRoutePolylines){
+            map.__babeRoutePolylines.forEach(function(polyline){ polyline.setMap(null); });
+        }
+        map.__babeRoutePolylines = [];
+
+        try {
+            const { Route } = await google.maps.importLibrary("routes");
+            const { routes } = await Route.computeRoutes({
+              origin: origin,
+              destination: destination,
+              travelMode: selectedMode,
+              fields: ['path']
+            });
+            if (routes && routes[0]){
+                var polylines = routes[0].createPolylines();
+                polylines.forEach(function(polyline){ polyline.setMap(map); });
+                map.__babeRoutePolylines = polylines;
+            }
+        } catch (e) {
+            // route could not be computed; leave the map without a drawn route
+            // window.alert('Directions request failed due to ' + e);
+        }
+    }
+
+    // Resolve a PlacePrediction into a Place (with the fields we use) and recenter the map on it.
+    async function babe_resolve_place(placePrediction, map, zoom){
+        var place = placePrediction.toPlace();
+        await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location', 'viewport'] });
+        if (place.viewport){
+            map.fitBounds(place.viewport);
+        } else {
+            map.setCenter(place.location);
+            if (zoom){ map.setZoom(zoom); }
+        }
+        return place;
+    }
+
+    // Recompute the drawn route whenever the travel-mode select inside `panelSelector` changes.
+    function babe_bind_travel_mode_recompute(map, panelSelector){
+        $(panelSelector).find('select').off('change.babeRoute').on('change.babeRoute', function(){
+            if (map.__babeRouteOrigin && map.__babeRouteDestination){
+                make_route(map, map.__babeRouteOrigin, map.__babeRouteDestination);
+            }
         });
+    }
+
+    // Hide the legacy autocomplete <input> and return a PlaceAutocompleteElement that
+    // reuses its (translated) placeholder. The caller decides where to place the element.
+    async function babe_make_place_autocomplete(autocomplete_selector){
+        const { PlaceAutocompleteElement } = await google.maps.importLibrary("places");
+        $(autocomplete_selector).hide();
+        var placeAutocomplete = new PlaceAutocompleteElement();
+        placeAutocomplete.placeholder = $(autocomplete_selector).attr('placeholder') || '';
+        return placeAutocomplete;
     }
 
 /////////////init_address_map////////////////
@@ -2352,16 +2400,14 @@ function getUrlParameter(sParam) {
         
         var infowindow = new google.maps.InfoWindow();
 
-        const glyphImg = document.createElement("img");
-        glyphImg.src = babe_lst.marker_icon;
         const pin = new PinElement({
-            glyph: glyphImg,
+            glyphSrc: babe_lst.marker_icon,
         });
 
         var marker = new AdvancedMarkerElement({
             map: map,
             position: {lat: var_lat, lng: var_lng},
-            content: pin.element,
+            content: pin,
         });
 
           infowindow.setContent('<div>' + address + '</div>');
@@ -2381,12 +2427,8 @@ function getUrlParameter(sParam) {
         if (post_id != ''){
 
             const { Map } = await google.maps.importLibrary("maps");
-            const {DirectionsService, DirectionsRenderer} = await google.maps.importLibrary("routes");
             const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
-            var directionsRenderer = new DirectionsRenderer();
-            var directionsService = new DirectionsService();
-        
         var map = new Map(dom_obj, {
           center: {lat: var_lat, lng: var_lng},
           mapTypeControl: false,
@@ -2396,34 +2438,33 @@ function getUrlParameter(sParam) {
             mapId: 'DEMO_MAP_ID_2',
         });
 
-            directionsRenderer.setMap(map);
-        
-        var input = $(autocomplete_selector)[0];
+        // legacy <input> replaced by the new PlaceAutocompleteElement web component
+        var placeAutocomplete = await babe_make_place_autocomplete(autocomplete_selector);
+        placeAutocomplete.style.width = '250px';
 
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(placeAutocomplete);
         map.controls[google.maps.ControlPosition.TOP_LEFT].push($(travel_mode_panel_selector)[0]);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-        var autocomplete = new google.maps.places.Autocomplete(input, {
-              types: []
-            });
-        autocomplete.bindTo('bounds', map);
-        
         var infowindow_from = new google.maps.InfoWindow();
         var infowindow_to = new google.maps.InfoWindow();
 
-            const glyphImg = document.createElement("img");
-            glyphImg.src = babe_lst.marker_icon;
-            const pin = new PinElement({
-                glyph: glyphImg,
+            // each AdvancedMarkerElement needs its own PinElement: a DOM node can
+            // only live in one marker, so a shared pin would leave one marker iconless
+            const pin_from = new PinElement({
+                glyphSrc: babe_lst.marker_icon,
+            });
+            const pin_to = new PinElement({
+                glyphSrc: babe_lst.marker_icon,
             });
 
-            var marker_args = {
+            var marker_from = new AdvancedMarkerElement({
                 map: map,
-                content: pin.element,
-            };
-
-            var marker_from = new AdvancedMarkerElement(marker_args);
-            var marker_to = new AdvancedMarkerElement(marker_args);
+                content: pin_from,
+            });
+            var marker_to = new AdvancedMarkerElement({
+                map: map,
+                content: pin_to,
+            });
         
         marker_from.position = {lat: var_lat, lng: var_lng};
         
@@ -2440,52 +2481,34 @@ function getUrlParameter(sParam) {
         
         var selected_lat, selected_lng;
 
-        autocomplete.addListener('place_changed', function() {
+        placeAutocomplete.addEventListener('gmp-select', async function({ placePrediction }) {
           infowindow_to.close();
             marker_to.visible = false;
 
-          var place = autocomplete.getPlace();
-          
-          // If the place has a geometry, then present it on a map.
-          if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-          } else {
-            map.setCenter(place.geometry.location);
-            //map.setZoom(17);  // Why 17? Because it looks good.
-          }
-          
-          selected_lat = place.geometry.location.lat();
-          selected_lng = place.geometry.location.lng();
-          
-          marker_to.position = place.geometry.location;
+          var place = await babe_resolve_place(placePrediction, map);
+
+          selected_lat = place.location.lat();
+          selected_lng = place.location.lng();
+
+          marker_to.position = place.location;
             marker_to.visible = true;
 
-          var address = '';
-          var selected_address = '';
-          if (place.address_components) {
-            address = [
-              (place.address_components[0] && place.address_components[0].short_name || ''),
-              (place.address_components[1] && place.address_components[1].short_name || ''),
-              (place.address_components[2] && place.address_components[2].short_name || ''),
-              (place.address_components[4] && place.address_components[4].short_name || ''),
-              (place.address_components[6] && place.address_components[6].long_name || '')
-            ].join(', ');
-            selected_address = $(autocomplete_selector).val();
-          }
-
-          infowindow_to.setContent('<div><strong>' + place.name + '</strong><br>' + address + '</div>');
+          infowindow_to.setContent('<div><strong>' + (place.displayName || '') + '</strong><br>' + (place.formattedAddress || '') + '</div>');
           infowindow_to.open(map, marker_to);
-          
+
           var destination = {lat: var_lat, lng: var_lng};
           var origin = {lat: selected_lat, lng: selected_lng};
-          make_route(directionsRenderer, directionsService, origin, destination);
-          
+          make_route(map, origin, destination);
+
         });
-        
-        }      
-        
+
+        // recompute the current route when the travel mode changes
+        babe_bind_travel_mode_recompute(map, travel_mode_panel_selector);
+
+        }
+
     }
-    
+
 /////////////init_meeting_map////////////////
     
     async function init_meeting_map(map_div, autocomplete_selector, button_go){
@@ -2504,12 +2527,8 @@ function getUrlParameter(sParam) {
         }
 
         const { Map } = await google.maps.importLibrary("maps");
-        const { DirectionsService, DirectionsRenderer } = await google.maps.importLibrary("routes");
         const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
-        var directionsRenderer = new DirectionsRenderer();
-        var directionsService = new DirectionsService();
-        
         var map = new Map(dom_obj, {
           center: {lat: var_lat, lng: var_lng},
           mapTypeControl: false,
@@ -2519,29 +2538,22 @@ function getUrlParameter(sParam) {
           mapId: 'DEMO_MAP_ID',
         });
 
-        directionsRenderer.setMap(map);
-        
-        var input = $(autocomplete_selector)[0];
+        // legacy <input> replaced by the new PlaceAutocompleteElement web component
+        var placeAutocomplete = await babe_make_place_autocomplete(autocomplete_selector);
+        $(autocomplete_selector).after(placeAutocomplete);
 
         map.controls[google.maps.ControlPosition.TOP_LEFT].push($('#travel_mode_panel')[0]);
         //map.controls[google.maps.ControlPosition.TOP_LEFT].push($(button_go)[0]);
 
-        var autocomplete = new google.maps.places.Autocomplete(input, {
-              types: []
-            });
-        autocomplete.bindTo('bounds', map);
-
         var infowindow = new google.maps.InfoWindow();
 
-        const glyphImg = document.createElement("img");
-        glyphImg.src = babe_lst.marker_icon;
         const pin = new PinElement({
-            glyph: glyphImg,
+            glyphSrc: babe_lst.marker_icon,
         });
 
         var marker_args = {
           map: map,
-          content: pin.element,
+          content: pin,
         };
         
         //var marker_from = new google.maps.Marker(marker_args);
@@ -2550,44 +2562,28 @@ function getUrlParameter(sParam) {
         
         var selected_lat, selected_lng;
 
-        autocomplete.addListener('place_changed', function() {
+        placeAutocomplete.addEventListener('gmp-select', async function({ placePrediction }) {
           infowindow.close();
           marker_to.visible = false;
-          var place = autocomplete.getPlace();
-          
-          // If the place has a geometry, then present it on a map.
-          if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-          } else {
-            map.setCenter(place.geometry.location);
-            map.setZoom(17);  // Why 17? Because it looks good.
-          }
-          
-          selected_lat = place.geometry.location.lat();
-          selected_lng = place.geometry.location.lng();
-          
-          marker_to.position = place.geometry.location;
+
+          var place = await babe_resolve_place(placePrediction, map, 17);
+
+          selected_lat = place.location.lat();
+          selected_lng = place.location.lng();
+
+          marker_to.position = place.location;
           marker_to.visible = true;
 
-          var address = '';
-          var selected_address = '';
-          if (place.address_components) {
-            address = [
-              (place.address_components[0] && place.address_components[0].short_name || ''),
-              (place.address_components[1] && place.address_components[1].short_name || ''),
-              (place.address_components[2] && place.address_components[2].short_name || ''),
-              (place.address_components[4] && place.address_components[4].short_name || ''),
-              (place.address_components[6] && place.address_components[6].long_name || '')
-            ].join(', ');
-            selected_address = $(autocomplete_selector).val();
-          }
-
-          infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address + '</div>');
+          infowindow.setContent('<div><strong>' + (place.displayName || '') + '</strong><br>' + (place.formattedAddress || '') + '</div>');
           infowindow.open(map, marker_to);
-          
-          $(button_go).on('click', function(el){
+        });
+
+        // Bound once here (not inside gmp-select) so the handlers don't accumulate on each
+        // address pick; namespaced off/on keeps it idempotent if init runs again.
+        $(button_go).off('click.babeMeeting').on('click.babeMeeting', function(el){
              el.stopPropagation();
              el.preventDefault();
+             if (selected_lat == null || selected_lng == null){ return; } // no address chosen yet
              //// get_meeting_points
              $('#meeting_points_result').html('<span class="spin_f"><i class="fas fa-spinner fa-spin fa-2x"></i></span>');      
         $.ajax({
@@ -2608,7 +2604,7 @@ function getUrlParameter(sParam) {
         });
           });
           
-          $('#meeting_points_result').on('click', '.add_destination', function(el){
+        $('#meeting_points_result').off('click.babeMeeting', '.add_destination').on('click.babeMeeting', '.add_destination', function(el){
              el.stopPropagation();
              el.preventDefault();
              var llat = $(this).data('lat'),
@@ -2617,12 +2613,13 @@ function getUrlParameter(sParam) {
                  point_id = $(this).data('point-id');
              var destination = {lat: parseFloat(llat), lng: parseFloat(llng)};
              var origin = {lat: selected_lat, lng: selected_lng};
-             make_route(directionsRenderer, directionsService, origin, destination);
+             make_route(map, origin, destination);
              update_current_meeting_point(point_id);
-          });
-          
-        });      
-        
+        });
+
+        // recompute the current route when the travel mode changes
+        babe_bind_travel_mode_recompute(map, '#travel_mode_panel');
+
     }
 
     /////////////////////////////////////////

@@ -507,7 +507,8 @@ $(document).ready(function(){
 
         const { Map } = await google.maps.importLibrary("maps");
         const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-        
+        const { PlaceAutocompleteElement } = await google.maps.importLibrary("places");
+
         var map = new Map(dom_obj, {
           center: {lat: parseFloat(babe_cmb2_lst.start_lat), lng: parseFloat(babe_cmb2_lst.start_lng)},
           mapTypeControl: false,
@@ -517,55 +518,51 @@ $(document).ready(function(){
             mapId: 'DEMO_MAP_ID',
         });
         
-        var input = $(autocomplete_selector)[0];
+        // legacy <input> replaced by the new PlaceAutocompleteElement web component
+        $(autocomplete_selector).hide();
 
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push($(button_save)[0]);
+        var placeAutocomplete = new PlaceAutocompleteElement();
+        placeAutocomplete.style.width = '300px';
+        placeAutocomplete.style.display = 'block';
 
-        var autocomplete = new google.maps.places.Autocomplete(input, {
-              types: []
-            });
-        autocomplete.bindTo('bounds', map);
+        // Wrap the autocomplete and the button into a single map control so the
+        // map's control stacking can't overlap the new web component with the button.
+        var controlWrap = document.createElement('div');
+        controlWrap.appendChild(placeAutocomplete);
+        controlWrap.appendChild($(button_save)[0]);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(controlWrap);
 
         var infowindow = new google.maps.InfoWindow();
 
         var marker = new AdvancedMarkerElement({
           map: map,
         });
-        
+
         var selected_address = '';
         var selected_lat, selected_lng;
 
-        autocomplete.addListener('place_changed', function() {
+        placeAutocomplete.addEventListener('gmp-select', async function({ placePrediction }) {
           infowindow.close();
-          var place = autocomplete.getPlace();
-          
-          // If the place has a geometry, then present it on a map.
-          if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
+
+          var place = placePrediction.toPlace();
+          await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location', 'viewport'] });
+
+          // If the place has a viewport, then present it on a map.
+          if (place.viewport) {
+            map.fitBounds(place.viewport);
           } else {
-            map.setCenter(place.geometry.location);
+            map.setCenter(place.location);
             map.setZoom(17);  // Why 17? Because it looks good.
           }
-          
-          selected_lat = place.geometry.location.lat();
-          selected_lng = place.geometry.location.lng();
 
-          marker.position = place.geometry.location;
+          selected_lat = place.location.lat();
+          selected_lng = place.location.lng();
 
-          var address = '';
-          if (place.address_components) {
-            address = [
-              (place.address_components[0] && place.address_components[0].short_name || ''),
-              (place.address_components[1] && place.address_components[1].short_name || ''),
-              (place.address_components[2] && place.address_components[2].short_name || ''),
-              (place.address_components[4] && place.address_components[4].short_name || ''),
-              (place.address_components[6] && place.address_components[6].long_name || '')
-            ].join(', ');
-            selected_address = $(autocomplete_selector).val();
-          }
+          marker.position = place.location;
 
-          infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+          selected_address = place.formattedAddress || place.displayName || '';
+
+          infowindow.setContent('<div><strong>' + (place.displayName || '') + '</strong><br>' + (place.formattedAddress || '') + '</div>');
           infowindow.open(map, marker);
         });
         

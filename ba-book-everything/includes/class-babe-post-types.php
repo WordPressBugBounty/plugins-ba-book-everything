@@ -2130,6 +2130,10 @@ class BABE_Post_types {
 
         foreach($post['meeting_points'] as $meeting_point){
 
+            if ( empty($meeting_point['place']) ){
+                continue;
+            }
+
             $place_id = $meeting_point['place'];
             $address_arr = get_post_meta($place_id, 'address', true);
             $description = get_post_meta($place_id, 'description', true);

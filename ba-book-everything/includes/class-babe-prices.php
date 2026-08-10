@@ -107,25 +107,19 @@ class BABE_Prices {
         wp_enqueue_style( 'babe-prices', plugins_url( "css/admin/babe-admin-prices.css", BABE_PLUGIN ), array(), BABE_VERSION);
     }
 
-//////////////////////////////
-    /**
-	 * Get rate for $booking_obj_id
-     * @param int $rate_id
-     * @param int $booking_obj_id
-     * @return array
-	 */
-    public static function get_rate_by_id($rate_id, $booking_obj_id = 0) {
-       global $wpdb;
-       
-       $clauses = '';
-       
-       if ($booking_obj_id){
-           $clauses .= " AND booking_obj_id = ".(int)$booking_obj_id;
-       }
+    public static function get_rate_by_id(int $rate_id, int $booking_obj_id = 0): array
+    {
+        global $wpdb;
 
-        $rate = $wpdb->get_row("SELECT * FROM ".self::$table_rate." WHERE rate_id = ".absint($rate_id).$clauses, ARRAY_A);
+        $clauses = '';
 
-        return array_map( 'maybe_unserialize', $rate);
+        if ( $booking_obj_id > 0 ){
+            $clauses .= " AND booking_obj_id = " . $booking_obj_id;
+        }
+
+        $rate = $wpdb->get_row("SELECT * FROM ".self::$table_rate." WHERE rate_id = " . absint($rate_id) . $clauses, ARRAY_A);
+
+        return $rate !== null ? array_map( 'maybe_unserialize', $rate) : [];
 	}
 
     /**
@@ -807,63 +801,63 @@ class BABE_Prices {
         echo $output;
         wp_die();  
     }
-    
-///////////ajax_check_base_rate////////
-    /**
-	 * Is there a base rate?
-	 */
+
     public static function ajax_check_base_rate(){
-        $output = '';
-        
-        if (isset($_POST['post_id'], $_POST['nonce']) && wp_verify_nonce($_POST['nonce'], self::$nonce_title) && BABE_Users::current_user_can_edit_post($_POST['post_id'])){
-             $post_id = (int)$_POST['post_id'];
-             $output = self::base_rate_exists($post_id) ? 1 : '';
-        }     
+
+        if (
+            !isset($_POST['post_id'], $_POST['nonce'])
+            || !wp_verify_nonce($_POST['nonce'], self::$nonce_title)
+            || !BABE_Users::current_user_can_edit_post($_POST['post_id'])
+        ){
+            echo '';
+            wp_die();
+        }
+
+        $post_id = (int)$_POST['post_id'];
+        $output = self::base_rate_exists($post_id) ? 1 : '';
         
         echo $output;
         wp_die();  
     }
-    
-//////////////ajax_delete_rate/////////    
-    /**
-	 * Delete selected rate.
-	 */
+
     public static function ajax_delete_rate(){
+
+        if (
+            !isset($_POST['post_id'], $_POST['rate_id'], $_POST['nonce'])
+            || !wp_verify_nonce($_POST['nonce'], self::$nonce_title)
+            || !BABE_Users::current_user_can_edit_post($_POST['post_id'])
+        ){
+            echo 0;
+            wp_die();
+        }
+
+        $rate_id = absint($_POST['rate_id']);
+        $result = self::delete_rate_by_id( $rate_id, absint($_POST['post_id']) );
         
-        $output = 0;
-        
-        if (isset($_POST['post_id'], $_POST['rate_id'], $_POST['nonce']) && wp_verify_nonce($_POST['nonce'], self::$nonce_title) && BABE_Users::current_user_can_edit_post($_POST['post_id'])){
-           $rate_id = absint($_POST['rate_id']);
-           $output = self::delete_rate_by_id($rate_id); 
+        echo $result ? 1 : 0;
+        wp_die();
+    }
+
+    public static function delete_rate_by_id(int $rate_id, int $booking_obj_id = 0): bool
+    {
+        global $wpdb;
+
+        $clauses = '';
+
+        if ( $booking_obj_id > 0 ){
+            $clauses .= " AND booking_obj_id = " . $booking_obj_id;
         }
         
-        echo (int)$output;
-        wp_die();  
-    }
-    
-///////////////////////    
-    /**
-	 * Delete rate by id
-     * 
-     * @param int $rate_id
-     * 
-     * @return int
-	 */
-    public static function delete_rate_by_id($rate_id){
-        global $wpdb;
-        
-        $output = 0;
-        
-        $rate_id = absint($rate_id); 
-        $old_rate = $wpdb->get_row("SELECT * FROM ".self::$table_rate." WHERE rate_id = ".$rate_id, ARRAY_A);
-       
-       if(!empty($old_rate)){
-           /// delete from DB
-           $wpdb->query( $wpdb->prepare( 'DELETE FROM '.self::$table_rate.' WHERE rate_id = %d', $rate_id ) );
-           $output = 1;
-       }
-            
-       return $output;  
+        $rate_id = absint($rate_id);
+        $old_rate = $wpdb->get_row("SELECT * FROM ".self::$table_rate." WHERE rate_id = " . $rate_id . $clauses, ARRAY_A);
+
+        if( empty($old_rate) ){
+            return false;
+        }
+
+        $wpdb->query( "DELETE FROM " . self::$table_rate . " WHERE rate_id = " . $rate_id . $clauses );
+
+        return true;
     }
     
 ///////////////////////    
@@ -882,7 +876,7 @@ class BABE_Prices {
         $booking_obj_id = absint($booking_obj_id); 
         $old_discounts = $wpdb->get_results("SELECT * FROM ".self::$table_discount." WHERE booking_obj_id = ".$booking_obj_id, ARRAY_A);
        
-       if(!empty($old_discounts)){
+       if( !empty($old_discounts) ){
            /// delete from DB
            $wpdb->query( $wpdb->prepare( 'DELETE FROM '.self::$table_discount.' WHERE booking_obj_id = %d', $booking_obj_id) );
            
@@ -1050,7 +1044,7 @@ class BABE_Prices {
 
         $rate_id = $post_arr['rate_id'];
         if( !empty($rate_id) ){
-            $rate = self::get_rate_by_id($rate_id, $post_arr['post_id']);
+            $rate = self::get_rate_by_id( (int)$rate_id, (int)$post_arr['post_id'] );
             if( empty($rate) ){
                 return $output;
             }

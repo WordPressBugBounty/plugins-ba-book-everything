@@ -2031,10 +2031,12 @@ class BABE_Order {
 
         $services = !empty($arr['booking_services']) ? array_map('absint', (array)$arr['booking_services']) : [];
 
-        $mandatory_services = BABE_Post_types::get_post_mandatory_service_ids(BABE_Post_types::get_post($arr['booking_obj_id']));
-        if ( !empty($mandatory_services) ){
-            $services = array_merge($services, array_map('absint', $mandatory_services));
+        $mandatory_service_ids = BABE_Post_types::get_post_mandatory_service_ids(BABE_Post_types::get_post($arr['booking_obj_id']));
+        if ( !empty($mandatory_service_ids) ){
+            $services = array_merge($services, $mandatory_service_ids);
         }
+
+        $available_service_ids = BABE_Post_types::get_post_service_ids(BABE_Post_types::get_post($arr['booking_obj_id']));
 
         $service_qty = isset($arr['booking_service_qty']) && is_array($arr['booking_service_qty']) ? $arr['booking_service_qty'] : [];
 
@@ -2042,6 +2044,11 @@ class BABE_Order {
 
         if ( !empty($services) ){
             foreach($services as $service_id){
+
+                if( !in_array($service_id, $available_service_ids) ){
+                    continue;
+                }
+
                 if ( !isset($service_qty[$service_id]) || !is_array($service_qty[$service_id]) ){
                     foreach( $guest_ages as $age_id => $age_id_val){
                         if ( empty($output['guests'][$age_id]) ){

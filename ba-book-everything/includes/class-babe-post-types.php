@@ -1996,15 +1996,12 @@ class BABE_Post_types {
 
     }
 
-/////////////////////
-    /**
-     * Get post mandatory service ids.
-     *
-     * @param array $post
-     *
-     * @return array
-     */
-    public static function get_post_mandatory_service_ids($post) {
+    public static function get_post_mandatory_service_ids(array $post): array {
+
+        return self::get_post_service_ids($post, true);
+    }
+
+    public static function get_post_service_ids(array $post, bool $mandatory_only = false) {
 
         $output = [];
 
@@ -2014,10 +2011,11 @@ class BABE_Post_types {
             return $output;
         }
 
-        foreach($services as $i => $service){
-            if ( $service['is_mandatory'] ){
-                $output[] = $service['ID'];
+        foreach($services as $service){
+            if( $mandatory_only && (int)$service['is_mandatory'] !== 1 ){
+                continue;
             }
+            $output[] = (int)$service['ID'];
         }
 
         return $output;

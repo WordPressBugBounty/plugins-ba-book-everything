@@ -3762,22 +3762,43 @@ class BABE_html {
     public static function ajax_apply_coupon_to_order(){
         
         $output = 0;
-        
-        if (isset($_POST['nonce']) && wp_verify_nonce( $_POST['nonce'], self::$nonce_title ) && BABE_Coupons::coupons_active()){
-           $args = wp_parse_args( $_POST, array(
+
+        if (
+            !isset($_POST['nonce'])
+            || !wp_verify_nonce( $_POST['nonce'], self::$nonce_title )
+            || !BABE_Coupons::coupons_active()
+        ){
+            echo $output;
+            wp_die();
+        }
+
+        $args = wp_parse_args( $_POST, array(
             'order_id' => 0,
             'order_num' => '',
             'order_hash' => '',
             'coupon_num' => '',
-           ));
-           $order_id = absint($args['order_id']);
-           $coupon_num = sanitize_text_field($args['coupon_num']);
-           
-           if (BABE_Order::is_order_valid($order_id, $args['order_num'], $args['order_hash'])){
-               $output = (int)BABE_Coupons::apply_coupon_to_the_order($order_id, $coupon_num);
-               BABE_Order::recalculate_order_total_amount($order_id);
-           }  
+        ));
+        $order_id = absint($args['order_id']);
+        $coupon_num = sanitize_text_field($args['coupon_num']);
+
+        if ( !BABE_Order::is_order_valid($order_id, $args['order_num'], $args['order_hash']) ){
+            echo $output;
+            wp_die();
         }
+
+        $order_status = BABE_Order::get_order_status($order_id);
+        if (
+            !in_array( $order_status, [
+                'payment_expected',
+                'draft',
+            ])
+        ){
+            echo $output;
+            wp_die();
+        }
+
+        $output = (int)BABE_Coupons::apply_coupon_to_the_order($order_id, $coupon_num);
+        BABE_Order::recalculate_order_total_amount($order_id);
         
         echo $output;
         wp_die();                   
@@ -3791,21 +3812,42 @@ class BABE_html {
 
         $output = 0;
 
-        if (isset($_POST['nonce']) && wp_verify_nonce( $_POST['nonce'], self::$nonce_title ) && BABE_Coupons::coupons_active()){
-            $args = wp_parse_args( $_POST, array(
-                'order_id' => 0,
-                'order_num' => '',
-                'order_hash' => '',
-                'coupon_num' => '',
-            ));
-            $order_id = absint($args['order_id']);
-            $coupon_num = sanitize_text_field($args['coupon_num']);
-
-            if (BABE_Order::is_order_valid($order_id, $args['order_num'], $args['order_hash'])){
-                $output = (int)BABE_Coupons::remove_coupon_from_the_order($order_id, $coupon_num);
-                BABE_Order::recalculate_order_total_amount($order_id);
-            }
+        if (
+            !isset($_POST['nonce'])
+            || !wp_verify_nonce( $_POST['nonce'], self::$nonce_title )
+            || !BABE_Coupons::coupons_active()
+        ){
+            echo $output;
+            wp_die();
         }
+
+        $args = wp_parse_args( $_POST, array(
+            'order_id' => 0,
+            'order_num' => '',
+            'order_hash' => '',
+            'coupon_num' => '',
+        ));
+        $order_id = absint($args['order_id']);
+        $coupon_num = sanitize_text_field($args['coupon_num']);
+
+        if ( !BABE_Order::is_order_valid($order_id, $args['order_num'], $args['order_hash']) ){
+            echo $output;
+            wp_die();
+        }
+
+        $order_status = BABE_Order::get_order_status($order_id);
+        if (
+            !in_array( $order_status, [
+                'payment_expected',
+                'draft',
+            ])
+        ){
+            echo $output;
+            wp_die();
+        }
+
+        $output = (int)BABE_Coupons::remove_coupon_from_the_order($order_id, $coupon_num);
+        BABE_Order::recalculate_order_total_amount($order_id);
 
         echo $output;
         wp_die();

@@ -4297,7 +4297,7 @@ class BABE_html {
                 
                <div class="checkout_form_input_field '.$add_content_class.'">
                    <label class="checkout_form_input_label">'.self::checkout_field_label($field_name).'</label>
-				   <input type="text" class="checkout_input_field checkout_input_required" name="'.$field_name.'" id="'.$field_name.'" value="'.$field_content.'" '.apply_filters('babe_checkout_field_required', '', $field_name).'/>
+				   <input type="text" class="checkout_input_field checkout_input_required" name="'.esc_attr($field_name).'" id="'.esc_attr($field_name).'" value="'.esc_attr($field_content).'" '.apply_filters('babe_checkout_field_required', '', $field_name).'/>
                    <div class="checkout_form_input_underline"><span class="checkout_form_input_ripple"></span></div>
 			   </div>
                

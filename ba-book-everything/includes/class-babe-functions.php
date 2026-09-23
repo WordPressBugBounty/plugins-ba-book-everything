@@ -647,6 +647,35 @@ public static function pager($max_num_pages){
         }
         return $services;
     }
-    
-///////////////////////////////////////
+
+    public static function clear_string_from_special_chars( string $string ): string
+    {
+        if ( empty($string) ){
+            return '';
+        }
+
+        $string = str_replace(
+            [
+                '"', "'", '/', '|', '@', '%', '^', '&', '*', '?', '{', '}', '[', ']',
+                '!', '(', ')', '<', '>', '_', '=', '+', '-', '$', '#', '~', '\\',
+            ],
+            '',
+            trim( $string )
+        );
+
+        return trim( $string );
+    }
+
+    public static function sanitize_phone(string $phone): string
+    {
+        // Allow +, - in phone number
+        $filtered_phone_number = filter_var($phone, FILTER_SANITIZE_NUMBER_INT);
+        // Remove "-" from number
+        $phone = str_replace("-", "", $filtered_phone_number);
+        // Check the length of number
+        if (strlen($phone) < 8 || strlen($phone) > 15) {
+            $phone = '';
+        }
+        return $phone;
+    }
 }

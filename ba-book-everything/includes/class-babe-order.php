@@ -2515,15 +2515,21 @@ class BABE_Order {
 
         $output['order_num'] = isset($arr['order_num']) ? sanitize_text_field($arr['order_num']) : '';
 
-        $output['order_hash'] = isset($arr['order_hash']) ? sanitize_text_field($arr['order_hash']) : '';
+        $output['order_hash'] = isset($arr['order_hash'])
+            ? BABE_Functions::clear_string_from_special_chars( sanitize_text_field($arr['order_hash']) ) : '';
 
         $output['action'] = isset($arr['action']) ? sanitize_text_field($arr['action']) : '';
 
-        $output['first_name'] = isset($arr['first_name']) ? sanitize_text_field($arr['first_name']) : '';
-        $output['last_name'] = isset($arr['last_name']) ? sanitize_text_field($arr['last_name']) : '';
+        $output['first_name'] = isset($arr['first_name'])
+            ? BABE_Functions::clear_string_from_special_chars( sanitize_text_field($arr['first_name']) ) : '';
+        $output['last_name'] = isset($arr['last_name'])
+            ? BABE_Functions::clear_string_from_special_chars( sanitize_text_field($arr['last_name']) ) : '';
+
         $output['email'] = isset($arr['email']) ? sanitize_email($arr['email']) : '';
         $output['email_check'] = isset($arr['email_check']) ? sanitize_email($arr['email_check']) : '';
-        $output['phone'] = isset($arr['phone']) ? sanitize_text_field($arr['phone']) : '';
+
+        $output['phone'] = isset($arr['phone'])
+            ? BABE_Functions::sanitize_phone($arr['phone']) : '';
 
         if ( !empty($arr['extra_guests']) && is_array($arr['extra_guests']) ){
 
@@ -2551,7 +2557,9 @@ class BABE_Order {
                             continue;
                         }
                     } else {
-                        $guest_data_value = sanitize_text_field($guest_data_value);
+                        $guest_data_value = BABE_Functions::clear_string_from_special_chars(
+                            sanitize_text_field($guest_data_value)
+                        );
                     }
 
                     $output['extra_guests'][$i][$guest_data_key] = $guest_data_value;
@@ -2574,8 +2582,15 @@ class BABE_Order {
             && !empty($states[ $output['billing_address']['country'] ][ $arr['billing_address']['state'] ])
                 ? $arr['billing_address']['state'] : '';
 
-            $output['billing_address']['city'] = !empty($arr['billing_address']['city']) ? sanitize_text_field($arr['billing_address']['city']) : '';
-            $output['billing_address']['address'] = !empty($arr['billing_address']['address']) ? sanitize_text_field($arr['billing_address']['address']) : '';
+            $output['billing_address']['city'] = !empty($arr['billing_address']['city'])
+                ? BABE_Functions::clear_string_from_special_chars(
+                    sanitize_text_field($arr['billing_address']['city'])
+                ) : '';
+
+            $output['billing_address']['address'] = !empty($arr['billing_address']['address'])
+                ? BABE_Functions::clear_string_from_special_chars(
+                    sanitize_text_field($arr['billing_address']['address'])
+                ) : '';
         }
 
         if (isset($arr['payment']['payment_method'])){

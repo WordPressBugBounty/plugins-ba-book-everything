@@ -4,7 +4,7 @@ Tags: booking, tours, properties, yachts, rental
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 7.1
-Stable tag: 1.8.28
+Stable tag: 1.8.29
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -54,7 +54,7 @@ You can find [Docs](https://ba-booking.com/ba-book-everything-docs/) and more de
 
 = Available in Addons =
 *   Currency switcher
-*   Backoffice: iCal synchronization, PDF invoices, backend bookings, editing/cancellation orders for both customers and administrators, extra charge, full or partial refund, custom refund rules, export orders to XLSX file, custom order statuses and email notifications, etc.
+*   Backoffice: iCal synchronization, PDF invoices, sales report, backend bookings, editing/cancellation orders for both customers and administrators, extra charge, full or partial refund, custom refund rules, export orders to XLSX file, custom order statuses and email notifications, etc.
 *   Multi Vendor Marketplace extension
 *   Payment gateways: PayPal, Stripe, Razorpay, ePayco, Yoco, Wompi, Mercado Pago, Mi Cuenta Web (IZIPAY), Kashier, PARAM, IfthenPay, "Bank transfer" payment option and more
 
@@ -89,6 +89,10 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.29 =
+* Added a "fixed deposit per guest" option to the booking item settings
+* Security fixes. Reported by Wordfence
 
 = 1.8.28 =
 * Security fixes. Reported by Wordfence

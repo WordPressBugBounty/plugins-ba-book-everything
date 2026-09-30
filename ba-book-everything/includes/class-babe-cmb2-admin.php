@@ -2538,6 +2538,17 @@ class BABE_CMB2_admin {
             ),
         ) );
 
+        $cmb->add_field( [
+                'name'       => __( 'Fixed Deposit amount is per guest', 'ba-book-everything' ),
+                'id'         => 'deposit_fixed_per_guest',
+                'type'       => 'radio_inline',
+                'options'    => array(
+                        0 => __( 'No', 'ba-book-everything' ),
+                        1 => __( 'Yes', 'ba-book-everything' ),
+                ),
+                'default' => 0,
+        ] );
+
         $cmb->add_field( array(
             'name' => __( 'Require full payment when there are less than specified number of days left before the start of the booking (days, optional)', 'ba-book-everything' ),
             'desc'       => __( 'leave blank to ignore', 'ba-book-everything' ),

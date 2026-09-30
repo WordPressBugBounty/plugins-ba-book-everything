@@ -3567,7 +3567,7 @@ class BABE_html {
                         $price += $age_price;
 
                         if ($service_qty){
-                            $age_details[$age_id] = $age_id && isset($ages_arr_ordered_by_id[$age_id]) ? $ages_arr_ordered_by_id[$age_id]['name'] . ' x'.$service_qty : 'x'.$service_qty;
+                            $age_details[$age_id] = $age_id && isset($ages_arr_ordered_by_id[$age_id]) ? esc_html($ages_arr_ordered_by_id[$age_id]['name']) . ' x'.(int)$service_qty : 'x'.(int)$service_qty;
                             if ( !$age_price ){
                                 $age_details[$age_id] .= ' ('
                                     .BABE_Currency::get_zero_price_display_value(
@@ -3593,7 +3593,7 @@ class BABE_html {
                             if ( isset($age_details[$age_id]) || !$service_qty ){
                                 continue;
                             }
-                            $age_details[$age_id] = $age_id && isset($ages_arr_ordered_by_id[$age_id]) ? $ages_arr_ordered_by_id[$age_id]['name'] . ' x'.$service_qty : 'x'.$service_qty;
+                            $age_details[$age_id] = $age_id && isset($ages_arr_ordered_by_id[$age_id]) ? esc_html($ages_arr_ordered_by_id[$age_id]['name']) . ' x'.(int)$service_qty : 'x'.(int)$service_qty;
                             $age_details[$age_id] .= ' ('
                                 .BABE_Currency::get_zero_price_display_value(
                                     $currency,

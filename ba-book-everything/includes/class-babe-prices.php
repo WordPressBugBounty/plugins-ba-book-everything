@@ -1149,6 +1149,11 @@ class BABE_Prices {
         $price['tax_percentage'] = BABE_Post_types::get_post_tax($booking_obj_id);
 
         $rules_cat = BABE_Booking_Rules::get_rule_by_obj_id($booking_obj_id);
+
+        $guests_total = empty($price_arr['guests']) ? 1 : array_sum($price_arr['guests']);
+        $deposit_fixed_per_guest = get_post_meta($booking_obj_id, 'deposit_fixed_per_guest', true);
+        $deposit_fixed_multiplier = empty($deposit_fixed_per_guest) || (int)$deposit_fixed_per_guest < 1
+            ? 1 : $guests_total;
         
         $price['total'] = 0;
         $price['total_with_taxes'] = 0;
@@ -1233,7 +1238,10 @@ class BABE_Prices {
         }
         
         $price['deposit'] = $price_arr['deposit'];
-        $price['total_deposit'] = isset($price_arr['deposit_fixed']) && $price_arr['deposit_fixed'] > 0 ? $price_arr['deposit_fixed'] : round($price['total_with_taxes']*$price_arr['deposit']/100, $precision);
+        $price['total_deposit'] = isset($price_arr['deposit_fixed']) && $price_arr['deposit_fixed'] > 0
+            ? $price_arr['deposit_fixed'] * $deposit_fixed_multiplier
+            : round($price['total_with_taxes']*$price_arr['deposit']/100, $precision)
+        ;
         $price['total_deposit_taxable'] = $price['total_deposit']/(1+$price['tax_percentage']/100);
         $price['total_deposit_taxes'] = $price['total_deposit'] - $price['total_deposit_taxable'];
 
@@ -1453,6 +1461,8 @@ class BABE_Prices {
         $prices['deposit_fixed'] = $rules_cat['rules']['payment_model'] !== 'full' ? self::localize_price((float)get_post_meta($booking_obj_id, 'deposit_fixed', true), $currency) : 0;
         
         $prices['payment_model'] = $rules_cat['rules']['payment_model'];
+
+        $prices[ 'guests' ] = $guests;
 
         /////
 

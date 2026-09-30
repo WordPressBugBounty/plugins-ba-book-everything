@@ -2070,8 +2070,8 @@ class BABE_Order {
                         continue;
                     }
 
-                    $qty = $qty >= 0
-                    && !empty($service_meta['allow_quantity'])
+                    $qty = absint($qty);
+                    $qty = !empty($service_meta['allow_quantity'])
                     && !empty($service_meta['max_quantity'])
                     && (int)$service_meta['max_quantity'] >= $qty
                         ? $qty : 1;

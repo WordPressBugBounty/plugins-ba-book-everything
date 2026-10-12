@@ -33,21 +33,28 @@ class BABE_Settings_admin {
 	 * Enqueue assets.
 	 */
     public static function admin_enqueue_scripts() {
-        
-     if ( isset($_GET['page']) && ($_GET['page'] == BABE_Settings::$option_menu_slug || $_GET['page'] == 'babe-addons' || $_GET['page'] == 'babe-demo-content' ) ){   
-     
-         wp_enqueue_style( 'wp-color-picker');
-         wp_enqueue_script( 'wp-color-picker');
-        if(function_exists( 'wp_enqueue_media' )){
-         wp_enqueue_media();
-         } else {
-           wp_enqueue_style('thickbox');
-           wp_enqueue_script('media-upload');
-           wp_enqueue_script('thickbox');
-           }
-           
-         wp_enqueue_style( 'babe-admin-settings', plugins_url( "css/admin/babe-admin-settings.css", BABE_PLUGIN ), array(), BABE_VERSION);
-      }
+
+        if (
+                isset($_GET['page'])
+                && (
+                        $_GET['page'] == BABE_Settings::$option_menu_slug
+                        || $_GET['page'] == 'babe-addons'
+                        || $_GET['page'] == 'babe-demo-content'
+                )
+        ){
+            wp_enqueue_style( 'wp-color-picker');
+            wp_enqueue_script( 'wp-color-picker');
+
+            if(function_exists( 'wp_enqueue_media' )){
+                wp_enqueue_media();
+            } else {
+                wp_enqueue_style('thickbox');
+                wp_enqueue_script('media-upload');
+                wp_enqueue_script('thickbox');
+            }
+        }
+
+        wp_enqueue_style( 'babe-admin-settings', plugins_url( "css/admin/babe-admin-settings.css", BABE_PLUGIN ), array(), BABE_VERSION);
      }
      
 ///////////////////////////////////////
@@ -451,76 +458,6 @@ function setup_demo_content(i){
      return;
    }
 
-   static function learn_more_banners(){
-        ?>
-       <div class="babe-addons-info-container">
-
-           <?php
-           if (!is_plugin_active('babe-payment-pack/babe-payment-pack.php')):
-           ?>
-
-           <div class="babe-addon payment-pack">
-
-               <div class="babe-addon-screenshot">
-                   <a href="https://ba-booking.com/shop/downloads/ba-book-everything-payment_pack/">
-                       <img src="<?php echo plugins_url( "css/img/ba_payments_banners.png", BABE_PLUGIN ); ?>" alt="">
-                   </a>
-               </div>
-
-               <div class="babe-addon-container">
-                   <a href="https://ba-booking.com/shop/downloads/ba-book-everything-payment_pack/">
-                       <h2 class="babe-addon-name"><?php echo __('BABE Payment pack', 'ba-book-everything'); ?></h2>
-                   </a>
-                   <div class="babe-addon-description">
-                       <?php echo __('Integrates PayPal and Credit Cards (Stripe) payments. Stripe integration supports 3D Secure card payments, Apple Pay, Google Pay, Microsoft Pay and the Payment Request API.', 'ba-book-everything'); ?>
-                   </div>
-
-                   <div class="babe-addon-actions">
-                       <a class="button button-primary" href="https://ba-booking.com/shop/downloads/ba-book-everything-payment_pack/"><?php echo __('Learn more', 'ba-book-everything'); ?></a>
-                   </div>
-               </div>
-
-           </div>
-
-            <?php
-           endif;
-
-           if (!is_plugin_active('babe-backoffice/babe-backoffice.php')):
-           ?>
-
-           <!--  //////////////////////      -->
-
-           <div class="babe-addon backoffice-pack">
-
-               <div class="babe-addon-screenshot">
-                   <a href="https://ba-booking.com/shop/downloads/babe-backoffice/">
-                       <img src="<?php echo plugins_url( "css/img/ba_backoffice_banner.png", BABE_PLUGIN ); ?>" alt="">
-                   </a>
-               </div>
-
-               <div class="babe-addon-container">
-                   <a href="https://ba-booking.com/shop/downloads/babe-backoffice/">
-                       <h2 class="babe-addon-name"><?php echo __('BABE Backoffice', 'ba-book-everything'); ?></h2>
-                   </a>
-                   <div class="babe-addon-description">
-                       <?php echo __('Management tools: PDF invoices, backend bookings, editing/cancelation orders, extra charge, full and partial refund, iCal synchronization.', 'ba-book-everything'); ?>
-                   </div>
-
-                   <div class="babe-addon-actions">
-                       <a class="button button-primary" href="https://ba-booking.com/shop/downloads/babe-backoffice/"><?php echo __('Learn more', 'ba-book-everything'); ?></a>
-                   </div>
-               </div>
-
-           </div>
-
-           <?php
-           endif;
-           ?>
-
-       </div>
-<?php
-   }
-
 ////////////////////////////////////////////////
     /**
      * Register and add settings
@@ -528,248 +465,248 @@ function setup_demo_content(i){
     public static function register_settings()
     {
         register_setting(
-            BABE_Settings::$option_menu_slug, // Option group
-            BABE_Settings::$option_name, // Option name
-            array( __CLASS__, 'sanitize_settings' ) // Sanitize
+            BABE_Settings::$option_menu_slug,
+            BABE_Settings::$option_name,
+            array( __CLASS__, 'sanitize_settings' )
         );
 
         ///////// General
 
         add_settings_section(
-            'setting_section_general', // ID
-            __('General','ba-book-everything'), // Title
-	        array( __CLASS__, 'learn_more_banners' ), // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_general',
+            __('General','ba-book-everything'),
+                '__return_false',
+            BABE_Settings::$option_menu_slug
         );
         
          add_settings_field(
-            'date_format', // ID
-            __('Date format','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_date_format' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general' // Section
+            'date_format',
+            __('Date format','ba-book-everything'),
+            array( __CLASS__, 'setting_date_format' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general'
         );
         
         add_settings_field(
-            'booking_obj_post_slug', // ID
-            __('Booking object post slug','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'booking_obj_post_slug', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'booking_obj_post_slug',
+            __('Booking object post slug','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'booking_obj_post_slug', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'booking_obj_post_name', // ID
-            __('Booking object singular name','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'booking_obj_post_name', 'settings_name' => BABE_Settings::$option_name, 'translate' => 1) // Args array
+            'booking_obj_post_name',
+            __('Booking object singular name','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'booking_obj_post_name', 'settings_name' => BABE_Settings::$option_name, 'translate' => 1)
         );
         
         add_settings_field(
-            'booking_obj_post_name_general', // ID
-            __('Booking object general (plural) name','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'booking_obj_post_name_general', 'settings_name' => BABE_Settings::$option_name, 'translate' => 1) // Args array
+            'booking_obj_post_name_general',
+            __('Booking object general (plural) name','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'booking_obj_post_name_general', 'settings_name' => BABE_Settings::$option_name, 'translate' => 1)
         );
         
         add_settings_field(
-            'booking_obj_menu_name', // ID
-            __('Booking object menu name','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'booking_obj_menu_name', 'settings_name' => BABE_Settings::$option_name, 'translate' => 1) // Args array
+            'booking_obj_menu_name',
+            __('Booking object menu name','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'booking_obj_menu_name', 'settings_name' => BABE_Settings::$option_name, 'translate' => 1)
         );
 
         add_settings_field(
-            'attr_tax_prefix', // ID
-            __('Prefix for custom taxonomies (*before changing this option it is required to remove all custom taxonomies)','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'attr_tax_prefix', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'attr_tax_prefix',
+            __('Prefix for custom taxonomies (*before changing this option it is required to remove all custom taxonomies)','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'attr_tax_prefix', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'search_result_page', // ID
-            __('Select search result page','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_page_select' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'search_result_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'search_result_page',
+            __('Select search result page','ba-book-everything'),
+            array( __CLASS__, 'setting_page_select' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'search_result_page', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'services_page', // ID
-            __('Services page','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_page_select' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'services_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'services_page',
+            __('Services page','ba-book-everything'),
+            array( __CLASS__, 'setting_page_select' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'services_page', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'checkout_page', // ID
-            __('Checkout page','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_page_select' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'checkout_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'checkout_page',
+            __('Checkout page','ba-book-everything'),
+            array( __CLASS__, 'setting_page_select' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'checkout_page', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'confirmation_page', // ID
-            __('Confirmation page','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_page_select' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'confirmation_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'confirmation_page',
+            __('Confirmation page','ba-book-everything'),
+            array( __CLASS__, 'setting_page_select' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'confirmation_page', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'terms_page', // ID
-            __('Terms & Conditions page','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_page_select' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'terms_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'terms_page',
+            __('Terms & Conditions page','ba-book-everything'),
+            array( __CLASS__, 'setting_page_select' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'terms_page', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'admin_confirmation_page', // ID
-            __('Admin page for order confirmation (for manually availability confirmation)','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_page_select' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'admin_confirmation_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'admin_confirmation_page',
+            __('Admin page for order confirmation (for manually availability confirmation)','ba-book-everything'),
+            array( __CLASS__, 'setting_page_select' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'admin_confirmation_page', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'customer_confirmation_page', // ID
-            __('Customer page for order confirmation (for manually availability confirmation)','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_page_select' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'customer_confirmation_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'customer_confirmation_page',
+            __('Customer page for order confirmation (for manually availability confirmation)','ba-book-everything'),
+            array( __CLASS__, 'setting_page_select' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'customer_confirmation_page', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'my_account_page', // ID
-            __('My Account page','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_page_select' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'my_account_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'my_account_page',
+            __('My Account page','ba-book-everything'),
+            array( __CLASS__, 'setting_page_select' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'my_account_page', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'my_account_disable', // ID
-            __('Disable My Account page and new user mail?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'my_account_disable', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'my_account_disable',
+            __('Disable My Account page and new user mail?','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'my_account_disable', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'my_account_remove_login_form', // ID
-            __('Remove default login/register form from "My account" page (this allows to use a third party login form shortcode into the "My account" page content)','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'my_account_remove_login_form', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'my_account_remove_login_form',
+            __('Remove default login/register form from "My account" page (this allows to use a third party login form shortcode into the "My account" page content)','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'my_account_remove_login_form', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'results_per_page', // ID
-            __('Search result: items per page','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'results_per_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'results_per_page',
+            __('Search result: items per page','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'results_per_page', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'posts_per_taxonomy_page', // ID
-            __('Taxonomy archive page: items per page','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general',  // Section
-            array('option' => 'posts_per_taxonomy_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'posts_per_taxonomy_page',
+            __('Taxonomy archive page: items per page','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'posts_per_taxonomy_page', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'results_without_av_check', // ID
-            __('Return search results without checking availability if no dates are specified','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'results_without_av_check', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'results_without_av_check',
+            __('Return search results without checking availability if no dates are specified','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'results_without_av_check', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'results_without_av_cal', // ID
-            __('Do not include availability calendar data in search results','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'results_without_av_cal', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'results_without_av_cal',
+            __('Do not include availability calendar data in search results','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'results_without_av_cal', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'search_terms_by_logic_or', // ID
-            __('Use "OR" logic when searching among taxonomy terms','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'search_terms_by_logic_or', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'search_terms_by_logic_or',
+            __('Use "OR" logic when searching among taxonomy terms','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'search_terms_by_logic_or', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'search_result_item_links_without_query_args', // ID
-            __('Remove search query arguments from booking item links on the search result page','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'search_result_item_links_without_query_args', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'search_result_item_links_without_query_args',
+            __('Remove search query arguments from booking item links on the search result page','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'search_result_item_links_without_query_args', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'results_view', // ID
-            __('Search result view','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_results_view' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general' // Section
+            'results_view',
+            __('Search result view','ba-book-everything'),
+            array( __CLASS__, 'setting_results_view' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general'
         );
 
         add_settings_field(
-            'use_minimized_css', // ID
-            __('Use minimized version of the main CSS file', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'use_minimized_css', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'use_minimized_css',
+            __('Use minimized version of the main CSS file', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'use_minimized_css', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'use_minimized_js', // ID
-            __('Use minimized version of the main JS file', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_general', // Section
-            array('option' => 'use_minimized_js', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'use_minimized_js',
+            __('Use minimized version of the main JS file', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_general',
+            array('option' => 'use_minimized_js', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'reset_settings', // ID
-            __('Reset settings', 'ba-book-everything'), // Title
-            array( __CLASS__, 'setting_reset_settings' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'reset_settings',
+            __('Reset settings', 'ba-book-everything'),
+            array( __CLASS__, 'setting_reset_settings' ),
+            BABE_Settings::$option_menu_slug,
             'setting_section_general',
             array('class' => 'babe_settings_subtitle', 'option' => 'reset_settings', 'settings_name' => BABE_Settings::$option_name)
         );
@@ -781,118 +718,118 @@ function setup_demo_content(i){
         ////////////////
 
         add_settings_section(
-            'setting_section_booking_object', // ID
-            __('Booking object','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_booking_object',
+            __('Booking object','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         add_settings_field(
-            'booking_obj_gutenberg', // ID
-            __('Use Gutenberg for booking object posts','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'booking_obj_gutenberg', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'booking_obj_gutenberg',
+            __('Use Gutenberg for booking object posts','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'booking_obj_gutenberg', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'zero_price_display_value', // ID
-            __('When service price is 0 display','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object',  // Section
-            array('option' => 'zero_price_display_value', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'zero_price_display_value',
+            __('When service price is 0 display','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'zero_price_display_value', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'av_calendar_max_months', // ID
-            __('Maximum number of months in availability calendar','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object',  // Section
-            array('option' => 'av_calendar_max_months', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'av_calendar_max_months',
+            __('Maximum number of months in availability calendar','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'av_calendar_max_months', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'content_in_tabs', // ID
-            __('Show booking object post content in tabs?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'content_in_tabs', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'content_in_tabs',
+            __('Show booking object post content in tabs?','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'content_in_tabs', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'mpoints_active', // ID
-            __('Add meeting points functionality?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'mpoints_active', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'mpoints_active',
+            __('Add meeting points functionality?','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'mpoints_active', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'view_only_uploaded_images', // ID
-            __('Media library filter: show only current user attachments and unattached madia in the Media library', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'view_only_uploaded_images', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'view_only_uploaded_images',
+            __('Media library filter: show only current user attachments and unattached madia in the Media library', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'view_only_uploaded_images', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'unitegallery_remove', // ID
-            __('Remove unitegallery from booking object pages', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'unitegallery_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'unitegallery_remove',
+            __('Remove unitegallery from booking object pages', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'unitegallery_remove', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'av_calendar_remove', // ID
-            __('Remove availability calendar from booking object pages', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'av_calendar_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'av_calendar_remove',
+            __('Remove availability calendar from booking object pages', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'av_calendar_remove', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'av_calendar_remove_all_prices', // ID
-            __('Remove all prices from availability calendar', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'av_calendar_remove_all_prices', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'av_calendar_remove_all_prices',
+            __('Remove all prices from availability calendar', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'av_calendar_remove_all_prices', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'av_calendar_remove_hover_prices', // ID
-            __('Remove price details on hover from availability calendar', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'av_calendar_remove_hover_prices', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'av_calendar_remove_hover_prices',
+            __('Remove price details on hover from availability calendar', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'av_calendar_remove_hover_prices', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'av_calendar_show_all_rates', // ID
-            __('Show all rates in the price details on hover on the availability calendar', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'av_calendar_show_all_rates', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'av_calendar_show_all_rates',
+            __('Show all rates in the price details on hover on the availability calendar', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'av_calendar_show_all_rates', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'google_map_remove', // ID
-            __('Remove google map from booking object pages', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_object', // Section
-            array('option' => 'google_map_remove', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'google_map_remove',
+            __('Remove google map from booking object pages', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_object',
+            array('option' => 'google_map_remove', 'settings_name' => BABE_Settings::$option_name)
         );
 
         ////////////////
@@ -902,55 +839,55 @@ function setup_demo_content(i){
         ////////////////
 
         add_settings_section(
-            'setting_section_review', // ID
-            __('Reviews','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_review',
+            __('Reviews','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         add_settings_field(
-            'add_product_schema_markup', // ID
-            __('Add schema.org Product markup to the booking object page','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_review', // Section
-            array('option' => 'add_product_schema_markup', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'add_product_schema_markup',
+            __('Add schema.org Product markup to the booking object page','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_review',
+            array('option' => 'add_product_schema_markup', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'generate_schema_review_if_no_comments', // ID
-            __('Generate 5 star review in schema.org Product markup if no comments found','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_review', // Section
-            array('option' => 'generate_schema_review_if_no_comments', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'generate_schema_review_if_no_comments',
+            __('Generate 5 star review in schema.org Product markup if no comments found','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_review',
+            array('option' => 'generate_schema_review_if_no_comments', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'reviews_allow_to_clients_only', // ID
-            __('Allow only customers who have a successful booking to post a review (one review per booking)','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_review', // Section
-            array('option' => 'reviews_allow_to_clients_only', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'reviews_allow_to_clients_only',
+            __('Allow only customers who have a successful booking to post a review (one review per booking)','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_review',
+            array('option' => 'reviews_allow_to_clients_only', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'reviews_in_tabs', // ID
-            __('Show reviews in tab on booking object page?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_review', // Section
-            array('option' => 'reviews_in_tabs', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'reviews_in_tabs',
+            __('Show reviews in tab on booking object page?','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_review',
+            array('option' => 'reviews_in_tabs', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'reviews_comment_template', // ID
-            __('Reviews comment template (leave empty to use the default "/comments.php")','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_review',  // Section
-            array('option' => 'reviews_comment_template', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'reviews_comment_template',
+            __('Reviews comment template (leave empty to use the default "/comments.php")','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_review',
+            array('option' => 'reviews_comment_template', 'settings_name' => BABE_Settings::$option_name)
         );
 
         ////////////////
@@ -960,64 +897,64 @@ function setup_demo_content(i){
         ////////////////
 
         add_settings_section(
-            'setting_section_booking_form', // ID
-            __('Booking form','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_booking_form',
+            __('Booking form','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         add_settings_field(
-            'max_guests_select', // ID
-            __('Booking form: maximum number of guests available to choose','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_form',  // Section
-            array('option' => 'max_guests_select', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'max_guests_select',
+            __('Booking form: maximum number of guests available to choose','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_form',
+            array('option' => 'max_guests_select', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'services_to_booking_form', // ID
-            __('Add services to booking form', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_form', // Section
-            array('option' => 'services_to_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'services_to_booking_form',
+            __('Add services to booking form', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_form',
+            array('option' => 'services_to_booking_form', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'prefill_date_in_booking_form', // ID
-            __('Prepopulates the date field on the booking form, starting with the nearest available date', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_form', // Section
-            array('option' => 'prefill_date_in_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'prefill_date_in_booking_form',
+            __('Prepopulates the date field on the booking form, starting with the nearest available date', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_form',
+            array('option' => 'prefill_date_in_booking_form', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'hide_guest_prices_in_booking_form', // ID
-            __('Hide prices in guest selection fields on the booking form', 'ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_form', // Section
-            array('option' => 'hide_guest_prices_in_booking_form', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'hide_guest_prices_in_booking_form',
+            __('Hide prices in guest selection fields on the booking form', 'ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_form',
+            array('option' => 'hide_guest_prices_in_booking_form', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'booking_form_optional_services_title', // ID
-            __('Title for optional services section','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_form',  // Section
-            array('option' => 'booking_form_optional_services_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'booking_form_optional_services_title',
+            __('Title for optional services section','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_form',
+            array('option' => 'booking_form_optional_services_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'booking_form_mandatory_services_title', // ID
-            __('Title for mandatory services section','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_booking_form',  // Section
-            array('option' => 'booking_form_mandatory_services_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'booking_form_mandatory_services_title',
+            __('Title for mandatory services section','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_booking_form',
+            array('option' => 'booking_form_mandatory_services_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         ////////////////
@@ -1027,62 +964,62 @@ function setup_demo_content(i){
         ///////// Currency
 
         add_settings_section(
-            'setting_section_currency', // ID
-            __('Currency','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_currency',
+            __('Currency','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
         
         add_settings_field(
-            'currency', // ID
-            __('Select base currency','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_currency' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_currency' // Section
+            'currency',
+            __('Select base currency','ba-book-everything'),
+            array( __CLASS__, 'setting_currency' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_currency'
         );
         
         add_settings_field(
-            'currency_place', // ID
-            __('Place of currency symbol in displayed prices','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_currency_place' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_currency' // Section
+            'currency_place',
+            __('Place of currency symbol in displayed prices','ba-book-everything'),
+            array( __CLASS__, 'setting_currency_place' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_currency'
         );
         
         add_settings_field(
-            'price_thousand_separator', // ID
-            __('Thousand Separator of displayed prices','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_currency',  // Section
-            array('option' => 'price_thousand_separator', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'price_thousand_separator',
+            __('Thousand Separator of displayed prices','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_currency',
+            array('option' => 'price_thousand_separator', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'price_decimal_separator', // ID
-            __('Decimal Separator of displayed prices','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_currency',  // Section
-            array('option' => 'price_decimal_separator', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'price_decimal_separator',
+            __('Decimal Separator of displayed prices','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_currency',
+            array('option' => 'price_decimal_separator', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'price_decimals', // ID
-            __('Number of decimal points shown in displayed prices','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_currency',  // Section
-            array('option' => 'price_decimals', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'price_decimals',
+            __('Number of decimal points shown in displayed prices','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_currency',
+            array('option' => 'price_decimals', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'price_from_label', // ID
-            __('Label before "price from" amount on the booking item page. Use "%s" to add currency three-letter code ISO 4217','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_currency',  // Section
-            array('option' => 'price_from_label', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'price_from_label',
+            __('Label before "price from" amount on the booking item page. Use "%s" to add currency three-letter code ISO 4217','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_currency',
+            array('option' => 'price_from_label', 'settings_name' => BABE_Settings::$option_name)
         );
         
         ////////////////
@@ -1092,27 +1029,27 @@ function setup_demo_content(i){
         ///////// Payments
 
         add_settings_section(
-            'setting_section_payment', // ID
-            __('Payments','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_payment',
+            __('Payments','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         add_settings_field(
-            'only_payment_gateway_from_deposit', // ID
-            __('For all subsequent payments only allow the payment gateway that was used for the deposit','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_payment', // Section
-            array('option' => 'only_payment_gateway_from_deposit', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'only_payment_gateway_from_deposit',
+            __('For all subsequent payments only allow the payment gateway that was used for the deposit','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_payment',
+            array('option' => 'only_payment_gateway_from_deposit', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'payment_methods', // ID
-            __('Activate payment methods','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_payment_methods' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_payment' // Section
+            'payment_methods',
+            __('Activate payment methods','ba-book-everything'),
+            array( __CLASS__, 'setting_payment_methods' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_payment'
         );
         
         if (empty(BABE_Payments::$payment_methods)){
@@ -1126,11 +1063,11 @@ function setup_demo_content(i){
             $option_name = BABE_Settings::$option_name;
             
             add_settings_field(
-              'title_payment_method_'.$method, // ID
-              __('Gateway: ','ba-book-everything').$method_title, // Title
-              '__return_false', // Callback
-              BABE_Settings::$option_menu_slug, // Page
-              'setting_section_payment', // Section
+              'title_payment_method_'.$method,
+              __('Gateway: ','ba-book-everything').$method_title,
+              '__return_false',
+              BABE_Settings::$option_menu_slug,
+              'setting_section_payment',
               ['class' => 'babe_setting_subtitle']
             );
             
@@ -1144,45 +1081,45 @@ function setup_demo_content(i){
         ///////// Order
 
         add_settings_section(
-            'setting_section_order', // ID
-            __('Order','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_order',
+            __('Order','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         add_settings_field(
-            'checkout_add_billing_address', // ID
-            __('Add billing address fields to the checkout form','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_order', // Section
-            array('option' => 'checkout_add_billing_address', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'checkout_add_billing_address',
+            __('Add billing address fields to the checkout form','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_order',
+            array('option' => 'checkout_add_billing_address', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'order_availability_confirm', // ID
-            __('Confirm item availability','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_order_availability_confirm' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_order' // Section
+            'order_availability_confirm',
+            __('Confirm item availability','ba-book-everything'),
+            array( __CLASS__, 'setting_order_availability_confirm' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_order'
         );
 
         add_settings_field(
-            'disable_guest_bookings', // ID
-            __('Disable guest bookings?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_order', // Section
-            array('option' => 'disable_guest_bookings', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'disable_guest_bookings',
+            __('Disable guest bookings?','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_order',
+            array('option' => 'disable_guest_bookings', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'order_payment_processing_waiting', // ID
-            __('Waiting before delete orders with "payment processing" status, minutes','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_order',  // Section
-            array('option' => 'order_payment_processing_waiting', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'order_payment_processing_waiting',
+            __('Waiting before delete orders with "payment processing" status, minutes','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_order',
+            array('option' => 'order_payment_processing_waiting', 'settings_name' => BABE_Settings::$option_name)
         );
         
         ////////////////
@@ -1192,91 +1129,91 @@ function setup_demo_content(i){
         ///////// Confirmation
 
         add_settings_section(
-            'setting_section_confirm', // ID
-            __('Confirmation', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_confirm',
+            __('Confirmation', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         add_settings_field(
-            'show_pay_button_on_confirmation_page', // ID
-            __('Show "Pay now" button on the confirmation page if the order has "payment expected" or "draft" status','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm', // Section
-            array('option' => 'show_pay_button_on_confirmation_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'show_pay_button_on_confirmation_page',
+            __('Show "Pay now" button on the confirmation page if the order has "payment expected" or "draft" status','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'show_pay_button_on_confirmation_page', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'show_reload_page_button_on_confirmation_page', // ID
-            __('Show a reload page button on the confirmation page if the order has "payment processing" or "payment expected" status','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm', // Section
-            array('option' => 'show_reload_page_button_on_confirmation_page', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'show_reload_page_button_on_confirmation_page',
+            __('Show a reload page button on the confirmation page if the order has "payment processing" or "payment expected" status','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'show_reload_page_button_on_confirmation_page', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'message_av_confirmation', // ID
-            __('Message for status "availability confirmation"', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm',  // Section
-            array('option' => 'message_av_confirmation', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'message_av_confirmation',
+            __('Message for status "availability confirmation"', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'message_av_confirmation', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'message_not_available', // ID
-            __('Message for status "not available"', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm',  // Section
-            array('option' => 'message_not_available', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'message_not_available',
+            __('Message for status "not available"', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'message_not_available', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'message_payment_deferred', // ID
-            __('Message for status "payment deferred"', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm',  // Section
-            array('option' => 'message_payment_deferred', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'message_payment_deferred',
+            __('Message for status "payment deferred"', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'message_payment_deferred', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'message_payment_expected', // ID
-            __('Message for status "payment expected"', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm',  // Section
-            array('option' => 'message_payment_expected', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'message_payment_expected',
+            __('Message for status "payment expected"', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'message_payment_expected', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'message_payment_processing', // ID
-            __('Message for status "payment processing"', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm',  // Section
-            array('option' => 'message_payment_processing', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'message_payment_processing',
+            __('Message for status "payment processing"', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'message_payment_processing', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'message_payment_received', // ID
-            __('Message for status "payment received"', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm',  // Section
-            array('option' => 'message_payment_received', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'message_payment_received',
+            __('Message for status "payment received"', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'message_payment_received', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'message_draft', // ID
-            __('Message for status "draft"', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_confirm',  // Section
-            array('option' => 'message_draft', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'message_draft',
+            __('Message for status "draft"', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_confirm',
+            array('option' => 'message_draft', 'settings_name' => BABE_Settings::$option_name)
         );
         
         ////////////////
@@ -1286,67 +1223,67 @@ function setup_demo_content(i){
         ///////// Emails
 
         add_settings_section(
-            'setting_section_emails', // ID
-            __('Emails','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_emails',
+            __('Emails','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         do_action('babe_settings_before_email_fields', BABE_Settings::$option_menu_slug, BABE_Settings::$option_name);
 
         //
         add_settings_field(
-            'shop_email', // ID
-            __('Shop admin email (site admin email by default)'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'shop_email', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'shop_email',
+            __('Shop admin email (site admin email by default)'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'shop_email', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_template_separator', // ID
-            __('Emails template settings', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_template_separator',
+            __('Emails template settings', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
         
         add_settings_field(
-            'email_logo', // ID
-            __('Logo image','ba-book-everything'), // Title
-            array( __CLASS__, 'img_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_logo', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_logo',
+            __('Logo image','ba-book-everything'),
+            array( __CLASS__, 'img_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_logo', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_header_image', // ID
-            __('Header image','ba-book-everything'), // Title
-            array( __CLASS__, 'img_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_header_image', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_header_image',
+            __('Header image','ba-book-everything'),
+            array( __CLASS__, 'img_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_header_image', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_footer_message', // ID
-            __('Footer text (contacts, etc.)','ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_footer_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_footer_message',
+            __('Footer text (contacts, etc.)','ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_footer_message', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_footer_credit', // ID
-            __('Credits text (copyright, etc.)','ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_footer_credit', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_footer_credit',
+            __('Credits text (copyright, etc.)','ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_footer_credit', 'settings_name' => BABE_Settings::$option_name)
         );
         
         //-----------------------//
@@ -1356,160 +1293,160 @@ function setup_demo_content(i){
         //-----------------------//
         
         add_settings_field(
-            'email_new_customer_created_separator', // ID
-            __('Customer account created email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_new_customer_created_separator',
+            __('Customer account created email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
         
         add_settings_field(
-            'email_new_customer_created_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_customer_created_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_customer_created_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_customer_created_subject', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_new_customer_created_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_customer_created_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_customer_created_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_customer_created_title', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_new_customer_created_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_customer_created_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_customer_created_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_customer_created_message', 'settings_name' => BABE_Settings::$option_name)
         );
         
         //-----------------------//
         
         add_settings_field(
-            'email_password_reseted_separator', // ID
-            __('Customer password reseted email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_password_reseted_separator',
+            __('Customer password reseted email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
         
         add_settings_field(
-            'email_password_reseted_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_password_reseted_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_password_reseted_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_password_reseted_subject', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_password_reseted_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_password_reseted_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_password_reseted_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_password_reseted_title', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_password_reseted_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_password_reseted_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_password_reseted_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_password_reseted_message', 'settings_name' => BABE_Settings::$option_name)
         );
         
         //-----------------------//
         
         add_settings_field(
-            'email_template_color_separator', // ID
-            __('Emails color scheme', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_template_color_separator',
+            __('Emails color scheme', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
         
         add_settings_field(
-            'email_color_font', // ID
-            __('Font color','ba-book-everything'), // Title
-            array( __CLASS__, 'color_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_color_font', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_color_font',
+            __('Font color','ba-book-everything'),
+            array( __CLASS__, 'color_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_color_font', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_color_background', // ID
-            __('Background color','ba-book-everything'), // Title
-            array( __CLASS__, 'color_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_color_background', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_color_background',
+            __('Background color','ba-book-everything'),
+            array( __CLASS__, 'color_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_color_background', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_color_title', // ID
-            __('Titles color','ba-book-everything'), // Title
-            array( __CLASS__, 'color_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_color_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_color_title',
+            __('Titles color','ba-book-everything'),
+            array( __CLASS__, 'color_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_color_title', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_color_link', // ID
-            __('Links color','ba-book-everything'), // Title
-            array( __CLASS__, 'color_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_color_link', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_color_link',
+            __('Links color','ba-book-everything'),
+            array( __CLASS__, 'color_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_color_link', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_color_button', // ID
-            __('Button default color','ba-book-everything'), // Title
-            array( __CLASS__, 'color_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_color_button', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_color_button',
+            __('Button default color','ba-book-everything'),
+            array( __CLASS__, 'color_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_color_button', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_color_button_yes', // ID
-            __('Confirm button color','ba-book-everything'), // Title
-            array( __CLASS__, 'color_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_color_button_yes', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_color_button_yes',
+            __('Confirm button color','ba-book-everything'),
+            array( __CLASS__, 'color_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_color_button_yes', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'email_color_button_no', // ID
-            __('Cancel button color','ba-book-everything'), // Title
-            array( __CLASS__, 'color_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_color_button_no', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_color_button_no',
+            __('Cancel button color','ba-book-everything'),
+            array( __CLASS__, 'color_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_color_button_no', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_color_button_change', // ID
-            __('Change button color','ba-book-everything'), // Title
-            array( __CLASS__, 'color_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails', // Section
-            array('option' => 'email_color_button_change', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_color_button_change',
+            __('Change button color','ba-book-everything'),
+            array( __CLASS__, 'color_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_color_button_change', 'settings_name' => BABE_Settings::$option_name)
         );
 
         ////////////////
@@ -1519,63 +1456,63 @@ function setup_demo_content(i){
         ///////// Google
 
         add_settings_section(
-            'setting_section_google', // ID
-            __('Google map','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_google',
+            __('Google map','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         add_settings_field(
-            'google_map_active', // ID
-            __('Add google map functionality?','ba-book-everything'), // Title
-            array( __CLASS__, 'is_active_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_google', // Section
-            array('option' => 'google_map_active', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'google_map_active',
+            __('Add google map functionality?','ba-book-everything'),
+            array( __CLASS__, 'is_active_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_google',
+            array('option' => 'google_map_active', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'google_api', // ID
-            sprintf(__('Google API key (see %1$sGoogle Maps API docs%2$s for details). You need to activate the following libraries in your Google map API: places, marker, routes','ba-book-everything'), '<a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">', '</a>'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_google',  // Section
-            array('option' => 'google_api', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'google_api',
+            sprintf(__('Google API key (see %1$sGoogle Maps API docs%2$s for details). You need to activate the following libraries in your Google map API: places, marker, routes','ba-book-everything'), '<a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">', '</a>'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_google',
+            array('option' => 'google_api', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'google_map_zoom', // ID
-            __('Map zoom','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_google',  // Section
-            array('option' => 'google_map_zoom', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'google_map_zoom',
+            __('Map zoom','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_google',
+            array('option' => 'google_map_zoom', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'google_map_start_lat', // ID
-            __('Map start latitude','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_google',  // Section
-            array('option' => 'google_map_start_lat', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'google_map_start_lat',
+            __('Map start latitude','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_google',
+            array('option' => 'google_map_start_lat', 'settings_name' => BABE_Settings::$option_name)
         );
         
         add_settings_field(
-            'google_map_start_lng', // ID
-            __('Map start Longitude','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_google',  // Section
-            array('option' => 'google_map_start_lng', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'google_map_start_lng',
+            __('Map start Longitude','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_google',
+            array('option' => 'google_map_start_lng', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'google_map_marker', // ID
-            __('Select map marker','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_map_marker' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_google' // Section
+            'google_map_marker',
+            __('Select map marker','ba-book-everything'),
+            array( __CLASS__, 'setting_map_marker' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_google'
         );
         
         ////////////////
@@ -1585,80 +1522,80 @@ function setup_demo_content(i){
          ///////// BABE Captcha
 
         add_settings_section(
-            'setting_section_captcha', // ID
-            __('Login form Captcha','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug // Page
+            'setting_section_captcha',
+            __('Login form Captcha','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug
         );
 
         add_settings_field(
-            'captcha_type', // ID
-            __('Captcha provider','ba-book-everything'), // Title
-            array( __CLASS__, 'setting_captcha_type' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_captcha' // Section
+            'captcha_type',
+            __('Captcha provider','ba-book-everything'),
+            array( __CLASS__, 'setting_captcha_type' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_captcha'
         );
 
         add_settings_field(
-            'captcha_title_google', // ID
-            __('Google reCAPTCHA v3','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_captcha', // Section
+            'captcha_title_google',
+            __('Google reCAPTCHA v3','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
+            'setting_section_captcha',
             array('class' => 'babe_setting_subtitle')
         );
 
         add_settings_field(
-            'recaptcha_site_key', // ID
-            '<a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener noreferrer">' . __('Site Key','ba-book-everything') . '</a>', // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_captcha', // Section
+            'recaptcha_site_key',
+            '<a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener noreferrer">' . __('Site Key','ba-book-everything') . '</a>',
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_captcha',
             array('option' => 'recaptcha_site_key', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'recaptcha_secret_key', // ID
-            '<a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener noreferrer">' . __('Secret Key','ba-book-everything') . '</a>', // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_captcha', // Section
+            'recaptcha_secret_key',
+            '<a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener noreferrer">' . __('Secret Key','ba-book-everything') . '</a>',
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_captcha',
             array('option' => 'recaptcha_secret_key', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'recaptcha_score', // ID
-            __('Minimum score (0.0–1.0)','ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_captcha', // Section
+            'recaptcha_score',
+            __('Minimum score (0.0–1.0)','ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_captcha',
             array('option' => 'recaptcha_score', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'captcha_title_turnstile', // ID
-            __('Cloudflare Turnstile','ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_captcha', // Section
+            'captcha_title_turnstile',
+            __('Cloudflare Turnstile','ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
+            'setting_section_captcha',
             array('class' => 'babe_setting_subtitle')
         );
 
         add_settings_field(
-            'turnstile_site_key', // ID
-            '<a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer">' . __('Site Key','ba-book-everything') . '</a>', // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_captcha', // Section
+            'turnstile_site_key',
+            '<a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer">' . __('Site Key','ba-book-everything') . '</a>',
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_captcha',
             array('option' => 'turnstile_site_key', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'turnstile_secret_key', // ID
-            '<a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer">' . __('Secret Key','ba-book-everything') . '</a>', // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_captcha', // Section
+            'turnstile_secret_key',
+            '<a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer">' . __('Secret Key','ba-book-everything') . '</a>',
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_captcha',
             array('option' => 'turnstile_secret_key', 'settings_name' => BABE_Settings::$option_name)
         );
 
@@ -1689,428 +1626,428 @@ Typically, the order number and customer name are automatically added to the ema
     public static function settings_standard_emails()
     {
         add_settings_field(
-            'email_new_order_separator', // ID
-            __('Customer New order email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_new_order_separator',
+            __('Customer New order email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-                '_email_shortcode_tips', // ID
-                '', // Title
-                array( __CLASS__, 'settings_email_tips' ), // Callback
-                BABE_Settings::$option_menu_slug, // Page
-                'setting_section_emails',  // Section
-                array('option' => '_email_shortcode_tips', 'settings_name' => BABE_Settings::$option_name) // Args array
+                '_email_shortcode_tips',
+                '',
+                array( __CLASS__, 'settings_email_tips' ),
+                BABE_Settings::$option_menu_slug,
+                'setting_section_emails',
+                array('option' => '_email_shortcode_tips', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_new_order_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_new_order_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_new_order_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_order_updated_separator', // ID
-            __('Customer order updated email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_order_updated_separator',
+            __('Customer order updated email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_order_updated_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_updated_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_updated_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_updated_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_order_updated_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_updated_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_updated_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_updated_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_order_updated_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_updated_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_updated_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_updated_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_new_order_av_confirm_separator', // ID
-            __('Customer is waiting for availability confirmation on admin side', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_new_order_av_confirm_separator',
+            __('Customer is waiting for availability confirmation on admin side', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_new_order_av_confirm_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_av_confirm_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_av_confirm_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_av_confirm_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_new_order_av_confirm_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_av_confirm_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_av_confirm_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_av_confirm_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_new_order_av_confirm_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_av_confirm_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_av_confirm_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_av_confirm_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_order_customer_confirmation_separator', // ID
-            __('Customer needs to confirm or reject changes to the booking', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_order_customer_confirmation_separator',
+            __('Customer needs to confirm or reject changes to the booking', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_order_customer_confirmation_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_customer_confirmation_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_customer_confirmation_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_customer_confirmation_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_order_customer_confirmation_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_customer_confirmation_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_customer_confirmation_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_customer_confirmation_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_order_customer_confirmation_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_customer_confirmation_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_customer_confirmation_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_customer_confirmation_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_new_order_to_pay_separator', // ID
-            __('Customer order to pay email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_new_order_to_pay_separator',
+            __('Customer order to pay email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_new_order_to_pay_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_to_pay_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_to_pay_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_to_pay_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_new_order_to_pay_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_to_pay_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_to_pay_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_to_pay_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_new_order_to_pay_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_new_order_to_pay_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_new_order_to_pay_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_new_order_to_pay_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_order_rejected_separator', // ID
-            __('Customer order rejected email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_order_rejected_separator',
+            __('Customer order rejected email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_order_rejected_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_rejected_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_rejected_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_rejected_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_order_rejected_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_rejected_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_rejected_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_rejected_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_order_rejected_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_rejected_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_rejected_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_rejected_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_order_canceled_separator', // ID
-            __('Customer canceled the order email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_order_canceled_separator',
+            __('Customer canceled the order email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_order_canceled_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_canceled_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_canceled_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_canceled_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_order_canceled_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_canceled_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_canceled_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_canceled_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_order_canceled_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_order_canceled_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_order_canceled_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_order_canceled_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_admin_new_order_separator', // ID
-            __('Admin New order email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_admin_new_order_separator',
+            __('Admin New order email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_admin_new_order_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_new_order_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_new_order_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_new_order_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_admin_new_order_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_new_order_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_new_order_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_new_order_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_admin_new_order_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_new_order_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_new_order_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_new_order_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_admin_order_updated_separator', // ID
-            __('Admin order updated email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_admin_order_updated_separator',
+            __('Admin order updated email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_admin_order_updated_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_order_updated_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_order_updated_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_order_updated_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_admin_order_updated_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_order_updated_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_order_updated_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_order_updated_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_admin_order_updated_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_order_updated_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_order_updated_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_order_updated_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_admin_new_order_av_confirm_separator', // ID
-            __('Admin availability confirmation email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_admin_new_order_av_confirm_separator',
+            __('Admin availability confirmation email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_admin_new_order_av_confirm_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_new_order_av_confirm_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_new_order_av_confirm_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_new_order_av_confirm_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_admin_new_order_av_confirm_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_new_order_av_confirm_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_new_order_av_confirm_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_new_order_av_confirm_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_admin_new_order_av_confirm_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_new_order_av_confirm_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_new_order_av_confirm_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_new_order_av_confirm_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
         //-----------------------//
 
         add_settings_field(
-            'email_admin_order_canceled_separator', // ID
-            __('Admin order canceled email', 'ba-book-everything'), // Title
-            '__return_false', // Callback
-            BABE_Settings::$option_menu_slug, // Page
+            'email_admin_order_canceled_separator',
+            __('Admin order canceled email', 'ba-book-everything'),
+            '__return_false',
+            BABE_Settings::$option_menu_slug,
             'setting_section_emails',
             array('class' => 'babe_settings_subtitle')
         );
 
         add_settings_field(
-            'email_admin_order_canceled_subject', // ID
-            __('Subject', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_order_canceled_subject', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_order_canceled_subject',
+            __('Subject', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_order_canceled_subject', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_admin_order_canceled_title', // ID
-            __('Body title', 'ba-book-everything'), // Title
-            array( __CLASS__, 'text_field_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_order_canceled_title', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_order_canceled_title',
+            __('Body title', 'ba-book-everything'),
+            array( __CLASS__, 'text_field_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_order_canceled_title', 'settings_name' => BABE_Settings::$option_name)
         );
 
         add_settings_field(
-            'email_admin_order_canceled_message', // ID
-            __('Body message', 'ba-book-everything'), // Title
-            array( __CLASS__, 'textarea_callback' ), // Callback
-            BABE_Settings::$option_menu_slug, // Page
-            'setting_section_emails',  // Section
-            array('option' => 'email_admin_order_canceled_message', 'settings_name' => BABE_Settings::$option_name) // Args array
+            'email_admin_order_canceled_message',
+            __('Body message', 'ba-book-everything'),
+            array( __CLASS__, 'textarea_callback' ),
+            BABE_Settings::$option_menu_slug,
+            'setting_section_emails',
+            array('option' => 'email_admin_order_canceled_message', 'settings_name' => BABE_Settings::$option_name)
         );
 
     }

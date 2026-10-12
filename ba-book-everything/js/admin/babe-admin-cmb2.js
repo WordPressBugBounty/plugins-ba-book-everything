@@ -637,6 +637,15 @@ $(document).ready(function(){
         $('.babe-settings-wrap input[name="_wp_http_referer"]').val(new_ref);
         
     });
+
+    $('.babe-settings-wrap').on('click', '.nav-tab-payment-gateway', function(event){
+        event.preventDefault();
+        let target = $(this).data('target');
+        $('.babe-settings-wrap .tab-target-payment').addClass('tab-target-payment-inactive');
+        $('.babe-settings-wrap .' + target).removeClass('tab-target-payment-inactive');
+        $('.babe-settings-wrap .nav-tab-payment-gateway').removeClass('nav-tab-payment-gateway-active');
+        $(this).addClass('nav-tab-payment-gateway-active');
+    });
     
     ///////////////////
 

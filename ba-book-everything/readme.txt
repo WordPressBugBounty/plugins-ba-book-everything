@@ -4,7 +4,7 @@ Tags: booking, tours, properties, yachts, rental
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 7.1
-Stable tag: 1.8.29
+Stable tag: 1.8.30
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -89,6 +89,9 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.8.30 =
+* Updated "BA Settings" admin menu
 
 = 1.8.29 =
 * Added a "fixed deposit per guest" option to the booking item settings

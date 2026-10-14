@@ -365,7 +365,14 @@ function setup_demo_content(i){
     {
         ?>
         <div class="wrap babe-settings-wrap">
-            <h2><?php echo __('BA Book Everything Settings', 'ba-book-everything'); ?></h2>
+            <h2><?php
+                echo __('BA Book Everything Settings', 'ba-book-everything');
+                echo '<div class="unlock_with_addon_buttons_in_header">
+               <a class="babe-ext-button" target="_blank" href="' . esc_url(BABE_Features::BA_ADDON_DOC_PAGE_DEFAULT) . '">' . __('BA Documentation', 'ba-book-everything') . '
+               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="babe-ext-button-arrow"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+               </a>
+            </div>';
+                ?></h2>
             <form method="post" action="options.php" enctype="multipart/form-data">
             <?php
                 // This prints out all hidden setting fields
@@ -386,16 +393,12 @@ function setup_demo_content(i){
        </script>
 
         <?php
-    }    
-         
-///////////////////////////////////////
-////////////////////////////////////////////////
+    }
 
     /**
      * Custom do settings with tabs support
      * 
      * @param string $page
-     * @return
      */
     public static function do_settings_sections( $page ) {
         
@@ -454,8 +457,6 @@ function setup_demo_content(i){
      $tabs .= '</h2>';
      
      echo $tabs.$content;
-     
-     return;
    }
 
 ////////////////////////////////////////////////

@@ -1718,7 +1718,7 @@ class BABE_Post_types {
 
         if ( $args['return_total_count'] ){
             // run count query
-            self::$get_posts_count = $wpdb->get_var("SELECT COUNT(discount_price_from) AS total_count FROM (".$query.") AS a");
+            self::$get_posts_count = $wpdb->get_var("SELECT COUNT(*) AS total_count FROM (".$query.") AS a");
         }
 
         self::$get_posts_pages = $posts_per_page == -1 ? 1 : ceil(self::$get_posts_count/$posts_per_page);

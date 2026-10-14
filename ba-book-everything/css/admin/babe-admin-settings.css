@@ -361,6 +361,11 @@
     margin-top: 8px;
 }
 
+.unlock_with_addon_buttons_in_header{
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
 .babe-ext-badge {
     background-color: #fff3cd;
     color: #674e00;

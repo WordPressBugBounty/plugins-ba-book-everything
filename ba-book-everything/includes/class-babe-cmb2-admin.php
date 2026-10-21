@@ -17,6 +17,16 @@ class BABE_CMB2_admin {
     private static $nonce_title = 'cmb2-tpl-nonce';
 
     private static $posts_options = [];
+
+    // order_id => validated manual order total and its title, waiting to be saved
+    private static $total_amount_override_new = [];
+
+    // order_id => true, if the manual order total was saved in the current request
+    private static $total_amount_override_saved = [];
+
+    // transient name prefixes (+ order_id) of the manual order total errors in the order edit form
+    private static $total_amount_override_error_transient  = 'babe_order_total_amount_override_error_';
+    private static $price_adjustment_title_error_transient = 'babe_price_adjustment_title_error_';
     
 //////////////////////////////
     /**
@@ -47,6 +57,10 @@ class BABE_CMB2_admin {
         add_filter( 'cmb2_can_save', array( __CLASS__, 'cmb2_can_save'), 10, 2 );
         
         add_action( 'cmb2_admin_init', array( __CLASS__, 'order_metabox' ), 10, 1);
+        add_action( 'cmb2_post_process_fields_order_metabox', array( __CLASS__, 'order_metabox_before_save' ), 10, 2 );
+        add_action( 'cmb2_save_post_fields_order_metabox', array( __CLASS__, 'order_metabox_after_save' ), 10, 3 );
+        add_action( 'cmb2_save_post_fields_order_create_metabox', array( __CLASS__, 'order_create_metabox_after_save' ), 5, 3 );
+        add_action( 'babe_order_status_update_before_order_actions', array( __CLASS__, 'order_status_before_update' ), 5, 1 );
         add_action( 'cmb2_admin_init', array( __CLASS__, 'order_items_metabox' ), 20, 1);
         add_action( 'cmb2_admin_init', array( __CLASS__, 'order_customer_metabox' ), 30, 1);
         add_action( 'cmb2_admin_init', array( __CLASS__, 'order_customer_extra_guests_metabox' ), 40, 1);
@@ -1543,6 +1557,32 @@ class BABE_CMB2_admin {
          'id'   => $prefix . 'total_amount',
          'type'    => 'text',
          'default' => 0,
+         'save_field' => false,
+         'attributes' => array(
+             'readonly' => 'readonly',
+         ),
+      ) );
+
+      // validated by validate_order_total_amount_override(), saved by save_order_total_amount_override() with the order amounts recalculation
+      $cmb->add_field( array(
+         'name'        => __( 'Total amount override, ', 'ba-book-everything' ) . BABE_Currency::get_currency_symbol( $currency ),
+         'desc'        => __( 'Manual total for this order. Leave empty to use the calculated price.', 'ba-book-everything' ),
+         'id'          => $prefix . 'total_amount_override',
+         'type'        => 'text',
+         'save_field'  => false,
+         'after_field' => array( __CLASS__, 'order_total_amount_override_after_field' ),
+      ) );
+
+      // saved by save_order_total_amount_override() together with the manual order total
+      $cmb->add_field( array(
+         'name'       => __( 'Price adjustment title', 'ba-book-everything' ),
+         'desc'       => __( 'Required for the manual total. Shown to the client in the order details, emails and invoices as the name of the price difference.', 'ba-book-everything' ),
+         'id'         => $prefix . 'price_adjustment_title',
+         'type'       => 'text',
+         'save_field' => false,
+         'attributes' => array(
+             'placeholder' => __( 'Discount/Hot season', 'ba-book-everything' ),
+         ),
       ) );
 
         if ( BABE_Coupons::coupons_active() ){
@@ -1589,6 +1629,228 @@ class BABE_CMB2_admin {
       ) );
     }
     
+//////////////////////////////
+    /**
+     * Hooked to "cmb2_post_process_fields_order_metabox": runs before the order fields are saved.
+     */
+    public static function order_metabox_before_save( CMB2 $cmb, int $object_id ): void {
+
+        self::validate_order_total_amount_override( $object_id );
+    }
+
+//////////////////////////////
+    /**
+     * Hooked to "cmb2_save_post_fields_order_metabox": runs after the order fields are saved.
+     */
+    public static function order_metabox_after_save( int $object_id, array $updated, CMB2 $cmb ): void {
+
+        $post = get_post( $object_id );
+
+        if (
+            ! $post
+            || BABE_Post_types::$order_post_type !== $post->post_type
+            || 'auto-draft' === $post->post_status
+        ) {
+            return;
+        }
+
+        self::save_order_total_amount_override( $object_id );
+    }
+
+//////////////////////////////
+    /**
+     * Hooked to "cmb2_save_post_fields_order_create_metabox" (BABE Backoffice) before the backoffice handler,
+     * which runs the extra charge, status update with emails and refund, so they get the new order amounts.
+     * The order_metabox is saved after this metabox.
+     */
+    public static function order_create_metabox_after_save( int $object_id, array $updated, CMB2 $cmb ): void {
+
+        self::validate_order_total_amount_override( $object_id );
+        self::order_metabox_after_save( $object_id, $updated, $cmb );
+    }
+
+//////////////////////////////
+    /**
+     * Hooked to "babe_order_status_update_before_order_actions" before the status change emails.
+     * The order edit form saves the status before order_metabox_after_save(),
+     * so the validated manual total is saved here to get the new order amounts in the emails.
+     */
+    public static function order_status_before_update( int $order_id ): void {
+
+        if ( isset( self::$total_amount_override_new[ $order_id ] ) ) {
+            self::save_order_total_amount_override( $order_id );
+        }
+    }
+
+//////////////////////////////
+    /**
+     * Validate the manual order total and its title from the order edit form,
+     * the valid changes are saved by save_order_total_amount_override().
+     * The title is required for the manual total, because it is shown to the client.
+     */
+    private static function validate_order_total_amount_override( int $order_id ): void {
+
+        $raw_value = self::post_param( '_total_amount_override' );
+
+        if (
+            ! $order_id
+            || $raw_value === null
+            || ! BABE_Users::current_user_can_edit_post( $order_id )
+        ) {
+            return;
+        }
+
+        $new_value     = str_replace( ',', '.', trim( sanitize_text_field( $raw_value ) ) );
+        $new_title     = sanitize_text_field( (string) self::post_param( '_price_adjustment_title' ) );
+        $current_value = BABE_Order::get_order_total_amount_override( $order_id );
+        // the form still contains the manual total removed in this request because of booking changes
+        $removed_value = BABE_Order::get_order_total_amount_override_removed( $order_id );
+
+        if ( '' !== $new_value && '' === $new_title ) {
+            set_transient( self::$price_adjustment_title_error_transient . $order_id, 1, 5 * MINUTE_IN_SECONDS );
+            return;
+        }
+
+        if ( '' !== $new_value && ( ! is_numeric( $new_value ) || (float) $new_value < 0 ) ) {
+            set_transient( self::$total_amount_override_error_transient . $order_id, $new_value, 5 * MINUTE_IN_SECONDS );
+            return;
+        }
+
+        $is_value_changed = ! (
+            ( '' === $new_value && $current_value === null )
+            || ( '' !== $new_value && $current_value !== null && abs( (float) $new_value - $current_value ) < 0.000001 )
+            || ( '' !== $new_value && $current_value === null && $removed_value !== null && abs( (float) $new_value - $removed_value ) < 0.000001 )
+        );
+
+        // the order amounts are recalculated also after the manual total removal because of booking changes,
+        // because the form saves the outdated prepaid amount
+        if ( ! $is_value_changed && '' === $new_title && $removed_value === null ) {
+            return;
+        }
+
+        self::$total_amount_override_new[ $order_id ] = array(
+            'is_value_changed' => $is_value_changed,
+            'value'            => '' === $new_value ? null : (float) $new_value,
+            'title'            => $new_title,
+        );
+    }
+
+//////////////////////////////
+    /**
+     * Save the manual order total validated by validate_order_total_amount_override()
+     * and recalculate the order amounts, get_obj_total_price_arr() applies the manual total.
+     */
+    private static function save_order_total_amount_override( int $order_id ): void {
+
+        if ( isset( self::$total_amount_override_new[ $order_id ] ) ) {
+
+            $new_data = self::$total_amount_override_new[ $order_id ];
+
+            // the order is saved several times in the current request, the manual total is saved once
+            unset( self::$total_amount_override_new[ $order_id ] );
+
+            if ( '' !== $new_data['title'] ) {
+                BABE_Order::set_order_price_adjustment_title( $order_id, $new_data['title'] );
+            }
+
+            if ( $new_data['is_value_changed'] ) {
+                BABE_Order::set_order_total_amount_override( $order_id, $new_data['value'] );
+                self::$total_amount_override_saved[ $order_id ] = true;
+            }
+        }
+
+        // each repeated save of the order fields in the current request writes the outdated prepaid amount from the form,
+        // so the order amounts are recalculated after each of them
+        if (
+            ( empty( self::$total_amount_override_saved[ $order_id ] ) && BABE_Order::get_order_total_amount_override_removed( $order_id ) === null )
+            || empty( BABE_Order::get_order_items( $order_id ) )
+        ) {
+            return;
+        }
+
+        BABE_Order::recalculate_order_total_amount( $order_id );
+
+        // the paid order expects only the rest of the new total, the paid amount above it is refunded
+        if ( 'full' === BABE_Order::get_order_payment_model( $order_id ) ) {
+
+            $paid_amount = BABE_Order::get_order_prepaid_received( $order_id ) - BABE_Order::get_order_refunded_amount( $order_id );
+
+            BABE_Order::update_order_prepaid_amount(
+                $order_id,
+                max( 0, round( BABE_Order::get_order_total_amount( $order_id ) - $paid_amount, BABE_Currency::get_currency_precision() ) )
+            );
+        }
+
+        // before the extra charge, save the recalculated expected prepaid amount instead of the outdated one
+        if ( isset( $_POST['_prepaid_amount'] ) ) {
+            $_POST['_prepaid_amount'] = (string) BABE_Order::get_order_prepaid_amount( $order_id );
+        }
+    }
+
+//////////////////////////////
+    /**
+     * Scalar value of the submitted form field, null if the field is not in the form.
+     */
+    private static function post_param( string $key ): ?string {
+
+        $value = isset( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : null;
+
+        return is_scalar( $value ) ? (string) $value : null;
+    }
+
+//////////////////////////////
+    /**
+     * Notes under the manual order total field: validation error, calculated price,
+     * removal because of booking changes and the refund/extra charge warning.
+     */
+    public static function order_total_amount_override_after_field( array $field_args, CMB2_Field $field ): void {
+
+        $order_id = (int) $field->object_id;
+
+        if ( ! $order_id || empty( BABE_Order::get_order_items( $order_id ) ) ) {
+            return;
+        }
+
+        $currency = BABE_Order::get_order_currency( $order_id );
+        $notes    = array();
+
+        $error_value = get_transient( self::$total_amount_override_error_transient . $order_id );
+
+        if ( false !== $error_value ) {
+            delete_transient( self::$total_amount_override_error_transient . $order_id );
+            $notes[] = '<span style="color:#d63638;">' . sprintf(
+                /* translators: %s: entered manual order total */
+                esc_html__( 'Total amount override "%s" was not applied: the value must be a number not less than 0.', 'ba-book-everything' ),
+                esc_html( $error_value )
+            ) . '</span>';
+        }
+
+        if ( false !== get_transient( self::$price_adjustment_title_error_transient . $order_id ) ) {
+            delete_transient( self::$price_adjustment_title_error_transient . $order_id );
+            $notes[] = '<span style="color:#d63638;">' . esc_html__( 'Total amount override was not applied: the price adjustment title is required.', 'ba-book-everything' ) . '</span>';
+        }
+
+        $notes[] = sprintf(
+            /* translators: %s: order total calculated by prices */
+            esc_html__( 'Calculated price: %s', 'ba-book-everything' ),
+            BABE_Currency::get_currency_price( BABE_Order::get_order_calculated_total_amount( $order_id ), $currency )
+        );
+
+        $override_reset_date = BABE_Order::get_order_total_amount_override_reset_date( $order_id );
+
+        if ( '' !== $override_reset_date && BABE_Order::get_order_total_amount_override( $order_id ) === null ) {
+            $notes[] = '<span style="color:#d63638;">' . sprintf(
+                /* translators: %s: date and time */
+                esc_html__( 'Total amount override was removed on %s because the booking details were changed.', 'ba-book-everything' ),
+                esc_html( $override_reset_date )
+            ) . '</span>';
+        }
+
+        $notes[] = esc_html__( 'Changing the total of a paid order may trigger a refund or an extra charge.', 'ba-book-everything' );
+
+        echo '<p class="cmb2-metabox-description">' . implode( '<br>', $notes ) . '</p>';
+    }
+
 ///////////////////////////////////////
     /**
 	 * Register order extra fields.

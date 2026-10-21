@@ -1165,6 +1165,10 @@ class BABE_Prices {
         $price['total_services_with_taxes'] = [];
 
         $price['total_fees'] = $price_arr['fees'] ?? [];
+
+        $price['total_manual_adjustment']         = 0;
+        $price['total_manual_adjustment_taxable'] = 0;
+        $price['total_manual_adjustment_taxes']   = 0;
         
         if (isset($price_arr['clear_with_taxes'])){
 
@@ -1228,6 +1232,16 @@ class BABE_Prices {
             $price['total_rewards_points_discount'] = round( $price_arr['rewards_points']['points_discount'], $precision);
             $price['total_with_taxes'] -= $price['total_rewards_points_discount'];
             $price['total_with_taxes'] = max( 0, $price['total_with_taxes'] );
+        }
+
+        // manual adjustment to reach the order total amount override: taxes included, split by the item tax rate
+        if ( ! empty( $price_arr['manual_adjustment'] ) ) {
+            $price['total_manual_adjustment']         = round( (float) $price_arr['manual_adjustment'], $precision );
+            $price['total_manual_adjustment_taxable'] = $price['total_manual_adjustment'] / ( 1 + $price['tax_percentage'] / 100 );
+            $price['total_manual_adjustment_taxes']   = $price['total_manual_adjustment'] - $price['total_manual_adjustment_taxable'];
+            $price['total_taxable_amount']           += $price['total_manual_adjustment_taxable'];
+            $price['total_taxes']                    += $price['total_manual_adjustment_taxes'];
+            $price['total_with_taxes']                = max( 0, $price['total_with_taxes'] + $price['total_manual_adjustment'] );
         }
 
         $price['total_payment_gateway_fee'] = 0;
@@ -1466,6 +1480,8 @@ class BABE_Prices {
 
         /////
 
+        $total_amount_override = null;
+
         if ( $order_id > 0 ){
             $payment_gateway_name = BABE_Order::get_order_payment_method($order_id);
             $payment_gateway_fee_percents = BABE_Order::get_order_payment_gateway_fee_percents($order_id);
@@ -1503,6 +1519,25 @@ class BABE_Prices {
                     $prices['used_rates'] = $order_item['meta']['price_arr']['used_rates'];
                 }
             }
+
+            // the manual order total is agreed for the booking details of the first order item
+            $total_amount_override = BABE_Order::get_order_total_amount_override( $order_id );
+
+            if (
+                $total_amount_override !== null
+                && BABE_Order::is_order_item_booking_changed( array(
+                    'order_item_id'  => key( $order_items ),
+                    'booking_obj_id' => $booking_obj_id,
+                    'meta'           => array(
+                        'date_from' => $date_from,
+                        'date_to'   => $date_to,
+                        'guests'    => $guests,
+                        'services'  => $services,
+                    ),
+                ) )
+            ) {
+                $total_amount_override = null;
+            }
         }
 
         /////
@@ -1527,6 +1562,13 @@ class BABE_Prices {
             $prices['fees'] = isset($prices['fees']) ? $prices['fees'] + $fee_tmp_prices['fees'] : $fee_tmp_prices['fees'];
         }
         
+        // the adjustment is calculated from the price with taxes and fees, so a coupon and redeemed points
+        // reduce the manual total, and the payment gateway fee is added on top of it
+        if ( $total_amount_override !== null ) {
+            $total_price                 = self::get_obj_total_price( $booking_obj_id, $prices );
+            $prices['manual_adjustment'] = (float) round( $total_amount_override - $total_price['total_with_taxes_fees'], BABE_Currency::get_currency_precision() );
+        }
+
         return $prices;
     }
 

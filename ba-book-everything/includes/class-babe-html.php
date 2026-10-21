@@ -3348,6 +3348,8 @@ class BABE_html {
         $fees_html = '';
         $taxes_html = '';
         $payment_gateway_html = '';
+        $manual_adjustment_amount = 0;
+        $manual_adjustment_html = '';
 
         foreach($order_items_arr as $item_id => $item){
 
@@ -3625,6 +3627,8 @@ class BABE_html {
 
             $subtotal += $total_item_prices['total'];
             $taxes_amount += $total_item_prices['total_item_with_taxes'] + array_sum($total_item_prices['total_services_with_taxes']) - $total_item_prices['total_item'] - array_sum($total_item_prices['total_services']);
+            $taxes_amount += $total_item_prices['total_manual_adjustment_taxes'];
+            $manual_adjustment_amount += $total_item_prices['total_manual_adjustment_taxable'];
             $total += $total_item_prices['total_with_taxes'];
 
             // $taxes_html
@@ -3684,6 +3688,22 @@ class BABE_html {
             <td class="order_items_row_total_amount order_items_row_subtotal">
             <span id="order_items_row_subtotal_amount">'.BABE_Currency::get_currency_price($subtotal, $currency).'</span>
             </td></tr>';
+
+        if ( 0.0 !== (float) round( $manual_adjustment_amount, BABE_Currency::get_currency_precision() ) ) {
+            $manual_adjustment_title = BABE_Order::get_order_price_adjustment_title( $order_id );
+            $manual_adjustment_title = '' !== $manual_adjustment_title ? $manual_adjustment_title . ':' : __( 'Price adjustment:', 'ba-book-everything' );
+
+            $manual_adjustment_html = '
+            <tr>
+            <td class="order_items_row_total order_items_row_subtotal order_items_row_manual_adjustment" colspan="2">
+            <span class="order_items_row_total_label">' . esc_html( $manual_adjustment_title ) . '</span>
+            </td>
+            <td class="order_items_row_total_amount order_items_row_subtotal order_items_row_manual_adjustment">
+            <span class="order_items_row_manual_adjustment_amount">' . BABE_Currency::get_currency_price(  $manual_adjustment_amount, $currency ) . '</span>
+            </td></tr>';
+        }
+
+        $output .= apply_filters('babe_order_items_manual_adjustment_html', $manual_adjustment_html, $order_id, $order_items_arr, $ages_arr_ordered_by_id);
 
         $output .= apply_filters('babe_order_items_taxes_html', $taxes_html, $order_id, $order_items_arr, $ages_arr_ordered_by_id);
 

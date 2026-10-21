@@ -35,6 +35,9 @@ class BABE_Order {
     
     private static $order_prices = [];
 
+    // order_id => manual order total removed in the current request because the booking details were changed
+    private static $total_amount_override_removed = [];
+
 
     public static function init() {
 
@@ -524,6 +527,120 @@ class BABE_Order {
             (float)get_post_meta($order_id, '_total_amount', true),
             $order_id);
      }
+
+//////////////////////////////
+    /**
+     * Manual order total set by admin in the order edit form.
+     * Null means the order total is calculated by prices.
+     */
+    public static function get_order_total_amount_override( int $order_id ): ?float {
+
+        $override = get_post_meta( $order_id, '_total_amount_override', true );
+
+        return '' === $override || false === $override ? null : (float) $override;
+    }
+
+//////////////////////////////
+    /**
+     * Set or remove (null) the manual order total, the value is validated by the order edit form.
+     * Coupons and redeemed points are applied on top of the manual total.
+     */
+    public static function set_order_total_amount_override( int $order_id, ?float $value ): void {
+
+        if ( $value === null ) {
+            delete_post_meta( $order_id, '_total_amount_override' );
+            return;
+        }
+
+        update_post_meta( $order_id, '_total_amount_override', $value );
+        delete_post_meta( $order_id, '_total_amount_override_reset' );
+    }
+
+//////////////////////////////
+    /**
+     * Remove the manual order total because the booking details were changed,
+     * the agreed total is not valid for the new booking.
+     */
+    public static function reset_order_total_amount_override( int $order_id ): void {
+
+        $override = self::get_order_total_amount_override( $order_id );
+
+        if ( $override === null ) {
+            return;
+        }
+
+        self::$total_amount_override_removed[ $order_id ] = $override;
+
+        delete_post_meta( $order_id, '_total_amount_override' );
+        update_post_meta( $order_id, '_total_amount_override_reset', current_time( 'mysql' ) );
+    }
+
+//////////////////////////////
+    /**
+     * Manual order total removed in the current request because the booking details were changed.
+     * The order edit form still contains it, so it must not be applied again on the same save.
+     */
+    public static function get_order_total_amount_override_removed( int $order_id ): ?float {
+
+        return self::$total_amount_override_removed[ $order_id ] ?? null;
+    }
+
+//////////////////////////////
+    /**
+     * Date when the manual order total was removed because the booking details were changed.
+     */
+    public static function get_order_total_amount_override_reset_date( int $order_id ): string {
+
+        return (string) get_post_meta( $order_id, '_total_amount_override_reset', true );
+    }
+
+//////////////////////////////
+    /**
+     * Title of the manual order total adjustment, shown to the client in the order details, emails and invoices.
+     * Empty string means the title is not set.
+     */
+    public static function get_order_price_adjustment_title( int $order_id ): string {
+
+        return (string) get_post_meta( $order_id, '_price_adjustment_title', true );
+    }
+
+//////////////////////////////
+    /**
+     * Set or remove (empty value) the title of the manual order total adjustment.
+     */
+    public static function set_order_price_adjustment_title( int $order_id, string $title ): void {
+
+        if ( '' === $title ) {
+            delete_post_meta( $order_id, '_price_adjustment_title' );
+            return;
+        }
+
+        update_post_meta( $order_id, '_price_adjustment_title', $title );
+    }
+
+//////////////////////////////
+    /**
+     * Order total calculated by prices, as if there is no manual order total.
+     */
+    public static function get_order_calculated_total_amount( int $order_id ): float {
+
+        $amount    = 0;
+        $all_items = self::get_order_items( $order_id );
+
+        foreach ( (array) self::get_order_prices( $order_id ) as $order_item_id => $item_price_arr ) {
+
+            if ( ! is_array( $item_price_arr ) || ! isset( $all_items[ $order_item_id ] ) ) {
+                continue;
+            }
+
+            $item_price_arr['manual_adjustment'] = 0;
+
+            $price   = BABE_Prices::get_obj_total_price( $all_items[ $order_item_id ]['booking_obj_id'], $item_price_arr );
+            $amount += $price['total_with_taxes'];
+        }
+
+        return (float) $amount;
+    }
 
      /**
 	 * Get order prepaid amount
@@ -1080,6 +1197,10 @@ class BABE_Order {
          $item_arr['order_item_id'] = absint($item_arr['order_item_id']);
          $item_arr['booking_obj_id'] = absint($item_arr['booking_obj_id']);
             
+         if ( $item_arr['order_item_id'] && self::is_order_item_booking_changed( $item_arr ) ) {
+             self::reset_order_total_amount_override( $order_id );
+         }
+
          $items = $wpdb->get_results("SELECT * FROM ".self::$table_order_items." WHERE order_item_id = '".$item_arr['order_item_id']."'", ARRAY_A);
          
          if (!empty($items)){
@@ -1145,6 +1266,67 @@ class BABE_Order {
         return $output;
      }
      
+//////////////////////////////
+    /**
+     * Check if the booking details of the existing order item will be changed by the new item data.
+     * Saving the same booking again (the admin form always sends dates) is not a change.
+     */
+    public static function is_order_item_booking_changed( array $item_arr ): bool {
+
+        $old_meta = self::get_order_item_meta( $item_arr['order_item_id'] );
+
+        if ( empty( $old_meta ) || ! is_array( $old_meta ) ) {
+            return false;
+        }
+
+        $old_booking_obj_id = isset( $old_meta['booking_obj_id'] ) ? (int) $old_meta['booking_obj_id'] : 0;
+
+        if ( $old_booking_obj_id && $old_booking_obj_id !== (int) $item_arr['booking_obj_id'] ) {
+            return true;
+        }
+
+        foreach ( array( 'date_from', 'date_to', 'guests', 'services' ) as $key ) {
+
+            $old_value = self::normalize_order_item_booking_value( $old_meta[ $key ] ?? '' );
+            $new_value = self::normalize_order_item_booking_value( $item_arr['meta'][ $key ] ?? '' );
+
+            if ( $old_value !== $new_value ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+//////////////////////////////
+    /**
+     * Stored and posted booking values differ in types (int/string) and in empty entries,
+     * so they are reduced to sorted non-empty strings before the strict comparison.
+     */
+    private static function normalize_order_item_booking_value( mixed $value ): array|string {
+
+        if ( ! is_array( $value ) ) {
+            return (string) $value;
+        }
+
+        $output = array();
+
+        foreach ( $value as $key => $item ) {
+
+            $item = self::normalize_order_item_booking_value( $item );
+
+            if ( '' === $item || '0' === $item || array() === $item ) {
+                continue;
+            }
+
+            $output[ (string) $key ] = $item;
+        }
+
+        ksort( $output );
+
+        return $output;
+    }
+
 ////////////////////////
      /**
 	 * Update av guests on order trash/delete
@@ -1210,6 +1392,9 @@ class BABE_Order {
                 
                 self::update_av_guests_on_delete($order_item_id, $item['booking_obj_id']);
             }
+
+            self::reset_order_total_amount_override( (int) $item['order_id'] );
+
             ///// delete all order item meta
             self::delete_order_item_meta($order_item_id);
             //// delete order item

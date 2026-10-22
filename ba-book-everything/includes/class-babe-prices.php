@@ -1385,7 +1385,7 @@ class BABE_Prices {
                     (
                         $rules_cat['rules']['basic_booking_period'] !== 'hour'
                         && $rateDTO->minBookingPeriod > $booking_days_total
-                        && $rate_begin_obj === $begin_check
+                        && $rate_begin_obj->format('Y-m-d') === $begin_check->format('Y-m-d')
                     )
                     || (
                         $rules_cat['rules']['basic_booking_period'] === 'hour'

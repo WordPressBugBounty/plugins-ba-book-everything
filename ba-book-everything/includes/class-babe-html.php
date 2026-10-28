@@ -3146,10 +3146,21 @@ class BABE_html {
             'current_action' => '',
             'action_update' => '',
         ));
+
+        if(
+            empty($args['action_update'])
+            || !in_array($args['action_update'], [
+                    'confirm',
+                    'reject',
+                    'change',
+                ])
+        ){
+            return $output;
+        }
         
         if ( $args['order_status'] !== 'av_confirmation' ){
 
-            $output .= '<h4 class="babe_message_order babe_message_order_'.$args['action_update'].'">';
+            $output .= '<h4 class="babe_message_order babe_message_order_'.esc_attr($args['action_update']).'">';
 
             switch( $args['order_status'] ){
                 case 'payment_expected':
@@ -3192,21 +3203,20 @@ class BABE_html {
                     <textarea name="admin_order_change_message" id="admin_order_change_message" class="babe_admin_order_change_message" required="required"></textarea>';
                     break;
                 case 'reject':
-                default:
                     $output .= '<div>'.__( 'Please click the button below to reject the order:', 'ba-book-everything' ).'</div>';
                     $button_title = __( 'Reject Order', 'ba-book-everything' );
                     break;
             }
 
             $output .= '<div class="babe_admin_order_confirm">
-              <button type="submit" class="button btn babe_button_admin_order babe_button_admin_order_'.$args['action_update'].'">'.$button_title.'</button>
+              <button type="submit" class="button btn babe_button_admin_order babe_button_admin_order_'.esc_attr($args['action_update']).'">'.$button_title.'</button>
             </div>';
 
             $output .= '</form>';
         }
 
         $order_details = [
-            'order_num' => '<p>'.sprintf(__('Order #%s', 'ba-book-everything'), $args['order_num']).'</p>',
+            'order_num' => '<p>'.sprintf(__('Order #%s', 'ba-book-everything'), esc_html($args['order_num']) ).'</p>',
             'order_items' => self::order_items($args['order_id']),
             'order_customer_details' => self::order_customer_details($args['order_id']),
         ];
@@ -3235,9 +3245,20 @@ class BABE_html {
             'action_update' => '',
         ));
 
+        if(
+            empty($args['action_update'])
+            || !in_array($args['action_update'], [
+                'confirm',
+                'reject',
+                'change',
+            ])
+        ){
+            return $output;
+        }
+
         if ( $args['order_status'] !== 'customer_confirmation' ){
 
-            $output .= '<h4 class="babe_message_order babe_message_order_'.$args['action_update'].'">';
+            $output .= '<h4 class="babe_message_order babe_message_order_'.esc_attr($args['action_update']).'">';
 
             switch( $args['order_status'] ){
                 case 'payment_expected':
@@ -3293,7 +3314,7 @@ class BABE_html {
             }
 
             $output .= '<div class="babe_admin_order_confirm">
-              <button type="submit" class="button btn babe_button_admin_order babe_button_admin_order_'.$args['action_update'].'">'.$button_title.'</button>
+              <button type="submit" class="button btn babe_button_admin_order babe_button_admin_order_'.esc_attr($args['action_update']).'">'.$button_title.'</button>
             </div>';
 
             $output .= '</form>';
@@ -3303,7 +3324,7 @@ class BABE_html {
             return $output;
         }
 
-        $output .= '<p>'.__( 'Order #', 'ba-book-everything' ).$args['order_num'].'</p>';
+        $output .= '<p>'.__( 'Order #', 'ba-book-everything' ).esc_html($args['order_num']).'</p>';
 
         $output .= BABE_html::order_items($args['order_id']);
         $output .= BABE_html::order_customer_details($args['order_id']);

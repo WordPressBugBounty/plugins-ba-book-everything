@@ -1048,7 +1048,7 @@ class BABE_Order {
 	 */
     public static function wp_update_order_meta($meta_id, $post_id, $meta_key, $meta_value) {
 
-        if ( BABE_Post_types::$order_post_type != get_post_type($post_id) || $meta_key !== '_status' ){
+        if ( BABE_Post_types::$order_post_type !== get_post_type($post_id) || $meta_key !== '_status' ){
             return;
         }
 
@@ -1093,7 +1093,7 @@ class BABE_Order {
      */
     public static function wp_update_order_meta_check($check, $post_id, $meta_key, $meta_value, $prev_value) {
        
-       if ( BABE_Post_types::$order_post_type == get_post_type($post_id) && $meta_key === '_status'){
+       if ( BABE_Post_types::$order_post_type === get_post_type($post_id) && $meta_key === '_status'){
         
           $old_status = self::get_order_status($post_id);
           
@@ -1994,7 +1994,7 @@ class BABE_Order {
         
         $post_type = get_post_type( $order_id );
         $post_status = get_post_status( $order_id );
-        if( $post_type == BABE_Post_types::$order_post_type && in_array($post_status, array('publish')) ) {
+        if( $post_type === BABE_Post_types::$order_post_type && in_array($post_status, array('publish')) ) {
           self::update_order_status($order_id, 'canceled');
         }
     }
@@ -2008,7 +2008,7 @@ class BABE_Order {
      public static function untrash_order_post($order_id){
         
         $post_type = get_post_type( $order_id );
-        if( $post_type == BABE_Post_types::$order_post_type ) {
+        if( $post_type === BABE_Post_types::$order_post_type ) {
           //self::order_trash($order_id, false);
         }
     }
@@ -2315,34 +2315,29 @@ class BABE_Order {
 
         return apply_filters('babe_sanitize_booking_vars', $output, $arr);
     }
-    
-////////////////////////
-     /**
-	 * Check if we have valid order data
-     * @param int $order_id
-     * @param string $order_num
-     * @param string $order_hash
-     * @return boolean
-	 */
-     public static function is_order_valid($order_id, $order_num, $order_hash){
+
+    public static function is_order_valid(int $order_id, string $order_num, string $order_hash): bool
+    {
+        return $order_id > 0
+            && !empty($order_num)
+            && !empty($order_hash)
+            && BABE_Post_types::$order_post_type === get_post_type($order_id)
+            && self::get_order_number($order_id) === $order_num
+            && self::get_order_hash($order_id) === $order_hash
+            ;
         
-        return self::get_order_number($order_id) == $order_num && self::get_order_hash($order_id) == $order_hash ? true : false;
-        
-     }
-     
-////////////////////////
-     /**
-	 * Check if we have valid order data
-     * @param int $order_id
-     * @param string $order_num
-     * @param string $order_hash
-     * @return boolean
-	 */
-     public static function is_order_admin_valid($order_id, $order_num, $order_admin_hash){
-        
-        return self::get_order_number($order_id) == $order_num && self::get_order_admin_hash($order_id) == $order_admin_hash ? true : false;
-        
-     }
+    }
+
+    public static function is_order_admin_valid(int $order_id, string $order_num, string $order_admin_hash): bool
+    {
+        return $order_id > 0
+            && !empty($order_num)
+            && !empty($order_admin_hash)
+            && BABE_Post_types::$order_post_type === get_post_type($order_id)
+            && self::get_order_number($order_id) === $order_num
+            && self::get_order_admin_hash($order_id) === $order_admin_hash
+            ;
+    }
 
     /**
      * @return string 'auto'|'manually'
@@ -2947,6 +2942,14 @@ class BABE_Order {
             $args['current_action'] !== 'to_admin_confirm'
             || self::get_order_availability_confirmation_mode($order_id) === 'auto'
             || !self::is_order_admin_valid($order_id, $args['order_num'], $args['order_admin_hash'])
+            || (
+                !empty($args['action_update'])
+                && !in_array($args['action_update'], [
+                    'confirm',
+                    'reject',
+                    'change',
+                ])
+            )
         ){
             return $output;
         }
@@ -3063,6 +3066,14 @@ class BABE_Order {
             $args['current_action'] !== 'to_customer_confirm'
             || self::get_order_availability_confirmation_mode($order_id) === 'auto'
             || !self::is_order_valid($order_id, $args['order_num'], $args['order_hash'])
+            || (
+                !empty($args['action_update'])
+                && !in_array($args['action_update'], [
+                    'confirm',
+                    'reject',
+                    'change',
+                ])
+            )
         ){
             return $output;
         }

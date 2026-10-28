@@ -467,7 +467,7 @@ public static function pager($max_num_pages){
      */
     public static function get_current_language_post_id( $post_id, $post_type = '', $return_original_if_missing = true){
 
-        $post_type = $post_type ? $post_type : get_post_type($post_id);
+        $post_type = $post_type ?: get_post_type($post_id);
 
         return apply_filters( 'wpml_object_id', $post_id, $post_type, $return_original_if_missing );
     }

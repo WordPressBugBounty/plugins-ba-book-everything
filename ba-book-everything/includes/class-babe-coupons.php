@@ -49,7 +49,7 @@ class BABE_Coupons {
      public static function delete_order_post($order_id){
         
         $post_type = get_post_type( $order_id );
-        if( $post_type == BABE_Post_types::$order_post_type ) {
+        if( $post_type === BABE_Post_types::$order_post_type ) {
              $coupon = self::get_coupon_by_order_id($order_id);
              if ($coupon){
                 self::reduce_coupon_number_of_uses($coupon->ID);

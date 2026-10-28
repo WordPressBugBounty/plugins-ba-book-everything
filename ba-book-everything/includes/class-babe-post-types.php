@@ -1737,11 +1737,9 @@ class BABE_Post_types {
      * @param int $post_id
      * @return boolean
 	 */
-    public static function is_post_booking_obj($post_id){
-        
-        $post_id = absint($post_id); 
-        
-        return self::$booking_obj_post_type == get_post_type($post_id) ? true : false;
+    public static function is_post_booking_obj($post_id): bool
+    {
+        return self::$booking_obj_post_type === get_post_type(absint($post_id));
     }
     
 /////is_post_order////    
@@ -1750,11 +1748,9 @@ class BABE_Post_types {
      * @param int $post_id
      * @return boolean
 	 */
-    public static function is_post_order($post_id){
-        
-        $post_id = absint($post_id); 
-        
-        return self::$order_post_type == get_post_type($post_id) ? true : false;
+    public static function is_post_order($post_id): bool
+    {
+        return self::$order_post_type === get_post_type(absint($post_id));
     }    
     
 /////////////////////    

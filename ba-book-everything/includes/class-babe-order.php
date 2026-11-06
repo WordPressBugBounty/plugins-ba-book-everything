@@ -382,22 +382,12 @@ class BABE_Order {
        unset(self::$order_meta[$post_id]);
     }
 
-     /**
-	 * Get order hash
-     * @param int $order_id
-     * @return string
-	 */
-    public static function get_order_hash( $order_id ) {
-       return get_post_meta($order_id, '_order_hash', true);
+    public static function get_order_hash( int $order_id ): string {
+       return (string)get_post_meta($order_id, '_order_hash', true);
     }
 
-     /**
-	 * Get order admin hash
-     * @param int $order_id
-     * @return string
-	 */
-    public static function get_order_admin_hash( $order_id ) {
-       return get_post_meta($order_id, '_order_admin_hash', true);
+    public static function get_order_admin_hash( int $order_id ): string {
+       return (string)get_post_meta($order_id, '_order_admin_hash', true);
     }
 
      /**
@@ -2323,7 +2313,7 @@ class BABE_Order {
             && !empty($order_hash)
             && BABE_Post_types::$order_post_type === get_post_type($order_id)
             && self::get_order_number($order_id) === $order_num
-            && self::get_order_hash($order_id) === $order_hash
+            && hash_equals(self::get_order_hash($order_id), $order_hash)
             ;
         
     }
@@ -2335,7 +2325,7 @@ class BABE_Order {
             && !empty($order_admin_hash)
             && BABE_Post_types::$order_post_type === get_post_type($order_id)
             && self::get_order_number($order_id) === $order_num
-            && self::get_order_admin_hash($order_id) === $order_admin_hash
+            && hash_equals(self::get_order_admin_hash($order_id), $order_admin_hash)
             ;
     }
 

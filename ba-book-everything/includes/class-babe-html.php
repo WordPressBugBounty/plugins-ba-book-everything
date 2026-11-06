@@ -3182,7 +3182,7 @@ class BABE_html {
                     break;
             }
             
-            $output .= $message . '</h4>';
+            $output .= esc_html($message) . '</h4>';
             
         } else {
 
@@ -3277,7 +3277,7 @@ class BABE_html {
                     break;
             }
 
-            $output .= $message . '</h4>';
+            $output .= esc_html($message) . '</h4>';
 
             if ( $args['order_status'] === 'payment_expected' ){
 
